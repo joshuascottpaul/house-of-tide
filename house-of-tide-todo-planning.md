@@ -4,9 +4,23 @@
 
 This plan implements the three highest-impact changes with testing at each stage. Each feature gets: implementation → Playwright tests → manual playthrough → git commit.
 
+## ⚠️ CRITICAL: Sequential Implementation Only
+
+**Implement ONE task at a time.**
+
+After completing each task:
+1. Run Playwright tests
+2. Complete manual playthrough
+3. Git commit
+4. Mark task as ✅ COMPLETE in this document
+5. Say: "Ready for Task [X]" where X is the next task number
+
+**Do not start Task 2 until Task 1 is marked complete.**
+**Do not start Task 3 until Task 2 is marked complete.**
+
 ---
 
-## Phase 1: Consequence Preview on Choices
+## Phase 1: Consequence Preview on Choices ⬜ NOT STARTED
 
 ### Implementation Steps
 
@@ -57,7 +71,7 @@ feat: add consequence preview to choices
 
 ---
 
-## Phase 2: Rival Family Memory
+## Phase 2: Rival Family Memory ⬜ NOT STARTED
 
 ### Implementation Steps
 
@@ -122,7 +136,7 @@ feat: add persistent rival family memory
 
 ---
 
-## Phase 3: Mid-Year Trading Layer
+## Phase 3: Mid-Year Trading Layer ⬜ NOT STARTED
 
 ### Implementation Steps
 
