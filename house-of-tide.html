@@ -82,6 +82,12 @@ h1 { font-family:'IM Fell English SC',serif; font-size:clamp(2.8rem,9vw,5.5rem);
 .choice-btn-rep:hover:not(:disabled) { border-color:#d4b030; color:#fad840;
   background:rgba(200,160,30,.1); }
 .rep-tier.leg { color:#d4a030; letter-spacing:.18em; }
+.choice-hint { font-family:'IM Fell English SC',serif; font-size:.68rem;
+  letter-spacing:.08em; color:#7a6840; font-style:normal; display:block;
+  margin-top:.35rem; opacity:.85; }
+.choice-hint.cost { color:#9a8040; }
+.choice-hint.requirement { color:#6a7888; }
+.choice-hint.warning { color:#a86830; }
 
 /* ── INPUTS ── */
 .name-group { margin-bottom:1.6rem; }
@@ -903,6 +909,16 @@ JSON only. No preamble. No markdown. No text outside the object.
 
 situation: The actual scene, in register. Not a summary of the scene type.
 choices: Exactly 3. Complete sentences. A=action (costs information), B=intelligence (costs time), C=honest position (player decides if cowardice or strategy). Do not label them. Do not make A obviously better than C.
+
+CRITICAL: When choices have costs or requirements, MENTION THEM IN THE CHOICE TEXT:
+- If a choice costs marks, include the amount: "Commission a second vessel from the Masso yards — this will require approximately 600 marks."
+- If a choice requires ships, mention it: "Dispatch two ships to the northern passage with Casso leading."
+- If a choice is risky, let Pell's caution show: "Challenge Rinaldo directly at the exchange — Pell has set his pen down."
+- For investigations/bribes, mention small costs: "Send Pell to the archive — 50 marks for the notary's consideration."
+- For hiring/commissions, always state the cost explicitly.
+
+DO NOT generate choices without cost information when the action clearly requires spending marks.
+
 repChoice: If reputation is 9-10 AND warranted: a 4th choice that exists only because of the house's standing. Not a negotiation — a declaration. Prefix with "✦". Otherwise null.
 thread_hint: If this situation naturally creates an open thread, return a 1-3 word type: "borracchi", "navigator", "sealed_document", "heir_patron", "returning_figure", etc. Otherwise null.
 `
@@ -1102,10 +1118,12 @@ A good thread is specific and retrievable: "The Borracchi marriage offer — def
 // ══════════════════════════════════════════════════════════
 const CFG_KEY = 'hot_config';
 const CFG_DEFAULTS = {
-  backend:     'ollama',       // 'ollama' | 'claude'
-  ollamaModel: 'qwen3.5:4b',
+  backend:     'ollama',       // 'ollama' | 'claude' | 'openai'
+  ollamaModel: 'mistral:latest',
   claudeModel: 'claude-haiku-4-5-20251001',
   claudeApiKey:'',
+  openaiModel: 'gpt-4o-mini',
+  openaiApiKey:'',
   debugMode:   false
 };
 let CFG = { ...CFG_DEFAULTS };
@@ -1127,6 +1145,9 @@ function updateEngineLabel() {
   if (CFG.backend === 'claude') {
     const short = CFG.claudeModel.includes('haiku') ? 'claude haiku' : 'claude sonnet';
     el.textContent = '⊞ Claude API · ' + short;
+  } else if (CFG.backend === 'openai') {
+    const short = CFG.openaiModel.includes('mini') ? 'gpt-4o-mini' : CFG.openaiModel;
+    el.textContent = '⊞ OpenAI API · ' + short;
   } else {
     el.textContent = '⊞ Ollama · ' + (CFG.ollamaModel === 'custom' ? 'custom' : CFG.ollamaModel);
   }
@@ -1201,6 +1222,7 @@ function openSettings() {
   // populate from CFG
   document.getElementById('s-ollama').checked = (CFG.backend === 'ollama');
   document.getElementById('s-claude').checked = (CFG.backend === 'claude');
+  document.getElementById('s-openai').checked = (CFG.backend === 'openai');
   // ollama model
   const oSel = document.getElementById('s-ollama-model');
   const known = ['qwen3.5:4b','qwen2.5:7b','mistral:latest','llama3.1:8b'];
@@ -1215,6 +1237,9 @@ function openSettings() {
   // claude model
   document.getElementById('s-claude-model').value = CFG.claudeModel;
   document.getElementById('s-api-key').value     = CFG.claudeApiKey;
+  // openai model
+  document.getElementById('s-openai-model').value = CFG.openaiModel;
+  document.getElementById('s-openai-key').value   = CFG.openaiApiKey;
   document.getElementById('s-debug').checked     = CFG.debugMode;
   settingsBackendChange();
   ov.classList.add('open');
@@ -1226,12 +1251,18 @@ function closeSettings() {
 
 function settingsBackendChange() {
   const isClaude = document.getElementById('s-claude').checked;
-  document.getElementById('s-ollama-section').style.display = isClaude ? 'none' : 'block';
+  const isOpenAI = document.getElementById('s-openai').checked;
+  document.getElementById('s-ollama-section').style.display = (isClaude || isOpenAI) ? 'none' : 'block';
   document.getElementById('s-claude-section').style.display = isClaude ? 'block' : 'none';
+  document.getElementById('s-openai-section').style.display = isOpenAI ? 'block' : 'none';
   const note = document.getElementById('settings-backend-note');
-  note.textContent = isClaude
-    ? 'Calls go directly from your browser to api.anthropic.com. Excellent prose quality and reliable JSON. Requires a paid API key.'
-    : 'Ollama runs locally on your machine — no API key, no cost, but requires the Ollama app and a downloaded model.';
+  if (isClaude) {
+    note.textContent = 'Calls go directly from your browser to api.anthropic.com. Excellent prose quality and reliable JSON. Requires a paid API key.';
+  } else if (isOpenAI) {
+    note.textContent = 'Calls go directly from your browser to api.openai.com. Fast, reliable JSON, good prose. Requires a paid API key.';
+  } else {
+    note.textContent = 'Ollama runs locally on your machine — no API key, no cost, but requires the Ollama app and a downloaded model.';
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1244,13 +1275,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function saveSettings() {
   const isClaude = document.getElementById('s-claude').checked;
-  CFG.backend     = isClaude ? 'claude' : 'ollama';
+  const isOpenAI = document.getElementById('s-openai').checked;
+  CFG.backend     = isClaude ? 'claude' : isOpenAI ? 'openai' : 'ollama';
   CFG.claudeModel = document.getElementById('s-claude-model').value;
   CFG.claudeApiKey= document.getElementById('s-api-key').value.trim();
+  CFG.openaiModel = document.getElementById('s-openai-model').value;
+  CFG.openaiApiKey= document.getElementById('s-openai-key').value.trim();
   CFG.debugMode   = document.getElementById('s-debug').checked;
   const oSel = document.getElementById('s-ollama-model');
   CFG.ollamaModel = oSel.value === 'custom'
-    ? (document.getElementById('s-ollama-custom').value.trim() || 'qwen3.5:4b')
+    ? (document.getElementById('s-ollama-custom').value.trim() || 'mistral:latest')
     : oSel.value;
   saveCFG();
   updateEngineLabel();
@@ -1272,7 +1306,43 @@ async function callLLM(systemPrompt, userMsg, opts = {}) {
   let raw = '';
   let metaStr = '';
 
-  if (CFG.backend === 'claude') {
+  if (CFG.backend === 'openai') {
+    // ── OpenAI API ─────────────────────────────────────────
+    if (!CFG.openaiApiKey) throw new Error('No OpenAI API key set. Open ⊞ Settings to add one.');
+    metaStr = `OpenAI API · ${CFG.openaiModel}`;
+
+    const body = {
+      model:       CFG.openaiModel,
+      max_tokens:  maxTok,
+      temperature: temp,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user',   content: msgText }
+      ]
+    };
+    if (isJson) {
+      body.response_format = { type: 'json_object' };
+    }
+
+    const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${CFG.openaiApiKey}`
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!resp.ok) {
+      const errBody = await resp.json().catch(() => ({}));
+      const detail  = errBody?.error?.message || resp.statusText;
+      throw new Error(`OpenAI API ${resp.status}: ${detail}`);
+    }
+
+    const data = await resp.json();
+    raw = data.choices?.[0]?.message?.content || '';
+
+  } else if (CFG.backend === 'claude') {
     // ── Claude API ─────────────────────────────────────────
     if (!CFG.claudeApiKey) throw new Error('No Claude API key set. Open ⊞ Settings to add one.');
     metaStr = `Claude API · ${CFG.claudeModel}`;
@@ -1800,6 +1870,49 @@ function startGame() {
   onboardPage = 0;
   renderOnboard();
   showScreen('screen-onboard');
+}
+
+
+// ══════════════════════════════════════════════════════════
+//  CHOICE RISK ANALYSIS
+// ══════════════════════════════════════════════════════════
+function analyzeChoiceRisk(choiceText) {
+  const lower = choiceText.toLowerCase();
+  const risk = { cost: null, requirement: null, warning: null };
+
+  // Detect costs - try to extract exact number first
+  const markMatch = choiceText.match(/(\d+)\s*(?:marks?|mk)/i);
+  if (markMatch) {
+    risk.cost = parseInt(markMatch[1]);
+  } else if (/\b(commission|buy|purchase)\b/.test(lower)) {
+    // Estimate based on keywords
+    if (/vessel|ship/i.test(choiceText)) risk.cost = 600;
+    else risk.cost = 100;
+  } else if (/\b(hire|bribe|pay|send.*pell.*archive|investigation|notary)\b/.test(lower)) {
+    risk.cost = 50;
+  }
+
+  // Detect ship requirements
+  if (/\b(dispatch|send.*ship|fleet|voyage|sail)\b/.test(lower)) {
+    const shipMatch = choiceText.match(/(\d+)\s*ships?/i);
+    if (shipMatch) {
+      const num = parseInt(shipMatch[1]);
+      risk.requirement = `requires ${num} ship${num > 1 ? 's' : ''}`;
+    } else if (/fleet|multiple|several/i.test(lower)) {
+      risk.requirement = 'requires 2+ ships';
+    } else {
+      risk.requirement = 'requires 1+ ships';
+    }
+  }
+
+  // Detect warnings
+  if (/\b(challenge|confront|publicly|accuse|dismiss|refuse.*directly)\b/.test(lower)) {
+    risk.warning = 'Pell advises caution';
+  } else if (/pell.*set.*pen|pell.*watching|pell.*caution/i.test(choiceText)) {
+    risk.warning = 'Pell advises caution';
+  }
+
+  return risk;
 }
 
 
@@ -2536,7 +2649,30 @@ function renderChoices(containerId, choices, isVenture) {
   choices.forEach(c => {
     const btn = document.createElement('button');
     btn.className = 'choice-btn' + (isVenture ? ' choice-btn-v' : '');
-    btn.textContent = c;
+    
+    // Analyze risk and append hints
+    const risk = analyzeChoiceRisk(c);
+    btn.innerHTML = c;
+    
+    if (risk.cost) {
+      const hint = document.createElement('span');
+      hint.className = 'choice-hint cost';
+      hint.textContent = `requires ${risk.cost} mk`;
+      btn.appendChild(hint);
+    }
+    if (risk.requirement) {
+      const hint = document.createElement('span');
+      hint.className = 'choice-hint requirement';
+      hint.textContent = risk.requirement;
+      btn.appendChild(hint);
+    }
+    if (risk.warning) {
+      const hint = document.createElement('span');
+      hint.className = 'choice-hint warning';
+      hint.textContent = risk.warning;
+      btn.appendChild(hint);
+    }
+    
     btn.onclick = () => makeChoice(c, isVenture);
     container.appendChild(btn);
   });
@@ -2549,7 +2685,30 @@ function renderChoices(containerId, choices, isVenture) {
     container.appendChild(sep);
     const btn = document.createElement('button');
     btn.className = 'choice-btn choice-btn-rep';
-    btn.textContent = gs.currentEvent.repChoice;
+    
+    // Analyze rep choice risk too
+    const risk = analyzeChoiceRisk(gs.currentEvent.repChoice);
+    btn.innerHTML = gs.currentEvent.repChoice;
+    
+    if (risk.cost) {
+      const hint = document.createElement('span');
+      hint.className = 'choice-hint cost';
+      hint.textContent = `requires ${risk.cost} mk`;
+      btn.appendChild(hint);
+    }
+    if (risk.requirement) {
+      const hint = document.createElement('span');
+      hint.className = 'choice-hint requirement';
+      hint.textContent = risk.requirement;
+      btn.appendChild(hint);
+    }
+    if (risk.warning) {
+      const hint = document.createElement('span');
+      hint.className = 'choice-hint warning';
+      hint.textContent = risk.warning;
+      btn.appendChild(hint);
+    }
+    
     btn.onclick = () => makeChoice(gs.currentEvent.repChoice, false);
     container.appendChild(btn);
   }
@@ -3554,6 +3713,10 @@ async function testConnection() {
           <span>Ollama (local)</span>
         </label>
         <label class="settings-radio">
+          <input type="radio" name="s-backend" value="openai" id="s-openai" onchange="settingsBackendChange()">
+          <span>OpenAI API</span>
+        </label>
+        <label class="settings-radio">
           <input type="radio" name="s-backend" value="claude" id="s-claude" onchange="settingsBackendChange()">
           <span>Claude API</span>
         </label>
@@ -3586,6 +3749,18 @@ async function testConnection() {
       <input type="password" class="settings-input" id="s-api-key"
         placeholder="sk-ant-api03-…" autocomplete="off">
       <div class="settings-hint">Stored locally in your browser only. Calls go directly to api.anthropic.com. Get a key at console.anthropic.com.</div>
+    </div>
+
+    <div class="settings-section" id="s-openai-section" style="display:none;">
+      <div class="settings-label">OpenAI Model</div>
+      <select class="settings-select" id="s-openai-model">
+        <option value="gpt-4o-mini">gpt-4o-mini — fast, cheap, reliable</option>
+        <option value="gpt-4o">gpt-4o — best quality, slower</option>
+      </select>
+      <div class="settings-label" style="margin-top:.9rem;">API Key</div>
+      <input type="password" class="settings-input" id="s-openai-key"
+        placeholder="sk-proj-…" autocomplete="off">
+      <div class="settings-hint">Stored locally in your browser only. Calls go directly to api.openai.com. Get a key at platform.openai.com.</div>
     </div>
 
     <div class="settings-section">

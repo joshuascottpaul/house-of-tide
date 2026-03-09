@@ -114,3 +114,56 @@ Each addresses a different core weakness:
 
 Together, they transform the game from "read beautiful prose, pick blind choices, hope for the best" to "navigate a living world, make informed gambles, actively manage an economy." The prose stays. The gothic tone stays. But the *game* underneath becomes something you play, not just something you read.
 
+
+
+---
+
+## 4. Fix Thread Followup System
+
+### The Problem
+Threads open when you defer/decline events ("Missing waypoints on northern route - uninvestigated"), but they don't reliably return. The AI generates new events instead of following up on open threads. Players see "⟳ 1 open thread" in the status bar but the thread never resolves.
+
+### Why This Matters
+**Narrative continuity:** The game promises that deferred matters return. "The world remembers" is a core design principle. When threads disappear, that promise breaks.
+
+**Player trust:** If you defer investigating the Borracchi in Year 3, you expect it to matter in Year 5. When it doesn't, deferral feels like "skip this content" instead of "I'll deal with this later."
+
+**The DM principle:** A good DM tracks open plot threads. If the party said "we'll investigate the missing cargo later," the DM brings it back — changed by time, but connected to the original thread.
+
+### What It Fixes
+- **Thread followup reliability:** When a thread is 2+ years old, force a followup event instead of random generation
+- **Better AI context:** Pass open threads more prominently to AI with instruction: "PRIORITY: Generate followup for oldest open thread"
+- **Thread resolution feedback:** When a thread closes, show visual indicator: "⟳ Thread resolved: Missing waypoints"
+- **Thread expiry grace:** Extend expiry from 8 years to 12 years so they have more chances to return
+
+### How It Improves Gameplay
+- **Deferred choices matter:** Choosing "investigate later" creates a real future event, not a dead end
+- **World feels alive:** The navigator you didn't confront in Year 3 becomes the Borracchi's factor in Year 6
+- **Strategic depth:** Players can deliberately defer low-priority threads to focus on urgent matters, knowing they'll return
+- **Narrative payoff:** Threads that span 5+ years feel like long-running storylines, not forgotten loose ends
+
+---
+
+## 5. Fix Reputation Stagnation
+
+### The Problem
+During 4-year playthrough, reputation stayed at 5 the entire time. No choices affected reputation positively or negatively. The AI is returning `reputation_delta: 0` for every event, making reputation feel like a dead stat.
+
+### Why This Matters
+**Gameplay:** Reputation is supposed to gate content (high-rep events at 7+, low-rep events at 3-). If it never changes, players never see those event pools.
+
+**Consequence weight:** Political choices should risk reputation. Successful ventures should build it. Currently, nothing matters.
+
+**The DM principle:** A good DM tracks how NPC factions view the party. Helping the Borracchi should improve standing. Snubbing them should damage it. The AI needs to be more aggressive with reputation deltas.
+
+### What It Fixes
+- **Strengthen AI prompt:** Add explicit instruction: "reputation_delta should be non-zero for 60% of outcomes. Political/social choices especially should affect reputation."
+- **Calibration examples:** Show AI what warrants +1 (successful alliance, public victory) and -1 (broken promise, public failure)
+- **Audit prompt:** Review SYSTEM_PROMPT reputation guidance to ensure it's not being too conservative
+
+### How It Improves Gameplay
+- **Reputation becomes dynamic:** Players see their standing rise and fall based on choices
+- **Stakes feel real:** Political gambles have visible consequences
+- **Content unlocks:** Players reach Renowned (7+) or fall to Precarious (3-), unlocking different event pools
+- **Narrative variety:** The game feels different at different reputation tiers
+

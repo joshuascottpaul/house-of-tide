@@ -1,0 +1,16 @@
+{
+  "name": "house-of-tide",
+  "version": "1.0.0",
+  "description": "A narrative merchant dynasty game set in the archipelago of Verantia. You are the founder of a merchant house. You will trade, govern, and scheme. You will age. When you die, your heir continues.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2"
+  }
+}
