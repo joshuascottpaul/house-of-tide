@@ -5,439 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>House of Tide</title>
 <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=UnifrakturMaguntia&family=Pirata+One&display=swap" rel="stylesheet">
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --page:    #cbb98e;
-  --gold:    #d4b46a;
-  --gold-hi: #f0dfa8;
-  --gold-lo: #9a8a68;
-  --rust:    #a07820;
-  --rust-dk: #5a4828;
-  --vein:    #3a2c18;
-  --ember:   #1a1008;
-  --red:     #c84030;
-  --green:   #6a9838;
-}
-html, body { min-height:100vh; background:#090705; color:var(--page);
-  font-family:'IM Fell English','Palatino Linotype',Palatino,Georgia,serif; }
-
-::-webkit-scrollbar { width:4px; }
-::-webkit-scrollbar-track { background:#090705; }
-::-webkit-scrollbar-thumb { background:var(--rust-dk); border-radius:2px; }
-
-/* ── SCREENS ── */
-.screen { display:none; min-height:100vh; flex-direction:column; }
-.screen.active { display:flex; }
-.screen-center { flex:1; display:flex; flex-direction:column; align-items:center;
-  justify-content:center; padding:2.5rem 2rem; text-align:center; }
-
-/* ── TYPE ── */
-.eyebrow { font-family:'IM Fell English SC',serif; font-size:.78rem; letter-spacing:.25em;
-  color:#9a8858; text-transform:uppercase; margin-bottom:.8rem; }
-h1 { font-family:'IM Fell English SC',serif; font-size:clamp(2.8rem,9vw,5.5rem);
-  color:var(--gold-hi); font-weight:normal; letter-spacing:.04em; line-height:1.05; }
-.subtitle { font-style:italic; color:var(--gold-lo); font-size:1.1rem;
-  margin-top:.6rem; line-height:1.85; }
-.rule { width:80px; height:1px;
-  background:linear-gradient(to right,transparent,#a07820,transparent);
-  margin:1.4rem auto; }
-.rule-wide { width:160px; height:1px;
-  background:linear-gradient(to right,transparent,#5a4828,transparent);
-  margin:1.2rem auto; }
-
-/* ── EPIGRAM ── */
-.epigram { max-width:420px; font-style:italic; color:var(--gold-lo);
-  font-size:1.05rem; line-height:1.9; margin:0 auto; }
-.epigram-attr { font-family:'IM Fell English SC',serif; font-size:.7rem;
-  letter-spacing:.18em; color:#7a6840; text-transform:uppercase; margin-top:.6rem; }
-
-/* ── BUTTONS ── */
-.btn { background:none; border:1px solid #5a4020; color:var(--gold);
-  font-family:'IM Fell English SC',serif; font-size:.75rem; letter-spacing:.1em;
-  padding:.65rem 1.8rem; cursor:pointer; margin-top:1.5rem;
-  text-transform:uppercase; transition:border-color .2s,color .2s,background .2s; }
-.btn:hover:not(:disabled) { border-color:var(--rust); color:var(--gold-hi);
-  background:rgba(139,105,20,.04); }
-.btn:disabled { opacity:.35; cursor:not-allowed; }
-.btn-venture { border-color:#3a3060; color:#a898d0; }
-.btn-venture:hover:not(:disabled) { border-color:#7060b0; color:#d0c8f0;
-  background:rgba(80,60,160,.06); }
-
-.choice-btn { display:block; width:100%; background:none; border:1px solid #5a4830;
-  color:#d4b878; font-family:'IM Fell English',serif; font-style:italic;
-  font-size:1.12rem; padding:1rem 1.4rem; text-align:left; cursor:pointer;
-  margin-bottom:.6rem; line-height:1.75;
-  transition:border-color .2s,color .2s,background .2s; }
-.choice-btn:hover:not(:disabled) { border-color:var(--rust); color:#e8d4a0;
-  background:rgba(139,105,20,.04); }
-.choice-btn:disabled { opacity:.35; cursor:not-allowed; }
-.choice-btn-v { border-color:#2a2040; color:#8878b8; }
-.choice-btn-v:hover:not(:disabled) { border-color:#6050a0; color:#c8c0e8;
-  background:rgba(60,40,120,.06); }
-.choice-btn-rep { border-color:#8a6c18; border-left:3px solid #c8a020;
-  color:#e4c040; background:rgba(200,160,30,.05); }
-.choice-btn-rep::before { content:'✦ '; font-family:'Pirata One',cursive;
-  font-size:.8em; opacity:.8; letter-spacing:.05em; }
-.choice-btn-rep:hover:not(:disabled) { border-color:#d4b030; color:#fad840;
-  background:rgba(200,160,30,.1); }
-.rep-tier.leg { color:#d4a030; letter-spacing:.18em; }
-.choice-hint { font-family:'IM Fell English SC',serif; font-size:.68rem;
-  letter-spacing:.08em; color:#7a6840; font-style:normal; display:block;
-  margin-top:.35rem; opacity:.85; }
-.choice-hint.cost { color:#9a8040; }
-.choice-hint.requirement { color:#6a7888; }
-.choice-hint.warning { color:#a86830; }
-
-/* ── INPUTS ── */
-.name-group { margin-bottom:1.6rem; }
-.field-label { font-family:'IM Fell English SC',serif; font-size:.72rem;
-  letter-spacing:.12em; color:#9a8858; text-transform:uppercase; margin-bottom:.45rem; }
-.name-row { display:flex; align-items:center; justify-content:center; gap:.5rem; }
-.name-prefix { color:var(--gold-lo); font-style:italic; }
-input[type=text] { background:none; border:none; border-bottom:1px solid #4a3410;
-  color:var(--gold-hi); font-family:'IM Fell English',serif; font-style:italic;
-  font-size:1.1rem; padding:.3rem 0; outline:none; width:200px; text-align:center;
-  transition:border-color .2s; }
-input[type=text]::placeholder { color:#2a1e0e; }
-input[type=text]:focus { border-bottom-color:var(--rust); }
-
-/* ── STATUS BAR ── */
-#status-bar { background:#060402; border-bottom:1px solid #140e06;
-  padding:.55rem 1.2rem; display:flex; justify-content:space-between;
-  align-items:center; flex-wrap:wrap; gap:.4rem;
-  position:sticky; top:0; z-index:20; }
-#dynasty-label { font-family:'IM Fell English SC',serif; font-size:.88rem;
-  color:var(--gold); letter-spacing:.08em; }
-.heir-badge { font-family:'IM Fell English',serif; font-style:italic;
-  font-size:.85rem; color:#a89060; }
-.heir-badge .ht { color:#d4b46a; }
-.stats { display:flex; gap:1.2rem; flex-wrap:wrap; align-items:center; }
-.stat { text-align:center; }
-.stat-name { font-family:'IM Fell English SC',serif; font-size:.7rem;
-  letter-spacing:.1em; color:#a08848; text-transform:uppercase; display:block; }
-.stat-val { font-size:1.05rem; color:#f0dfa8; display:block; font-weight:normal; }
-.stat-val.danger { color:var(--red); }
-    .stat-warning { color:#c8922a !important; }
-    .finance-btn { background:none; border:1px solid #4a3820; font-family:'IM Fell English SC',serif; font-size:.64rem; letter-spacing:.1em; color:#c8a850; text-transform:uppercase; cursor:pointer; padding:.35rem .8rem; transition:all .2s; white-space:nowrap; }
-    .finance-btn:hover { border-color:#a07820; color:#f0d070; }
-    .finance-btn:disabled { opacity:.35; cursor:not-allowed; }
-    .finance-btn.sell { color:#b08840; border-color:#5a4020; }
-    .finance-btn.sell:hover { color:#d0a850; border-color:#8a6030; }
-    .finance-btn.shadow { color:#a06838; border-color:#5a3018; }
-    .finance-btn.shadow:hover { color:#c88040; border-color:#8a4820; }
-    .finance-section { margin-top:1.4rem; padding:.9rem 1rem; border:1px solid #2a1e0e; }
-    .finance-section-title { font-family:'IM Fell English SC',serif; font-size:.62rem; letter-spacing:.12em; color:#5a4820; text-transform:uppercase; margin-bottom:.5rem; }
-    .finance-note { font-family:'IM Fell English',serif; font-style:italic; font-size:.78rem; color:#9a8848; margin:0 0 .5rem; }
-    .finance-prices { font-family:'IM Fell English SC',serif; font-size:.61rem; letter-spacing:.08em; color:#7a6840; margin-bottom:.6rem; }
-    .finance-actions { display:flex; gap:.5rem; flex-wrap:wrap; align-items:flex-start; }
-    .finance-warn { font-family:'IM Fell English SC',serif; font-size:.61rem; letter-spacing:.08em; }
-    .finance-divider { border-top:1px solid #1e1608; margin:.9rem 0; }
-    .finance-debt-warn { font-family:'IM Fell English',serif; font-style:italic; font-size:.74rem; margin:0 0 .5rem; }
-.phase-pip { font-family:'IM Fell English SC',serif; font-size:.68rem;
-  letter-spacing:.1em; color:#a08848; text-transform:uppercase;
-  padding:.2rem .6rem; border:1px solid #4a3820; white-space:nowrap; }
-.phase-pip.routes  { color:#5a8090; border-color:#2a4858; }
-.phase-pip.venture { color:#8878c0; border-color:#3a3068; }
-.rep-tier { font-family:'IM Fell English SC',serif; font-size:.62rem;
-  letter-spacing:.08em; display:block; }
-.rep-tier.hi  { color:#7aaa40; }
-.rep-tier.mid { color:#9a8848; }
-.rep-tier.lo  { color:#c04030; }
-
-/* ── GAME CONTENT ── */
-#game-content { max-width:680px; margin:0 auto; padding:2rem 1.5rem 5rem; width:100%; }
-.phase-hdr { display:flex; align-items:center; gap:.8rem; margin-bottom:1.4rem; }
-.phase-hdr-line { flex:1; height:1px; background:linear-gradient(to right,#5a4828,transparent); }
-.phase-hdr-line.r { background:linear-gradient(to left,#5a4828,transparent); }
-.phase-hdr-lbl { font-family:'IM Fell English SC',serif; font-size:.78rem;
-  letter-spacing:.2em; color:#b09858; text-transform:uppercase; white-space:nowrap; }
-.event-text { font-style:italic; font-size:1.2rem; color:#deca98;
-  line-height:2; margin-bottom:2rem; max-width:600px; }
-.choices-lbl { font-family:'IM Fell English SC',serif; font-size:.76rem;
-  letter-spacing:.2em; color:#a08848; text-transform:uppercase; margin-bottom:.8rem; }
-
-/* ── LOADING ── */
-#loading-panel { display:none; text-align:center; padding:4rem 2rem; }
-.loading-msg { font-style:italic; color:#a08858; font-size:1.05rem; letter-spacing:.02em; }
-
-/* ── NARRATIVE ── */
-.narrative-block { border-left:2px solid #1e1508; padding-left:1.5rem; margin-bottom:2rem; }
-.narrative-para { font-size:1.1rem; line-height:2; color:#c8a878; margin-bottom:1.1rem; }
-.narrative-para.venture-color { color:#b0a8c8; }
-
-/* ── CONSEQUENCE BOX ── */
-.consequence-box { background:rgba(255,255,255,.012); border:1px solid #180f04;
-  padding:1rem 1.2rem; margin-bottom:1.5rem; }
-.consequence-title { font-family:'IM Fell English SC',serif; font-size:.76rem;
-  letter-spacing:.15em; color:#a08848; text-transform:uppercase; margin-bottom:.6rem; }
-.consequence-entry { font-style:italic; font-size:1.05rem; color:#c8aa80; line-height:1.85; }
-.consequence-deltas { display:flex; gap:1.5rem; margin-top:.7rem; flex-wrap:wrap; }
-.delta { font-family:'IM Fell English SC',serif; font-size:.68rem; letter-spacing:.08em; }
-.delta .dl { color:#8a7848; text-transform:uppercase; }
-.delta.pos .dv { color:var(--green); }
-.delta.neg .dv { color:var(--red); }
-
-/* ── YEAR END ── */
-#panel-yearend { display:none; text-align:center; padding:1rem 0; }
-.ye-ornament { color:#8a7848; font-size:1.1rem; margin:1rem 0; letter-spacing:.3em; }
-.ye-note { font-style:italic; font-size:1.1rem; color:#9a8858;
-  line-height:2; max-width:500px; margin:0 auto; }
-.ye-heir { font-style:italic; font-size:1rem; color:#7a6840;
-  margin-top:1rem; line-height:1.85; max-width:480px; margin-left:auto; margin-right:auto; }
-
-/* ── GRAND VENTURE ── */
-#panel-venture { display:none; border:1px solid #2a2050;
-  background:linear-gradient(to bottom,#0a0820,#090705);
-  padding:2rem; margin-bottom:1.5rem; }
-.venture-eyebrow { font-family:'IM Fell English SC',serif; font-size:.72rem;
-  letter-spacing:.2em; color:#8878c0; text-transform:uppercase; margin-bottom:1rem; }
-.venture-text { font-style:italic; font-size:1.05rem; color:#b0a8d8;
-  line-height:1.95; margin-bottom:1.5rem; }
-.venture-warning { font-family:'IM Fell English SC',serif; font-size:.68rem;
-  letter-spacing:.1em; color:#6860a0; text-transform:uppercase; margin-bottom:1rem; }
-
-/* ── ORNAMENT ── */
-.ornament { display:flex; align-items:center; gap:1rem; color:#2a1e0e; margin:1.5rem 0; }
-.ornament::before,.ornament::after { content:''; flex:1; height:1px;
-  background:linear-gradient(to right,transparent,#2a1e0e,transparent); }
-
-/* ── LEDGER HISTORY ── */
-#ledger-history { margin-top:3rem; border-top:1px solid #110b04; padding-top:1.5rem; }
-.ledger-heading { font-family:'IM Fell English SC',serif; font-size:.76rem;
-  letter-spacing:.2em; color:#a08848; text-transform:uppercase; margin-bottom:1rem; }
-.ledger-line { font-style:italic; font-size:.95rem; color:#a08858;
-  border-left:1px solid #4a3820; padding-left:1rem; margin-bottom:.65rem; line-height:1.85; }
-.ledger-phase { font-family:'IM Fell English SC',serif; font-size:.68rem;
-  color:#8a7848; letter-spacing:.08em; text-transform:uppercase; margin-right:.5rem; }
-
-/* ── DEATH SCREEN ── */
-.death-block { max-width:560px; text-align:center; margin-top:1.5rem; }
-.death-notice { font-size:1.05rem; color:#9a8060; line-height:2; }
-.death-notice strong { color:var(--gold-hi); font-style:normal; }
-.death-epitaph { font-style:italic; color:var(--gold-lo); margin-top:1rem;
-  line-height:1.95; font-size:.95rem; }
-.death-heir-note { font-style:italic; color:#6a5a3a; margin-top:.8rem;
-  line-height:1.9; font-size:.9rem; }
-.death-pull { font-style:italic; color:#b89030; font-size:1rem;
-  line-height:1.95; margin-top:1.5rem; }
-.death-turn { color:#3a2a12; font-style:italic; margin-top:.5rem; font-size:.88rem; }
-.death-ledger { max-width:500px; text-align:left; }
-
-/* ── ERROR ── */
-#error-banner { display:none; background:#140606; border:1px solid #501010;
-  color:#b05040; font-style:italic; font-size:.84rem; padding:.85rem 1.2rem;
-  margin-bottom:1rem; line-height:1.75; }
-
-/* ── FOOTER ── */
-footer { text-align:center; padding:1.2rem; border-top:1px solid #2a1e0e;
-  font-family:'IM Fell English SC',serif; font-size:.68rem;
-  color:#7a6840; letter-spacing:.15em; text-transform:uppercase; }
-
-/* ── ANIMATIONS ── */
-@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-@keyframes ventureIn { from{opacity:0;transform:translateY(8px);border-color:transparent}
-  to{opacity:1;transform:translateY(0);border-color:#2a2050} }
-@keyframes overlayIn { from{opacity:0} to{opacity:1} }
-.fade-in { animation:fadeUp .5s ease; }
-.venture-in { animation:ventureIn .8s ease; }
-
-/* ── SAVE OVERLAY ── */
-#save-overlay { display:none; position:fixed; inset:0; z-index:100;
-  background:rgba(4,3,2,.92); animation:overlayIn .3s ease;
-  overflow-y:auto; }
-.save-overlay-inner { max-width:560px; margin:0 auto; padding:3rem 2rem 4rem;
-  text-align:center; }
-.save-title { font-family:'IM Fell English SC',serif; font-size:1.4rem;
-  color:var(--gold-hi); font-weight:normal; letter-spacing:.06em; margin-bottom:.4rem; }
-.save-subtitle { font-style:italic; color:var(--gold-lo); font-size:.88rem;
-  margin-bottom:2rem; line-height:1.7; }
-.save-slot { border:1px solid #1e1508; padding:1.1rem 1.2rem;
-  margin-bottom:.8rem; text-align:left; transition:border-color .2s; }
-.save-slot:hover { border-color:#2a1e0e; }
-.save-slot-header { display:flex; justify-content:space-between;
-  align-items:baseline; margin-bottom:.3rem; gap:.5rem; }
-.save-slot-num { font-family:'IM Fell English SC',serif; font-size:.6rem;
-  letter-spacing:.15em; color:#3a2a12; text-transform:uppercase; }
-.save-slot-date { font-family:'IM Fell English SC',serif; font-size:.56rem;
-  letter-spacing:.08em; color:#2a1e0e; text-transform:uppercase; }
-.save-slot-name { font-style:italic; font-size:.95rem; color:var(--gold);
-  margin-bottom:.15rem; }
-.save-slot-detail { font-style:italic; font-size:.78rem; color:#5a4a2a;
-  line-height:1.6; }
-.save-slot-empty { font-style:italic; font-size:.88rem; color:#2a1e0e; }
-.save-slot-actions { display:flex; gap:.5rem; margin-top:.8rem; flex-wrap:wrap; }
-.save-btn { background:none; border:1px solid #3a2a12; color:#7a6840;
-  font-family:'IM Fell English SC',serif; font-size:.62rem; letter-spacing:.1em;
-  padding:.35rem .9rem; cursor:pointer; text-transform:uppercase;
-  transition:border-color .2s,color .2s; }
-.save-btn:hover { border-color:var(--rust); color:var(--gold); }
-.save-btn.load { border-color:#2a4030; color:#608060; }
-.save-btn.load:hover { border-color:#408050; color:#90c090; }
-.save-btn.del { border-color:#3a1010; color:#804040; }
-.save-btn.del:hover { border-color:#801010; color:#c06060; }
-.save-autosave-note { font-family:'IM Fell English SC',serif; font-size:.58rem;
-  letter-spacing:.1em; color:#2a1e0e; text-transform:uppercase; margin-top:1.5rem; }
-.save-close { display:block; margin:1.5rem auto 0;
-  background:none; border:1px solid #2a1e0e; color:#4a3820;
-  font-family:'IM Fell English SC',serif; font-size:.7rem; letter-spacing:.1em;
-  padding:.55rem 1.5rem; cursor:pointer; text-transform:uppercase;
-  transition:border-color .2s,color .2s; }
-.save-close:hover { border-color:var(--rust-dk); color:var(--gold-lo); }
-.save-confirm { font-style:italic; font-size:.82rem; color:#803020;
-  margin-top:.6rem; display:none; }
-
-/* ── CONTINUE SAVES (title screen) ── */
-.title-saves { margin-top:1.5rem; width:100%; max-width:360px; }
-.title-save-item { display:flex; justify-content:space-between; align-items:center;
-  border:1px solid #1e1508; padding:.7rem 1rem; margin-bottom:.5rem;
-  cursor:pointer; transition:border-color .2s,background .2s; }
-.title-save-item:hover { border-color:#3a2a12; background:rgba(255,255,255,.015); }
-.tsi-info { text-align:left; }
-.tsi-name { font-style:italic; font-size:.88rem; color:var(--gold); }
-.tsi-detail { font-style:italic; font-size:.72rem; color:#4a3820; margin-top:.1rem; }
-.tsi-arrow { color:#3a2a12; font-size:.9rem; }
-
-
-/* ── SETTINGS MODAL ── */
-#settings-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.82);
-  z-index:300; align-items:center; justify-content:center; }
-#settings-overlay.open { display:flex; }
-.settings-box { background:#0e0b06; border:1px solid #3a2c18; max-width:560px; width:92%;
-  padding:2rem 2.2rem; font-family:'IM Fell English SC',serif; }
-.settings-title { font-size:1.05rem; color:var(--gold-hi); letter-spacing:.1em;
-  text-transform:uppercase; margin-bottom:1.5rem; border-bottom:1px solid #2a1e0e; padding-bottom:.8rem; }
-.settings-section { margin-bottom:1.4rem; }
-.settings-label { font-size:.62rem; letter-spacing:.12em; color:#7a6840;
-  text-transform:uppercase; margin-bottom:.5rem; }
-.settings-radio-row { display:flex; gap:1rem; margin-bottom:.7rem; }
-.settings-radio { display:flex; align-items:center; gap:.4rem; cursor:pointer; }
-.settings-radio input { accent-color:#a08848; cursor:pointer; }
-.settings-radio span { font-family:'IM Fell English',serif; font-size:.88rem;
-  color:#c8a870; font-style:italic; }
-.settings-select { background:#0a0804; border:1px solid #3a2c18; color:#c8a870;
-  font-family:'IM Fell English',serif; font-style:italic; font-size:.88rem;
-  padding:.35rem .5rem; width:100%; cursor:pointer; }
-.settings-input { background:#0a0804; border:1px solid #3a2c18; color:#c8a870;
-  font-family:'IM Fell English',serif; font-style:italic; font-size:.85rem;
-  padding:.35rem .5rem; width:100%; letter-spacing:.02em; }
-.settings-input::placeholder { color:#3a2c18; }
-.settings-hint { font-family:'IM Fell English',serif; font-style:italic;
-  font-size:.78rem; color:#5a4828; line-height:1.7; margin-top:.4rem; }
-.settings-row { display:flex; gap:.8rem; margin-top:1.2rem; justify-content:flex-end; }
-.settings-close { background:none; border:1px solid #3a2c18; color:#7a6840;
-  font-family:'IM Fell English SC',serif; font-size:.62rem; letter-spacing:.1em;
-  text-transform:uppercase; padding:.4rem .9rem; cursor:pointer; }
-.settings-close:hover { color:#c8a870; border-color:#5a4020; }
-.settings-save { background:#1a1408; border:1px solid #5a4020; color:#c8a870;
-  font-family:'IM Fell English SC',serif; font-size:.62rem; letter-spacing:.1em;
-  text-transform:uppercase; padding:.4rem .9rem; cursor:pointer; }
-.settings-save:hover { background:#2a1e0e; }
-#settings-backend-note { font-family:'IM Fell English',serif; font-style:italic;
-  font-size:.78rem; color:#5a4828; line-height:1.7; margin-top:.5rem;
-  padding:.5rem; border-left:2px solid #2a1e0e; }
-
-/* ── DEBUG LOG ── */
-#debug-panel { display:none; position:fixed; bottom:0; left:0; right:0; height:42vh;
-  background:#06050302; border-top:1px solid #3a2c18; z-index:400;
-  backdrop-filter:blur(2px); flex-direction:column; }
-#debug-panel.open { display:flex; }
-.debug-bar { display:flex; align-items:center; gap:.8rem; padding:.35rem .8rem;
-  background:#0a0804; border-bottom:1px solid #2a1e0e; flex-shrink:0; }
-.debug-bar-title { font-family:'IM Fell English SC',serif; font-size:.58rem;
-  letter-spacing:.12em; color:#7a6840; text-transform:uppercase; flex:1; }
-.debug-bar-btn { background:none; border:1px solid #2a1e0e; color:#5a4828;
-  font-family:'IM Fell English SC',serif; font-size:.54rem; letter-spacing:.08em;
-  text-transform:uppercase; padding:.2rem .5rem; cursor:pointer; }
-.debug-bar-btn:hover { color:#a08848; border-color:#3a2c18; }
-#debug-log { flex:1; overflow-y:auto; padding:.6rem; font-family:monospace;
-  font-size:.72rem; color:#7a6840; line-height:1.6; }
-.debug-entry { margin-bottom:.9rem; border-left:2px solid #2a1e0e; padding-left:.6rem; }
-.debug-ts { color:#4a3820; margin-bottom:.15rem; }
-.debug-meta { color:#5a4828; margin-bottom:.15rem; }
-.debug-raw { color:#6a5838; white-space:pre-wrap; word-break:break-all; max-height:120px;
-  overflow-y:auto; margin-bottom:.2rem; }
-.debug-parse { color:#7a6840; }
-.debug-err { color:#8a3020; }
-.debug-ok { color:#4a7030; }
-#debug-toggle { position:fixed; bottom:0; right:5rem; background:#0a0804;
-  border:1px solid #2a1e0e; border-bottom:none; color:#4a3820;
-  font-family:'IM Fell English SC',serif; font-size:.52rem; letter-spacing:.1em;
-  text-transform:uppercase; padding:.18rem .5rem; cursor:pointer; z-index:401; }
-#debug-toggle:hover { color:#7a6840; }
-
-/* ── PIRATA GLYPHS ── */
-.glyph { font-family:'Pirata One',cursive; font-style:normal; }
-.glyph-anchor { color:#5a7888; }
-.glyph-skull  { color:#6a4030; }
-.glyph-sword  { color:#6a5830; }
-.glyph-star   { color:#6a5830; }
-/* ── ONBOARDING ── */
-#screen-onboard { background:#090705; }
-.onboard-wrap { max-width:620px; margin:0 auto; padding:3rem 2rem 2rem; width:100%; }
-.onboard-progress { display:flex; gap:.4rem; margin-bottom:2rem; justify-content:center; }
-.onboard-dot { width:24px; height:2px; background:#2a1e0e; transition:background .3s; }
-.onboard-dot.active { background:var(--rust); }
-.onboard-dot.done { background:#4a3820; }
-.onboard-page { display:none; animation:fadeUp .4s ease; }
-.onboard-page.active { display:block; }
-.onboard-chapter { font-family:'IM Fell English SC',serif; font-size:.7rem;
-  letter-spacing:.25em; color:#6a5838; text-transform:uppercase; margin-bottom:1rem; }
-.onboard-title { font-family:'IM Fell English SC',serif; font-size:1.8rem;
-  color:var(--gold-hi); font-weight:normal; letter-spacing:.04em; margin-bottom:1.4rem; line-height:1.1; }
-.onboard-body { font-style:italic; font-size:1.05rem; color:#c8aa78;
-  line-height:2; margin-bottom:1.4rem; }
-.onboard-body p { margin-bottom:1rem; }
-.onboard-kpi-row { display:flex; gap:1rem; flex-wrap:wrap; margin:1.2rem 0; }
-.onboard-kpi { border:1px solid #2a1e0e; padding:.7rem 1rem; flex:1; min-width:120px; }
-.onboard-kpi-label { font-family:'IM Fell English SC',serif; font-size:.64rem;
-  letter-spacing:.12em; color:#7a6840; text-transform:uppercase; display:block; margin-bottom:.2rem; }
-.onboard-kpi-val { font-style:italic; font-size:.9rem; color:#9a8858; line-height:1.6; }
-.onboard-nav { display:flex; justify-content:space-between; align-items:center;
-  margin-top:2rem; padding-top:1.5rem; border-top:1px solid #1e1508; }
-.onboard-nav-btn { background:none; border:1px solid #3a2c18; color:#7a6840;
-  font-family:'IM Fell English SC',serif; font-size:.7rem; letter-spacing:.1em;
-  padding:.5rem 1.2rem; cursor:pointer; text-transform:uppercase;
-  transition:border-color .2s,color .2s; }
-.onboard-nav-btn:hover { border-color:var(--rust); color:var(--gold); }
-.onboard-nav-btn:disabled { opacity:.2; cursor:default; }
-.onboard-skip { font-family:'IM Fell English SC',serif; font-size:.6rem;
-  letter-spacing:.1em; color:#3a2c18; text-transform:uppercase; cursor:pointer;
-  background:none; border:none; transition:color .2s; }
-.onboard-skip:hover { color:#6a5838; }
-
-/* ── ADVISOR ── */
-#advisor-toggle { position:fixed; bottom:1.4rem; right:1.4rem; z-index:50;
-  background:#090705; border:1px solid #3a2c18; color:#9a8848;
-  font-family:'IM Fell English SC',serif; font-size:.68rem; letter-spacing:.1em;
-  padding:.5rem 1rem; cursor:pointer; text-transform:uppercase;
-  transition:all .2s; box-shadow:0 2px 12px rgba(0,0,0,.5); }
-#advisor-toggle:hover { border-color:var(--rust); color:var(--gold); }
-#advisor-toggle.active { border-color:#5a4890; color:#a898d0; }
-
-#advisor-panel { position:fixed; bottom:4rem; right:1.4rem; z-index:49;
-  width:300px; max-width:calc(100vw - 2rem);
-  background:#0c0a06; border:1px solid #3a2c18;
-  display:none; animation:fadeUp .3s ease; }
-#advisor-panel.open { display:block; }
-.advisor-header { display:flex; justify-content:space-between; align-items:center;
-  padding:.6rem .9rem; border-bottom:1px solid #1e1508; }
-.advisor-name { font-family:'IM Fell English SC',serif; font-size:.68rem;
-  letter-spacing:.12em; color:#7a6840; text-transform:uppercase; }
-.advisor-ask { background:none; border:1px solid #2a1e0e; color:#6a5838;
-  font-family:'IM Fell English SC',serif; font-size:.58rem; letter-spacing:.08em;
-  padding:.2rem .6rem; cursor:pointer; text-transform:uppercase;
-  transition:all .2s; }
-.advisor-ask:hover:not(:disabled) { border-color:var(--rust); color:var(--gold); }
-.advisor-ask:disabled { opacity:.35; cursor:not-allowed; }
-.advisor-body { padding:.9rem; min-height:80px; max-height:220px; overflow-y:auto; }
-.advisor-text { font-style:italic; font-size:.9rem; color:#9a8858;
-  line-height:1.85; }
-.advisor-text.thinking { color:#4a3820; }
-.advisor-footer { padding:.4rem .9rem; border-top:1px solid #2a1e0e;
-  font-family:'IM Fell English SC',serif; font-size:.56rem;
-  letter-spacing:.1em; color:#7a6840; text-transform:uppercase; }
-</style>
+<link rel="stylesheet" href="hot-game.css">
 </head>
 <body>
 
@@ -608,7 +176,12 @@ footer { text-align:center; padding:1.2rem; border-top:1px solid #2a1e0e;
     <div style="display:flex;flex-direction:column;gap:.12rem;">
       <div id="dynasty-label">—</div>
       <div id="heir-badge" class="heir-badge"></div>
-      <div id="thread-pip" style="display:none;font-family:'IM Fell English SC',serif;font-size:.57rem;letter-spacing:.1em;color:#7a6040;margin-top:.05rem;cursor:default;" title="Open threads — see year-end for details"></div>
+      <div id="thread-tracker" style="display:none;margin-top:.25rem;">
+        <div id="thread-tracker-header" onclick="toggleThreads()" class="thread-tracker-hdr">
+          ⟳ Open Threads (<span id="thread-count">0</span>)
+        </div>
+        <div id="thread-tracker-list" style="display:none;"></div>
+      </div>
       <div id="player-trait" style="font-family:'IM Fell English SC',serif;font-size:.58rem;letter-spacing:.13em;color:#5a4820;text-transform:uppercase;margin-top:.08rem;" title="Decision profile"></div>
       <button onclick="openSaveOverlay()" style="margin-top:.3rem;background:none;border:1px solid #4a3820;font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.1em;color:#a08848;text-transform:uppercase;cursor:pointer;text-align:center;padding:.25rem .7rem;transition:all .2s;" onmouseover="this.style.borderColor='#a07820';this.style.color='#d4b46a'" onmouseout="this.style.borderColor='#4a3820';this.style.color='#a08848'">⊟ Save / Load</button>
     </div>
@@ -899,6 +472,8 @@ The document does not explain itself. The choice is what to do with the knowledg
 
 Thread followups must bring A NEW SPECIFIC FACT, not a repetition. Time has passed. The fact that emerged from the time is what generates the new scene.
 
+When open threads exist, PRIORITIZE continuing the oldest thread. The thread context shows thread age — older threads demand resolution.
+
 Structure: Establish the original thread briefly. Introduce the ONE NEW THING that time has produced. Build choices around that new fact.
 
 ═══ OUTPUT FORMAT ═══
@@ -1074,7 +649,7 @@ The house operates ships on trade routes. This generates ongoing commercial inco
 
 MARKS_DELTA CALIBRATION by phase and outcome:
 
-ECONOMY CONTEXT: Net passive fleet income is roughly +15 mk/ship/year at mid reputation (Established). At Legendary (rep 9-10) the passive modifier is 1.65×, meaning ships are substantially more profitable just by existing. Events are still the primary economy — make them matter.
+ECONOMY CONTEXT: Net passive fleet income is roughly +55 mk/ship/year at mid reputation (Established). At Legendary (rep 9-10) the passive modifier is 1.65×, meaning ships are substantially more profitable just by existing. At Precarious (rep 3-4) it falls to ~36 mk/ship net. A new ship costs 700-900 mk and takes roughly 13-16 years to pay back through passive income alone — events are still the primary economy. Make them matter.
 
 ROUTES phase marks calibration:
 — Good outcome: +100 to +250 mk (Legendary: +200 to +400 mk — name opens doors)
@@ -1099,15 +674,21 @@ JSON only. No preamble. No markdown fences. No commentary outside the JSON objec
 {"narrative":"para one\\n\\npara two\\n\\npara three","marks_delta":0,"reputation_delta":0,"ships_delta":0,"ledger_entry":"One terse sentence.","open_thread":null,"resolve_thread":null}
 
 marks_delta: integer (positive, negative, or 0)
-reputation_delta: integer -3 to 3
+reputation_delta: integer -3 to 3. CRITICAL: Return non-zero for at least 60% of outcomes. The most common failure mode is returning 0 for everything — this makes reputation a dead stat. Political choices, social gambles, public actions, and rival interactions MUST affect reputation. +1 for: successful alliance, public victory, keeping a costly promise, impressing the council. -1 for: broken promise, public failure, snubbing a rival who noticed, backing the wrong party. +2/-2 for: exceptional outcomes that the city talks about. Reserve 0 for private commercial transactions with no social dimension.
 ships_delta: integer -1, 0, or 1 only
 ledger_entry: one dry sentence — ledger line, harbour record, obituary note. A fact, not a summary.
 open_thread: a SHORT label (max 12 words) for something left unresolved that should return — e.g. "Borracchi marriage offer — deferred", "Missing salt fish cargo — uninvestigated", "Captain Orsano dismissed — whereabouts unknown". Use this when the player chose to wait, defer, observe, or decline something that has natural follow-up weight. Null if nothing significant was left open.
-resolve_thread: a fragment matching an OPEN THREAD label that this outcome closes or settles — e.g. "Borracchi marriage" or "salt fish". Null if nothing is resolved.
+resolve_thread: a fragment matching an OPEN THREAD label. Return this ONLY when the player ACTIVELY ENGAGED with the thread — investigated it, accepted an offer, confronted a person, took direct action. Do NOT return this when the player deferred, waited, said nothing, or observed. Null if nothing is resolved or player deferred again. ENGAGEMENT examples: "Send Pell to investigate" → resolve_thread:"Borracchi"; "Accept the offer" → resolve_thread:"marriage"; "Confront the navigator" → resolve_thread:"navigator". DEFERRAL examples (return null): "Wait and see", "Say nothing for now", "Defer until next season".
 
 ═══ OPEN THREADS INSTRUCTION ═══
 
 The userMsg includes a list of OPEN THREADS — things the player deferred, refused, or left unresolved in previous turns. These are the world's unfinished business. Treat them as a dungeon master treats open plot threads: they do not disappear. They return, changed by time. If an open thread is directly relevant to the current situation, weave it in. If you are resolving it, include resolve_thread. If the current choice creates new unresolved weight, include open_thread.
+
+THREAD RESOLUTION — this is critical:
+The userMsg will tell you whether the player ENGAGED or DEFERRED. Read this carefully.
+— ENGAGEMENT (player investigated, accepted, confronted, acted): you MUST return resolve_thread with a word or short phrase that matches part of the open thread label. The thread closes. The world acknowledges it.
+— DEFERRAL (player waited, said nothing, observed, chose later): return resolve_thread: null. The thread stays open. It ages.
+A good dungeon master closes plot threads when players resolve them. Do not leave resolve_thread null when the player took direct action on a thread. That is the most common failure mode. Fix it.
 
 A good thread is specific and retrievable: "The Borracchi marriage offer — deferred" is good. "Something unresolved" is not.`;
 
@@ -1118,8 +699,10 @@ A good thread is specific and retrievable: "The Borracchi marriage offer — def
 // ══════════════════════════════════════════════════════════
 const CFG_KEY = 'hot_config';
 const CFG_DEFAULTS = {
-  backend:     'ollama',       // 'ollama' | 'claude' | 'openai'
+  backend:     'ollama',       // 'ollama' | 'claude' | 'openai' | 'mlx'
   ollamaModel: 'mistral:latest',
+  mlxModel:    'mlx-community/Qwen2.5-3B-Instruct-4bit',
+  mlxHfToken:  '',
   claudeModel: 'claude-haiku-4-5-20251001',
   claudeApiKey:'',
   openaiModel: 'gpt-4o-mini',
@@ -1142,7 +725,10 @@ function saveCFG() {
 function updateEngineLabel() {
   const el = document.getElementById('engine-label');
   if (!el) return;
-  if (CFG.backend === 'claude') {
+  if (CFG.backend === 'mlx') {
+    const short = CFG.mlxModel.split('/').pop();
+    el.textContent = '⊞ MLX · ' + short;
+  } else if (CFG.backend === 'claude') {
     const short = CFG.claudeModel.includes('haiku') ? 'claude haiku' : 'claude sonnet';
     el.textContent = '⊞ Claude API · ' + short;
   } else if (CFG.backend === 'openai') {
@@ -1151,6 +737,26 @@ function updateEngineLabel() {
   } else {
     el.textContent = '⊞ Ollama · ' + (CFG.ollamaModel === 'custom' ? 'custom' : CFG.ollamaModel);
   }
+}
+
+// ══════════════════════════════════════════════════════════
+//  NOTIFICATION TOAST
+// ══════════════════════════════════════════════════════════
+function showNotification(msg) {
+  let el = document.getElementById('toast-notification');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'toast-notification';
+    el.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);' +
+      'background:#0e0b06;border:1px solid #5a4020;color:#c8a870;' +
+      'font-family:"IM Fell English SC",serif;font-size:.75rem;letter-spacing:.1em;' +
+      'padding:.5rem 1.2rem;pointer-events:none;opacity:0;transition:opacity .3s;z-index:999;';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.style.opacity = '1';
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => { el.style.opacity = '0'; }, 3000);
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1223,6 +829,7 @@ function openSettings() {
   document.getElementById('s-ollama').checked = (CFG.backend === 'ollama');
   document.getElementById('s-claude').checked = (CFG.backend === 'claude');
   document.getElementById('s-openai').checked = (CFG.backend === 'openai');
+  document.getElementById('s-mlx').checked    = (CFG.backend === 'mlx');
   // ollama model
   const oSel = document.getElementById('s-ollama-model');
   const known = ['qwen3.5:4b','qwen2.5:7b','mistral:latest','llama3.1:8b'];
@@ -1234,6 +841,9 @@ function openSettings() {
     document.getElementById('s-ollama-custom').style.display = 'block';
     document.getElementById('s-ollama-custom').value = CFG.ollamaModel;
   }
+  // mlx model
+  document.getElementById('s-mlx-model').value    = CFG.mlxModel;
+  document.getElementById('s-mlx-token').value    = CFG.mlxHfToken;
   // claude model
   document.getElementById('s-claude-model').value = CFG.claudeModel;
   document.getElementById('s-api-key').value     = CFG.claudeApiKey;
@@ -1252,14 +862,18 @@ function closeSettings() {
 function settingsBackendChange() {
   const isClaude = document.getElementById('s-claude').checked;
   const isOpenAI = document.getElementById('s-openai').checked;
-  document.getElementById('s-ollama-section').style.display = (isClaude || isOpenAI) ? 'none' : 'block';
+  const isMLX    = document.getElementById('s-mlx').checked;
+  document.getElementById('s-ollama-section').style.display = (isClaude || isOpenAI || isMLX) ? 'none' : 'block';
   document.getElementById('s-claude-section').style.display = isClaude ? 'block' : 'none';
   document.getElementById('s-openai-section').style.display = isOpenAI ? 'block' : 'none';
+  document.getElementById('s-mlx-section').style.display   = isMLX    ? 'block' : 'none';
   const note = document.getElementById('settings-backend-note');
   if (isClaude) {
     note.textContent = 'Calls go directly from your browser to api.anthropic.com. Excellent prose quality and reliable JSON. Requires a paid API key.';
   } else if (isOpenAI) {
     note.textContent = 'Calls go directly from your browser to api.openai.com. Fast, reliable JSON, good prose. Requires a paid API key.';
+  } else if (isMLX) {
+    note.textContent = 'MLX runs Apple Silicon models locally via mlx-openai-server — no API key, no cost. Start with: mlx-openai-server launch --model-path <model> --model-type lm';
   } else {
     note.textContent = 'Ollama runs locally on your machine — no API key, no cost, but requires the Ollama app and a downloaded model.';
   }
@@ -1276,7 +890,10 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveSettings() {
   const isClaude = document.getElementById('s-claude').checked;
   const isOpenAI = document.getElementById('s-openai').checked;
-  CFG.backend     = isClaude ? 'claude' : isOpenAI ? 'openai' : 'ollama';
+  const isMLX    = document.getElementById('s-mlx').checked;
+  CFG.backend     = isClaude ? 'claude' : isOpenAI ? 'openai' : isMLX ? 'mlx' : 'ollama';
+  CFG.mlxModel    = document.getElementById('s-mlx-model').value.trim() || 'mlx-community/Qwen2.5-3B-Instruct-4bit';
+  CFG.mlxHfToken  = document.getElementById('s-mlx-token').value.trim();
   CFG.claudeModel = document.getElementById('s-claude-model').value;
   CFG.claudeApiKey= document.getElementById('s-api-key').value.trim();
   CFG.openaiModel = document.getElementById('s-openai-model').value;
@@ -1306,7 +923,35 @@ async function callLLM(systemPrompt, userMsg, opts = {}) {
   let raw = '';
   let metaStr = '';
 
-  if (CFG.backend === 'openai') {
+  if (CFG.backend === 'mlx') {
+    // ── MLX (mlx-openai-server, OpenAI-compatible) ─────────
+    metaStr = `MLX · ${CFG.mlxModel}`;
+
+    const body = {
+      model:       CFG.mlxModel,
+      max_tokens:  maxTok,
+      temperature: temp,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user',   content: msgText }
+      ]
+    };
+    if (isJson) body.response_format = { type: 'json_object' };
+
+    const mlxHeaders = { 'Content-Type': 'application/json' };
+    if (CFG.mlxHfToken) mlxHeaders['Authorization'] = `Bearer ${CFG.mlxHfToken}`;
+
+    const resp = await fetch('http://localhost:8000/v1/chat/completions', {
+      method:  'POST',
+      headers: mlxHeaders,
+      body:    JSON.stringify(body)
+    });
+
+    if (!resp.ok) throw new Error(`MLX server ${resp.status} — is mlx-openai-server running?`);
+    const data = await resp.json();
+    raw = data.choices?.[0]?.message?.content || '';
+
+  } else if (CFG.backend === 'openai') {
     // ── OpenAI API ─────────────────────────────────────────
     if (!CFG.openaiApiKey) throw new Error('No OpenAI API key set. Open ⊞ Settings to add one.');
     metaStr = `OpenAI API · ${CFG.openaiModel}`;
@@ -1919,6 +1564,35 @@ function analyzeChoiceRisk(choiceText) {
 // ══════════════════════════════════════════════════════════
 //  STATUS BAR
 // ══════════════════════════════════════════════════════════
+function renderThreadTracker() {
+  const tracker = document.getElementById('thread-tracker');
+  const countEl = document.getElementById('thread-count');
+  const list    = document.getElementById('thread-tracker-list');
+  if (!tracker) return;
+
+  const alive = (gs.threads || []).filter(t => t.year <= gs.turn);
+  if (alive.length === 0) {
+    tracker.style.display = 'none';
+    return;
+  }
+
+  tracker.style.display = 'block';
+  countEl.textContent = alive.length;
+
+  list.innerHTML = alive.map(t => {
+    const age     = gs.turn - (t.year || gs.turn);
+    const ageStr  = age === 0 ? 'this year' : age === 1 ? '1 year' : `${age} years`;
+    const urgency = age >= 4 ? 'urgent' : age >= 2 ? 'warning' : '';
+    const short   = t.label.length > 38 ? t.label.slice(0, 38) + '…' : t.label;
+    return `<div class="thread-item ${urgency}" title="${t.label}">⟳ ${short} — ${ageStr}</div>`;
+  }).join('');
+}
+
+function toggleThreads() {
+  const list = document.getElementById('thread-tracker-list');
+  if (list) list.style.display = list.style.display === 'none' ? 'block' : 'none';
+}
+
 function updateStatusBar() {
   document.getElementById('stat-turn').textContent  = gs.turn;
   document.getElementById('stat-age').textContent   = gs.age;
@@ -2014,17 +1688,8 @@ function updateStatusBar() {
   }
   // ────────────────────────────────────────────────────────
 
-  // ── Thread pip ───────────────────────────────────────────
-  const pipEl = document.getElementById('thread-pip');
-  if (pipEl) {
-    const n = (gs.threads||[]).length;
-    if (n > 0) {
-      pipEl.textContent = `⟳ ${n} open thread${n>1?'s':''}`;
-      pipEl.style.display = 'block';
-    } else {
-      pipEl.style.display = 'none';
-    }
-  }
+  // ── Thread tracker ───────────────────────────────────────
+  renderThreadTracker();
   // ────────────────────────────────────────────────────────
 
   // Dynasty label with generation
@@ -2077,8 +1742,8 @@ function beginYear() {
               : gs.reputation >= 3 ? 0.65
               : 0.40;
   const variance = 0.85 + Math.random() * 0.3;  // ±15%
-  const baseRate = 50;   // gross per ship per year
-  const upkeep   = 35;   // crew, berthing, maintenance per ship
+  const baseRate = 85;   // gross per ship per year
+  const upkeep   = 30;   // crew, berthing, maintenance per ship
   const greedyBonus = (gs.heirTrait && gs.heirTrait.key === 'greedy') ? 1.2 : 1.0;
   const gross = Math.round(gs.ships * baseRate * repMod * variance * greedyBonus);
   const cost  = gs.ships * upkeep;
@@ -2420,17 +2085,21 @@ async function generateEvent(phase) {
   let seed = null;
   let isThreadFollowup = false;
 
-  // Thread followup check (house phase only, 60% chance if open thread)
+  // Thread followup check (house phase only, 80% chance, forced if 2+ years old)
   if (phase === 'house' && gs.threads && gs.threads.length > 0) {
     const openTypes = new Set(gs.threads.map(t => t.type));
     const threadSeeds = THREAD_SEEDS.filter(ts =>
       openTypes.has(ts.thread) && !gs.usedHouse.has(ts.id)
     );
-    if (threadSeeds.length > 0 && Math.random() < 0.60) {
+    if (threadSeeds.length > 0) {
       const oldest = [...gs.threads].sort((a,b) => a.year - b.year);
-      for (const t of oldest) {
-        const match = threadSeeds.find(ts => ts.thread === t.type && !gs.usedHouse.has(ts.id));
-        if (match) { seed = match; isThreadFollowup = true; break; }
+      const oldestAge = gs.turn - oldest[0].year;
+      const forceFollowup = oldestAge >= 2;
+      if (forceFollowup || Math.random() < 0.80) {
+        for (const t of oldest) {
+          const match = threadSeeds.find(ts => ts.thread === t.type && !gs.usedHouse.has(ts.id));
+          if (match) { seed = match; isThreadFollowup = true; break; }
+        }
       }
     }
   }
@@ -2478,7 +2147,7 @@ SEASON: ${season} — ${seasonNotes[season]}
 LEDGER (last 6 entries — the world's recent memory):
 ${recentHistory}
 
-OPEN THREADS (unresolved — weave in if naturally relevant):
+OPEN THREADS (unresolved — PRIORITY: continue oldest thread if possible):
 ${threadContext}
 
 SITUATION TYPE: ${seed.type}
@@ -2845,6 +2514,12 @@ async function makeChoice(choice, isVenture) {
     ? activeThreads.map(t => `— ${t.label} (Year ${t.year})`).join('\n')
     : 'None recorded.';
 
+  // Classify choice as engagement or deferral (for thread resolution guidance)
+  const isDeferral = /\b(wait|nothing|see|later|defer|another|next|hold|observe|find out|watch|say nothing|not yet|another season)\b/i.test(choice);
+  const actionType = isDeferral
+    ? 'DEFERRAL — player chose to wait/observe/say nothing. Return resolve_thread: null.'
+    : 'ENGAGEMENT — player took active action. If this relates to an open thread, you MUST return resolve_thread.';
+
   const userMsg =
 `CURRENT STATE:
 House ${gs.dynastyName} · ${gs.founderName} · Gen ${gs.generation||1} · Year ${gs.turn} · Age ${gs.age}
@@ -2868,6 +2543,8 @@ If any entry in the ledger or decisions above connects to this situation — a p
 
 OPEN THREADS — things the player deferred, refused, or left unresolved (these should return):
 ${threadContext}
+
+PLAYER ACTION TYPE: ${actionType}
 ${ventureNote}
 
 Respond with JSON only.`;
@@ -2916,7 +2593,7 @@ Respond with JSON only.`;
       const deferWords = /\b(wait|nothing|see|again|let them|another|observe|later|defer|hold|say nothing|find out|watch)\b/i;
       if (deferWords.test(choiceLower) && !gs.threads.find(t => t.type === ttype)) {
         const label = `${seed_label_from_type(ttype)} — deferred`;
-        gs.threads.push({ id:'th_hint_'+gs.turn, year:gs.turn, label, type:ttype, expiresYear:gs.turn+8 });
+        gs.threads.push({ id:'th_hint_'+gs.turn, year:gs.turn, label, type:ttype, expiresYear:gs.turn+12 });
       }
     }
 
@@ -2937,7 +2614,7 @@ Respond with JSON only.`;
       if (atm.matchWords.test(choiceLower)) {
         // Only create if no thread of this type already open
         if (!gs.threads.find(t => t.type === atm.type)) {
-          gs.threads.push({ id:'th_'+gs.turn+'_'+evId, year:gs.turn, label:atm.label, type:atm.type, expiresYear: gs.turn+8 });
+          gs.threads.push({ id:'th_'+gs.turn+'_'+evId, year:gs.turn, label:atm.label, type:atm.type, expiresYear: gs.turn+12 });
         }
       }
     }
@@ -2958,7 +2635,7 @@ Respond with JSON only.`;
         : 'misc_'+gs.turn;
       // Avoid duplicates
       if (!gs.threads.find(t => t.label === newLabel)) {
-        gs.threads.push({ id:'th_ai_'+gs.turn, year:gs.turn, label:newLabel, type:ttype, expiresYear: gs.turn+8 });
+        gs.threads.push({ id:'th_ai_'+gs.turn, year:gs.turn, label:newLabel, type:ttype, expiresYear: gs.turn+12 });
       }
     }
 
@@ -2966,9 +2643,17 @@ Respond with JSON only.`;
     if (parsed.resolve_thread && typeof parsed.resolve_thread === 'string') {
       const frag = parsed.resolve_thread.toLowerCase();
       const before = gs.threads.length;
-      gs.threads = gs.threads.filter(t => !t.label.toLowerCase().includes(frag));
+      // Try label match first, then type match as fallback
+      gs.threads = gs.threads.filter(t =>
+        !t.label.toLowerCase().includes(frag) && t.type !== frag.replace(/\s+/g,'_')
+      );
       if (gs.threads.length < before) {
-        gs.ledger.unshift({ year:gs.turn, phase:'Ledger', entry:`Thread closed: ${parsed.resolve_thread}.` });
+        const closedLabel = parsed.resolve_thread;
+        gs.ledger.unshift({ year:gs.turn, phase:'Ledger', entry:`Thread closed: ${closedLabel}.` });
+        showNotification(`⟳ Thread resolved: ${closedLabel}`);
+        debugLog('Thread resolution', closedLabel, `Removed ${before - gs.threads.length} thread(s)`, false);
+      } else {
+        debugLog('Thread resolution', parsed.resolve_thread, 'No matching thread found — check fragment vs labels', true);
       }
     }
 
@@ -3713,6 +3398,10 @@ async function testConnection() {
           <span>Ollama (local)</span>
         </label>
         <label class="settings-radio">
+          <input type="radio" name="s-backend" value="mlx" id="s-mlx" onchange="settingsBackendChange()">
+          <span>MLX (local)</span>
+        </label>
+        <label class="settings-radio">
           <input type="radio" name="s-backend" value="openai" id="s-openai" onchange="settingsBackendChange()">
           <span>OpenAI API</span>
         </label>
@@ -3737,6 +3426,16 @@ async function testConnection() {
         placeholder="model name e.g. gemma3:4b"
         style="margin-top:.5rem;display:none;">
       <div class="settings-hint">Models must be pulled first: <code style="color:#7a6840">ollama pull &lt;model&gt;</code></div>
+    </div>
+
+    <div class="settings-section" id="s-mlx-section" style="display:none;">
+      <div class="settings-label">MLX Model Path</div>
+      <input type="text" class="settings-input" id="s-mlx-model"
+        placeholder="mlx-community/Qwen2.5-3B-Instruct-4bit">
+      <div class="settings-label" style="margin-top:.9rem;">HuggingFace Token</div>
+      <input type="password" class="settings-input" id="s-mlx-token"
+        placeholder="hf_…" autocomplete="off">
+      <div class="settings-hint">Stored locally in your browser only. Required to download models from HuggingFace. Then start the server: <code style="color:#7a6840">HF_TOKEN=&lt;your-token&gt; mlx-openai-server launch --model-path &lt;path&gt; --model-type lm</code></div>
     </div>
 
     <div class="settings-section" id="s-claude-section" style="display:none;">
