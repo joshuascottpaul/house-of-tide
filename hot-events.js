@@ -339,6 +339,8 @@ function showYearEnd() {
   // ── Ship market + finance panel ─────────────────────
   rollShipMarket();
   showYearEndFinance();
+  // ── Refresh background at year-end ──────────────────
+  if (typeof updateBackground === 'function') updateBackground();
   // ─────────────────────────────────────────────────────
 
   const btn = document.getElementById('yearend-btn');

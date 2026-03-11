@@ -1,4 +1,29 @@
 // ══════════════════════════════════════════════════════════
+//  DYNAMIC BACKGROUND
+// ══════════════════════════════════════════════════════════
+function updateBackground() {
+  const el = document.getElementById('bg-image');
+  if (!el) return;
+
+  // Build a context-appropriate search keyword
+  const rep = gs.reputation || 5;
+  const marks = gs.marks || 0;
+  const ships = gs.ships || 1;
+
+  let keyword;
+  if (rep >= 9)          keyword = 'renaissance venice palazzo grand';
+  else if (rep >= 7)     keyword = 'renaissance merchant city harbor';
+  else if (marks < 400)  keyword = 'medieval harbor storm abandoned';
+  else if (ships >= 3)   keyword = 'renaissance harbor fleet sailing ships';
+  else if (gs.phase === 'house') keyword = 'medieval palace courtyard archway';
+  else                   keyword = 'renaissance port dock fishing boats';
+
+  // Unsplash Source API — free, no key required
+  const url = `https://source.unsplash.com/1600x900/?${encodeURIComponent(keyword)}`;
+  el.style.backgroundImage = `url(${url})`;
+}
+
+// ══════════════════════════════════════════════════════════
 //  START GAME
 // ══════════════════════════════════════════════════════════
 function startGame() {
@@ -38,6 +63,7 @@ function startGame() {
   };
 
   updateStatusBar();
+  updateBackground();
   document.getElementById('dynasty-label').textContent = `House ${gs.dynastyName} — ${gs.founderName}`;
   // Show onboarding first
   onboardPage = 0;

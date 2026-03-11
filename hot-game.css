@@ -437,3 +437,17 @@ footer { text-align:center; padding:1.2rem; border-top:1px solid #2a1e0e;
 .advisor-footer { padding:.4rem .9rem; border-top:1px solid #2a1e0e;
   font-family:'IM Fell English SC',serif; font-size:.56rem;
   letter-spacing:.1em; color:#7a6840; text-transform:uppercase; }
+
+/* ── Dynamic Background Image ─────────────────────────── */
+#bg-image {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: grayscale(100%) opacity(0.18);
+  pointer-events: none;
+  transition: background-image 2s ease;
+}
+body > *:not(#bg-image) { position: relative; z-index: 1; }
