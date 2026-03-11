@@ -367,3 +367,130 @@ After all three phases:
 5. **Manual play feels good** — 20-year playthrough feels coherent and engaging
 
 The ledger is open. The plan is written. Turn the page.
+
+---
+
+## #7 Code Refactor — Subtask Plan
+
+### Principles
+
+1. **Strangler Fig** — extract piece by piece, never rewrite. The monolith keeps working at every step.
+2. **One file per step** — each sub-task extracts exactly one logical group. No combining steps.
+3. **No behaviour changes** — refactoring only. Zero feature changes per sub-task. If you touch logic, stop.
+4. **Green at every step** — game must open in browser and pass Playwright tests after each extraction before committing.
+5. **Commit after each green step** — small, reversible commits. If a step breaks something, `git checkout` and try again.
+6. **No build step** — plain `<script src>` tags in dependency order. All globals stay global. Browser handles the rest.
+
+### File Map (dependency order = load order)
+
+| Sub-task | File | Contents | Deps | Est. lines |
+|----------|------|----------|------|------------|
+| 7.1 | `hot-game.css` | All CSS from `<style>` block | none | ~350 |
+| 7.2 | `hot-data.js` | EPIGRAMS, LOADING_MSGS, YEAR_END_NOTES, HEIR_TRAITS, HEIR_MALE/FEMALE, SITUATION_SEEDS, THREAD_SEEDS, THREAD_FOLLOWUPS, EVENT_GEN_MSGS, TEST_MODEL, `rand()` | none | ~270 |
+| 7.3 | `hot-prompts.js` | SYSTEM_PROMPT, EVENT_GEN_PROMPT, ADVISOR_SYSTEM (currently at line 3431 in advisor block — move it here) | none | ~230 |
+| 7.4 | `hot-config.js` | CFG_KEY, CFG_DEFAULTS, CFG, `loadCFG`, `saveCFG`, `updateEngineLabel`, `openSettings`, `closeSettings`, `settingsBackendChange`, `saveSettings` | none | ~100 |
+| 7.5 | `hot-llm.js` | `callLLM` only | config | ~190 |
+| 7.6 | `hot-state.js` | `gs`, `serialiseState`, `deserialiseState`, `autoSave`, `saveToSlot`, `flashSaveSlot`, `loadFromSlot`, `loadAutosave`, `deleteSlot`, `renderSaveOverlay`, `openSaveOverlay`, `closeSaveOverlay`, `renderTitleSaves` | config, data | ~180 |
+| 7.7 | `hot-ui.js` | `showNotification`, `showScreen`, `showPanel`, `showError`, `hideError`, `rotateEpigram`, `updateStatusBar`, `renderThreadTracker`, `toggleThreads`, `updateLedgerHistory`, `debugLog`, `renderDebugLog`, `escHtml`, `toggleDebug`, `debugClear`, `debugCopyLast`, `debugEntries` | state, config | ~180 |
+| 7.8 | `hot-economy.js` | `rollShipMarket`, `buyShip`, `sellShip`, `getBankRate`, `applyLoanInterest`, `takeBankLoan`, `takeShadowLoan`, `repayLoan`, `showYearEndFinance` | state, ui | ~220 |
+| 7.9 | `hot-events.js` | `getSeason`, `pickSeed`, `generateEvent`, `checkAndShowRoutes`, `showHouseEvent`, `showRoutesEvent`, `pickVentureSeed`, `showVenture`, `analyzeChoiceRisk`, `renderChoices` | state, ui, llm, prompts, data | ~280 |
+| 7.10 | `hot-engine.js` | `startGame`, `launchGame`, `beginPhase`, `advancePhase`, `beginYear`, `makeChoice`, `seed_label_from_type`, `showResult`, `showYearEnd`, `showDeathScreen`, `generationalHandoff`, `resetGame`, `renderOnboard`, `onboardNext`, `onboardPrev`, `skipOnboard`, `advisorOpen`, `toggleAdvisor`, `askAdvisor`, `testConnection`, `_origBeginPhase`/`_origShowResult` hooks (these two MUST be last in file, after originals are defined) | everything | ~670 |
+| 7.11 | `tests/unit.spec.js` | Unit tests for pure functions: `analyzeChoiceRisk`, `getSeason`, `seed_label_from_type`, `serialiseState`/`deserialiseState` round-trip | — | ~80 |
+| 7.12 | `house-of-tide.html` | Final cleanup — HTML shell only. Just structure + `<link>` + `<script>` tags. No inline JS or CSS. | — | ~120 |
+
+### Per-step Protocol — MANDATORY, NO EXCEPTIONS
+
+Every sub-task must complete ALL SIX steps before the next sub-task begins.
+Steps 5 and 6 are not optional. Do not skip them. Do not combine steps across sub-tasks.
+
+```
+1. Create new file with extracted code (copy-paste only — do not edit logic)
+2. Delete the same code from house-of-tide.html
+3. Add <script src="hot-xxx.js"> or <link rel="stylesheet"> in correct position
+4. Open house-of-tide.html in browser — spot check: start game, make a choice, verify nothing is visually broken
+5. npx playwright test — ALL tests must pass before proceeding
+6. git add hot-xxx.js house-of-tide.html && git commit
+```
+
+**Hard gates:**
+- If step 5 fails → fix the error, re-run step 5. Do not proceed to step 6 or the next sub-task until green.
+- If step 4 shows visual breakage → fix before running tests.
+- A sub-task is only COMPLETE when the commit exists. "Extracted but not committed" = not done.
+
+### Script tag order in HTML (7.12 target state)
+
+```html
+<link rel="stylesheet" href="hot-game.css">
+<!-- in <head> -->
+
+<script src="hot-data.js"></script>
+<script src="hot-prompts.js"></script>
+<script src="hot-config.js"></script>
+<script src="hot-llm.js"></script>
+<script src="hot-state.js"></script>
+<script src="hot-ui.js"></script>
+<script src="hot-economy.js"></script>
+<script src="hot-events.js"></script>
+<script src="hot-engine.js"></script>
+<!-- before </body> -->
+```
+
+### Things to watch for — audited against actual code
+
+**1. Monkey-patches execute at parse time — critical load order issue**
+
+`_origBeginPhase = beginPhase` (line 3496) and `_origShowResult = showResult` (line 3749) are top-level `const` assignments. They execute the moment their script is parsed. `beginPhase` and `showResult` must already be defined at that point.
+
+Fix: both monkey-patches go at the **bottom of `hot-engine.js`**, after their target functions are defined. Do not put them in any earlier-loaded file.
+
+**2. `testConnection` is NOT a clean LLM function — wrong file in plan**
+
+`testConnection` (line 3765) reads DOM elements (`test-btn`, `test-result`), hardcodes Ollama-specific fetch logic, and references `TEST_MODEL` from `hot-data.js`. It belongs in `hot-engine.js`, not `hot-llm.js`. Move accordingly.
+
+**3. `ADVISOR_SYSTEM` is not grouped with other prompts in the current file**
+
+Currently sits at line 3431 sandwiched inside the advisor block between `toggleAdvisor` and `askAdvisor`. When extracting, move it to `hot-prompts.js` with the other prompts. Leave `toggleAdvisor`, `advisorOpen`, and `askAdvisor` in `hot-engine.js`.
+
+**4. Two `DOMContentLoaded` handlers — both safe, different homes**
+
+- Line 1322: registers the ollama model change listener. Lives in `hot-config.js`. Fine.
+- Line 3756: calls `loadCFG()`, `renderTitleSaves()`, `rotateEpigram()`. These functions end up across `hot-config.js`, `hot-state.js`, `hot-engine.js`. This handler goes in `hot-state.js`. It's safe because `DOMContentLoaded` fires after ALL scripts at the bottom of `<body>` have run — all functions are available.
+
+**5. `gs` uses `Set` — handled, but verify**
+
+`gs.usedHouse`, `gs.usedRoutes`, `gs.usedVentures` are `Set` objects. `serialiseState` spreads them to arrays; `deserialiseState` reconstructs them. This is already correct — just don't accidentally assign plain arrays to these fields anywhere during the refactor.
+
+**6. `const` re-declaration will throw**
+
+During each extraction step: delete the code from the HTML first, then reload. Never have the same `const` declared in both the HTML and an external file simultaneously. Git staging gives you a safety net.
+
+**7. Inline `onclick=` in HTML calls global functions — safe by design**
+
+All functions stay global (no `export`/`import`). Inline handlers will resolve correctly as long as the scripts are loaded before user interaction, which they are (all scripts at bottom of `<body>`, loaded before any click is possible).
+
+### Commit message format
+
+```
+refactor: extract <description> into <filename>
+
+- Moved: list of functions/constants moved
+- No logic changes
+- Tested: browser spot check + npx playwright test
+```
+
+### Status
+
+| Sub-task | Status |
+|----------|--------|
+| 7.1 CSS | ✅ commit d829143 |
+| 7.2 Data/constants | ✅ commit b73bddc |
+| 7.3 Prompts | ✅ commit 03f2c08 |
+| 7.4 Config/settings | ✅ commit a64ced9 |
+| 7.5 LLM layer | ✅ commit 9405048 |
+| 7.6 State + save/load | ✅ commit 12699dc |
+| 7.7 UI utilities | ✅ commit 4b466a5 |
+| 7.8 Economy | ✅ commit be44a35 |
+| 7.9 Events | ✅ commit d918b72 |
+| 7.10 Engine | ✅ commit dedf71c |
+| 7.11 Unit tests | ✅ commit 6f3c14d |
+| 7.12 HTML shell cleanup | ✅ complete (HTML was clean after 7.10) |
