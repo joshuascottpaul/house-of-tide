@@ -16,6 +16,12 @@ let gs = {
   history:[],
   bankLoan:null, shadowLoan:null, creditScore:0, shipMarket:null,
   threads:[],
+  rivals:{
+    borracchi:{ relationship:0, lastInteraction:0, notes:[] },
+    spinetta: { relationship:0, lastInteraction:0, notes:[] },
+    calmari:  { relationship:0, lastInteraction:0, notes:[] },
+    liyuen:   { relationship:0, lastInteraction:0, notes:[] },
+  },
 };
 
 // ══════════════════════════════════════════════════════════
@@ -53,6 +59,16 @@ function deserialiseState(raw) {
   obj.creditScore     = obj.creditScore     || 0;
   obj.shipMarket      = obj.shipMarket      || null;
   obj.threads         = obj.threads         || [];
+  obj.rivals          = obj.rivals          || {
+    borracchi:{ relationship:0, lastInteraction:0, notes:[] },
+    spinetta: { relationship:0, lastInteraction:0, notes:[] },
+    calmari:  { relationship:0, lastInteraction:0, notes:[] },
+    liyuen:   { relationship:0, lastInteraction:0, notes:[] },
+  };
+  // Ensure all four families exist (for saves predating rival memory)
+  for (const fam of ['borracchi','spinetta','calmari','liyuen']) {
+    if (!obj.rivals[fam]) obj.rivals[fam] = { relationship:0, lastInteraction:0, notes:[] };
+  }
   return obj;
 }
 
@@ -262,4 +278,68 @@ function renderTitleSaves() {
       </div>
       <div class="tsi-arrow">→</div>
     </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+//  RIVAL FAMILY MEMORY
+// ══════════════════════════════════════════════════════════
+
+function updateRivalRelationship(family, delta, reason) {
+  if (!gs.rivals || !gs.rivals[family]) return;
+  const r = gs.rivals[family];
+  r.relationship = Math.max(-5, Math.min(5, r.relationship + delta));
+  r.lastInteraction = gs.turn;
+  if (reason) {
+    r.notes.unshift(`Year ${gs.turn}: ${reason}`);
+    if (r.notes.length > 8) r.notes.length = 8; // keep last 8
+  }
+}
+
+function getRivalContext() {
+  if (!gs.rivals) return 'No rival history recorded.';
+  const labels = {
+    borracchi:'The Borracchi', spinetta:'The Spinetta',
+    calmari:'The Calmari', liyuen:"Li Yuen's Network",
+  };
+  const tiers = r => r >=  4 ? 'Allied'
+    : r >=  2 ? 'Friendly'
+    : r >=  0 ? 'Neutral'
+    : r >= -2 ? 'Hostile'
+    : 'Enemies';
+
+  return Object.entries(gs.rivals).map(([fam, r]) => {
+    const recentNote = r.notes[0] ? ` (${r.notes[0]})` : '';
+    return `${labels[fam]}: ${tiers(r.relationship)} (${r.relationship >= 0 ? '+' : ''}${r.relationship})${recentNote}`;
+  }).join('\n');
+}
+
+function detectAndUpdateRivals(choiceText, narrativeText) {
+  const combined = (choiceText + ' ' + (narrativeText || '')).toLowerCase();
+  const year = gs.turn;
+
+  const families = [
+    { key:'borracchi', names:['borracchi','rinaldo'] },
+    { key:'spinetta',  names:['spinetta'] },
+    { key:'calmari',   names:['calmari'] },
+    { key:'liyuen',    names:['li yuen','liyuen','yuen'] },
+  ];
+
+  // Positive keywords: alliance, helping, accepting, agreeing
+  const posWords = /\b(alliance|accept|agree|help|honour|contract|offer|assist|partner|deal)\b/;
+  // Negative keywords: challenge, refuse, snub, dismiss, betray, expose
+  const negWords = /\b(challenge|refuse|dismiss|snub|betray|expose|publicly|confront|against)\b/;
+
+  for (const { key, names } of families) {
+    const mentioned = names.some(n => combined.includes(n));
+    if (!mentioned) continue;
+
+    if (posWords.test(choiceText.toLowerCase())) {
+      updateRivalRelationship(key, +1, `Favourable interaction — "${choiceText.slice(0,60)}"`);
+    } else if (negWords.test(choiceText.toLowerCase())) {
+      updateRivalRelationship(key, -1, `Hostile action — "${choiceText.slice(0,60)}"`);
+    } else {
+      // Neutral mention — just record last interaction year
+      if (gs.rivals[key]) gs.rivals[key].lastInteraction = year;
+    }
+  }
 }

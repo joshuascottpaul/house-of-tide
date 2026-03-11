@@ -29,6 +29,12 @@ function startGame() {
     history:[],
     bankLoan:null, shadowLoan:null, creditScore:0, shipMarket:null,
     threads:[],
+    rivals:{
+      borracchi:{ relationship:0, lastInteraction:0, notes:[] },
+      spinetta: { relationship:0, lastInteraction:0, notes:[] },
+      calmari:  { relationship:0, lastInteraction:0, notes:[] },
+      liyuen:   { relationship:0, lastInteraction:0, notes:[] },
+    },
   };
 
   updateStatusBar();
@@ -151,6 +157,9 @@ async function makeChoice(choice, isVenture) {
     ? activeThreads.map(t => `— ${t.label} (Year ${t.year})`).join('\n')
     : 'None recorded.';
 
+  // Rival context for AI
+  const rivalContext = getRivalContext();
+
   // Classify choice as engagement or deferral (for thread resolution guidance)
   const isDeferral = /\b(wait|nothing|see|later|defer|another|next|hold|observe|find out|watch|say nothing|not yet|another season)\b/i.test(choice);
   const actionType = isDeferral
@@ -180,6 +189,9 @@ If any entry in the ledger or decisions above connects to this situation — a p
 
 OPEN THREADS — things the player deferred, refused, or left unresolved (these should return):
 ${threadContext}
+
+RIVAL FAMILY STANDINGS (persistent memory — reference past interactions when relevant):
+${rivalContext}
 
 PLAYER ACTION TYPE: ${actionType}
 ${ventureNote}
@@ -342,6 +354,10 @@ Respond with JSON only.`;
       phase: gs.phase === 'house' ? 'House' : isVenture ? 'Venture' : 'Routes',
       entry: parsed.ledger_entry || '—'
     });
+
+    // ── Rival relationship tracking ───────────────────────
+    detectAndUpdateRivals(choice, parsed.narrative || '');
+    // ─────────────────────────────────────────────────────
 
     updateStatusBar();
     showResult(parsed, isVenture);

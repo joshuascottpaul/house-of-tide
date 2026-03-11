@@ -273,7 +273,10 @@ function updateStatusBar() {
     ? ` &thinsp;·&thinsp; Gen ${genRoman[gs.generation-1] || gs.generation}`
     : '';
   const dl = document.getElementById('dynasty-label');
-  if (dl && gs.dynastyName) dl.innerHTML = `House ${gs.dynastyName} — ${gs.founderName}${genLabel}`;
+  if (dl && gs.dynastyName) {
+    dl.innerHTML = `House ${gs.dynastyName} — ${gs.founderName}${genLabel}`;
+    dl.title = getRivalContext ? getRivalContext() : '';
+  }
 }
 
 // ══════════════════════════════════════════════════════════
