@@ -98,6 +98,8 @@ function renderChoices(containerId, choices, isVenture) {
     btn.onclick = () => makeChoice(c, isVenture);
     container.appendChild(btn);
   });
+  // Kick off pre-fetch for local backends (hot-engine.js)
+  if (typeof prefetchOutcomes === 'function') prefetchOutcomes(choices, isVenture);
   // Legendary 4th choice — only at rep 9+, only if event defines one
   if (!isVenture && gs.reputation >= 9 && gs.currentEvent && gs.currentEvent.repChoice) {
     const sep = document.createElement('div');

@@ -113,6 +113,84 @@ function beginYear() {
 
 
 // ══════════════════════════════════════════════════════════
+//  PRE-FETCH CACHE (speeds up Ollama / MLX responses)
+// ══════════════════════════════════════════════════════════
+let _prefetchCache = {};
+
+function _buildChoiceUserMsg(choice, isVenture) {
+  const recentHistory = gs.ledger.slice(0, 8)
+    .map(l => `[Year ${l.year} · ${l.phase}] ${l.entry}`)
+    .join('\n') || 'None yet — this is the founding.';
+  const choiceHistory = (gs.history || []).slice(0, 6)
+    .map(h => `[Yr ${h.year} · ${h.phase}] "${h.choice}"${h.outcome ? ' → '+h.outcome : ''}`)
+    .join('\n') || 'No decisions recorded yet.';
+  const pd = gs.decisions || {};
+  const pdTotal = (pd.bold||0)+(pd.cautious||0)+(pd.political||0)+(pd.mercantile||0)+(pd.patient||0);
+  const playerProfile = pdTotal > 0
+    ? `Bold ${pd.bold||0} · Cautious ${pd.cautious||0} · Political ${pd.political||0} · Mercantile ${pd.mercantile||0} · Patient ${pd.patient||0}`
+    : 'Pattern not yet established.';
+  const ventureNote = isVenture
+    ? '\n\nNOTE: This is a GRAND VENTURE. Generational stakes. Oregon Trail mechanics. Marks delta +/- 200 to 600.'
+    : '';
+  const activeThreads = (gs.threads || []).filter(t => t.year <= gs.turn);
+  const threadContext = activeThreads.length > 0
+    ? activeThreads.map(t => `— ${t.label} (Year ${t.year})`).join('\n')
+    : 'None recorded.';
+  const rivalContext = getRivalContext();
+  const isDeferral = /\b(wait|nothing|see|later|defer|another|next|hold|observe|find out|watch|say nothing|not yet|another season)\b/i.test(choice);
+  const actionType = isDeferral
+    ? 'DEFERRAL — player chose to wait/observe/say nothing. Return resolve_thread: null.'
+    : 'ENGAGEMENT — player took active action. If this relates to an open thread, you MUST return resolve_thread.';
+
+  return `CURRENT STATE:
+House ${gs.dynastyName} · ${gs.founderName} · Gen ${gs.generation||1} · Year ${gs.turn} · Age ${gs.age}
+Treasury: ${gs.marks} mk · Reputation: ${gs.reputation}/10 · Ships: ${gs.ships}
+Heir: ${gs.heirName} (${gs.heirAge}, ${gs.heirTrait.label}, ${gs.hp.sub}/${gs.hp.pos})
+Phase: ${gs.phase === 'house' ? 'The House' : isVenture ? 'The Horizon — Grand Venture' : 'The Routes'}
+
+LEDGER — LAST 8 ENTRIES (your session notes — use these):
+${recentHistory}
+
+DECISIONS MADE — LAST 6 (use for continuity; if people or situations recur, connect them):
+${choiceHistory}
+
+PLAYER CHARACTER PATTERN:
+${playerProfile}
+
+SITUATION: ${gs.currentEvent ? gs.currentEvent.text : ''}
+CHOICE MADE: "${choice}"
+
+If any entry in the ledger or decisions above connects to this situation — weave it in. The world remembers.
+
+OPEN THREADS — things the player deferred, refused, or left unresolved (these should return):
+${threadContext}
+
+RIVAL FAMILY STANDINGS (persistent memory — reference past interactions when relevant):
+${rivalContext}
+
+PLAYER ACTION TYPE: ${actionType}
+${ventureNote}
+
+Respond with JSON only.`;
+}
+
+function prefetchOutcomes(choices, isVenture) {
+  // Only pre-fetch for local backends (saves cloud API costs)
+  if (!CFG || (CFG.backend !== 'ollama' && CFG.backend !== 'mlx')) return;
+  _prefetchCache = {}; // clear previous event's cache
+  const allChoices = [...choices];
+  if (!isVenture && gs.currentEvent && gs.currentEvent.repChoice) {
+    allChoices.push(gs.currentEvent.repChoice);
+  }
+  allChoices.forEach(c => {
+    const userMsg = _buildChoiceUserMsg(c, isVenture);
+    callLLM(SYSTEM_PROMPT, userMsg, { json:true, temperature:0.88, maxTokens:900 })
+      .then(parsed => { _prefetchCache[c] = parsed; })
+      .catch(() => {}); // silent fail — makeChoice retries normally
+  });
+}
+
+// ══════════════════════════════════════════════════════════
 //  MAKE CHOICE (outcome resolution)
 // ══════════════════════════════════════════════════════════
 function seed_label_from_type(type) {
@@ -199,7 +277,10 @@ ${ventureNote}
 Respond with JSON only.`;
 
   try {
-    const parsed = await callLLM(SYSTEM_PROMPT, userMsg, {
+    // Use pre-fetched result if available (local backends only)
+    const _cached = _prefetchCache[choice];
+    if (_cached) delete _prefetchCache[choice];
+    const parsed = _cached || await callLLM(SYSTEM_PROMPT, userMsg, {
       json: true, temperature: 0.88, maxTokens: 900
     });
 
