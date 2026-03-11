@@ -1,0 +1,327 @@
+// ══════════════════════════════════════════════════════════
+//  ATMOSPHERIC CONTENT
+// ══════════════════════════════════════════════════════════
+const TEST_MODEL = 'qwen3.5:4b'; // change this if you change the model name
+
+const EPIGRAMS = [
+  { t:"The sea keeps better records than any notary. It simply does not share them.", a:"— The Ledger" },
+  { t:"A merchant who does not count his enemies has not been counting long enough.", a:"— Harbourmaster Pell, Verantia" },
+  { t:"Every alliance is a debt arranged to look like generosity.", a:"— The Ledger" },
+  { t:"Reputation is what your enemies say about you when you are in the room. You have been leaving the room too often.", a:"— A Letter, Unsigned" },
+  { t:"The Borracchi smile the way weather smiles. Just before.", a:"— The Ledger" },
+  { t:"Three things your father left you: the name, the ships, and the knowledge of how he got them. Two of these will serve you.", a:"— The Ledger" },
+  { t:"Every harbour master is lying about something. The good ones lie about small things.", a:"— Captain Casso" },
+  { t:"A leaking roof is not a problem. A leaking roof with three estimates is a philosophical condition.", a:"— The Ledger" },
+  { t:"Dead captains tell no tales. Living captains tell several, most of them about the Caldera straits.", a:"— Masso, general knowledge" },
+  { t:"There is no such thing as a generous offer from the Borracchi. File it under weather.", a:"— A Letter, Unsigned" },
+  { t:"The heir watches everything and writes nothing down. This means she has either learned the most important lesson or not yet understood why it matters.", a:"— The Ledger" },
+  { t:"What the archive knows that nobody has asked it would fill another archive entirely.", a:"— The Ledger" },
+  { t:"The Calmari wanted nothing from the meeting. They left with three things.", a:"— Harbourmaster's Notes, Verantia" },
+  { t:"You can be rich and powerless or poor and the most dangerous person at any table. The game does not tell you which is better.", a:"— The Ledger" },
+  { t:"Every ship is a small wager against the specific conditions of a specific sea on a specific day. The sea does not wager back. It simply is.", a:"— Captain Casso" },
+];
+
+const EVENT_GEN_MSGS = [
+  "The situation takes shape…",
+  "The harbour has news…",
+  "The ledger considers what arrives next…",
+  "Something is developing…",
+  "Pell is at his desk…",
+  "The world takes a moment…",
+  "A letter arrives. It opens slowly…",
+];
+
+const LOADING_MSGS = [
+  "The ledger considers what to record…",
+  "The harbour master makes his notes…",
+  "The sea takes a moment with this…",
+  "The Borracchi are watching…",
+  "Somewhere, a notary uncaps his pen…",
+  "The consequence arrives, as consequences do…",
+  "The ledger opens to a fresh page…",
+  "The matter is being weighed…",
+  "The archive knows. It is deciding whether to say.",
+  "The Caldera straits have an opinion on this…",
+  "The record is being written. It will not be kind.",
+  "The year considers its position…",
+];
+
+const YEAR_END_NOTES = [
+  "The year closes like a ledger: columns balanced or not, the notation the same either way.",
+  "Winter. The harbour empties. The Borracchi's lights stay on longer than usual.",
+  "Another year recorded. The sea does not mark the occasion.",
+  "The season turns. The ledger adds a page. This is what a year is.",
+  "The routes close for winter. What was left unfinished waits in spring, patient as a creditor.",
+  "In Masso they are celebrating something. In Verantia, as always, they are watching to see who else is.",
+  "The Caldera straits freeze at the narrows. Your captains come home. Most of them.",
+  "The harbour master files his annual report. You are mentioned twice. Neither mention is wrong.",
+  "The accounting is done. The numbers say one thing. The rumours say another. The ledger takes no position.",
+  "Winter comes in from the east, which Casso says means a hard crossing season. Casso is usually right about what he says aloud.",
+  "The year ends without ceremony, which is the only ceremony the sea permits.",
+  "The Spinetta have been quiet this quarter. In Verantia, quiet is never good news about the quiet party.",
+  "The palazzo roof survived another winter. The repairman's third estimate still sits on your desk. You have not opened it.",
+  "Another revolution. The city watches the same stars and draws insufficient conclusions, as it always has.",
+];
+
+const HEIR_TRAITS = {
+  reckless:   { label:"Reckless",   death:"who spends money the way weather spends energy — completely, and without warning. This will be the treasury's problem soon." },
+  cautious:   { label:"Cautious",   death:"who counts everything twice and trusts the second count less than the first. In a house with debts, this is either wisdom or paralysis." },
+  diplomatic: { label:"Diplomatic", death:"who says the right thing and means a third thing entirely. The Borracchi will find this useful or annoying. Possibly both." },
+  greedy:     { label:"Greedy",     death:"who sees the ledger as a floor, not a ceiling. Whether this is the right instinct depends entirely on what is in the ledger." },
+  romantic:   { label:"Romantic",   death:"who believes in things. This is expensive. It is also occasionally useful, in the way that weather is occasionally useful." },
+  scholarly:  { label:"Scholarly",  death:"who reads everything and acts on very little of it. The archive will be in excellent order. The warehouse may not be." },
+  proud:      { label:"Proud",      death:"who carries the name like a weight they chose and are beginning to resent. This will either forge them or break them. The ledger will record which." },
+  suspicious: { label:"Suspicious", death:"who trusts no one, which is accurate and exhausting and will make them formidable if it does not first make them alone." },
+};
+
+const HEIR_MALE   = ["Luca","Marco","Dario","Theo","Kael","Miro","Fen","Tarro","Venn","Osso"];
+const HEIR_FEMALE = ["Sera","Nara","Livia","Dena","Cass","Maris","Vela","Ione","Tessa","Ravel"];
+
+function rand(arr) { return arr[Math.floor(Math.random()*arr.length)]; }
+
+
+// ══════════════════════════════════════════════════════════
+//  EVENTS — phase-separated, reputation-gated, de-duplicated
+// ══════════════════════════════════════════════════════════
+const SITUATION_SEEDS = {
+  house: {
+    standard: [
+      { id:"hs01", type:"rival_approach",
+        hint:"The Borracchi, Spinetta, or Calmari have done something small and deliberate. Not a threat — a gesture. Specific enough to be meaningful, vague enough that responding directly would look paranoid. The question is whether you are meant to respond or merely to notice." },
+      { id:"hs02", type:"guild_matter",
+        hint:"Secretary Vanzetti has issued a clarification on a guild regulation affecting your operations. Clarifications are not binding; they are written down, and Vanzetti writes things on behalf of people. You were not consulted. The clarification benefits someone." },
+      { id:"hs03", type:"council_business",
+        hint:"The council has made a decision — a tariff, a route designation, a dock arrangement — that affects the house in ways not announced as the decision's purpose. Someone in the council room knew what it would do. You need to know who." },
+      { id:"hs04", type:"informant",
+        hint:"Pell has received information from a source he describes as reliable-with-a-qualification. He states the qualification precisely. The information, if accurate, changes your position with a rival or a route. The qualification is the problem." },
+      { id:"hs05", type:"household_staff",
+        hint:"Someone in the household has started doing something small and different. Arriving earlier. Leaving by a different door. Asking which ships are in port. The thing they are doing is not obviously wrong. It is simply new." },
+      { id:"hs06", type:"heir_matter",
+        hint:"The heir has said something, been somewhere, or been seen with someone, and the report reaches you indirectly — from Pell, from a servant, from something you noticed at the edge of a dinner. The report is specific. The heir has not mentioned it." },
+      { id:"hs07", type:"property_dispute",
+        hint:"A document has arrived — a survey, a licence renewal, a boundary record — that describes a property arrangement differently from how it was described last time it was discussed. The difference is small enough to be an error. It is also large enough to be a claim." },
+      { id:"hs08", type:"sealed_document",
+        hint:"Something has arrived that should not exist, or exists that should not. A document in a familiar hand referring to an arrangement you were not party to. An entry in the ledger for a payment you do not remember authorising, recipient described as 'considerations'. Pell has not commented. He is waiting for you to ask." },
+      { id:"hs09", type:"family_obligation",
+        hint:"There is a social requirement — a funeral, a celebration, a formal dinner, a civic ceremony — that cannot be declined without consequence and cannot be attended without cost. Both the cost and consequence are specific. The question is which one you are more able to pay." },
+      { id:"hs10", type:"patron_request",
+        hint:"Commissioner Albinosi, a council member, or a significant creditor requires something of the house. Not asks. Requires. The thing required is technically reasonable. The reason it is required, and what happens if it is not, has not been stated." },
+      { id:"hs11", type:"investment_offer",
+        hint:"An opportunity has arrived with attractive terms and an unspoken condition. The condition is visible if you know what to look for. Pell has laid the document on your desk with a specific alignment that is not how he usually places documents." },
+      { id:"hs12", type:"hiring_opportunity",
+        hint:"An exceptional person is available — a factor with alum connections, a captain, a specialist in the northern wool routes. Someone else has made an approach. The exceptional person has not yet decided. Their hesitation tells you something about why they left their previous house." },
+      { id:"hs13", type:"intelligence_coup",
+        hint:"The house has information it was not supposed to have. It arrived by accident or through a route that implicates the person who sent it. Using it directly would reveal you have it. Not using it may be the more expensive option." },
+      { id:"hs14", type:"alliance_offer",
+        hint:"A house or institution is proposing a formal arrangement. The arrangement is reasonable. The thing being asked for in return has not been stated as the thing being asked for; it has been stated as a condition. Pell has read the condition and said nothing." },
+    ],
+    high_rep: [
+      { id:"hs15", type:"council_seat",
+        hint:"Something has been offered to the house that is not offered to houses at other standings — a seat on a committee, a position in a civic arrangement, an invitation whose value is not the invitation itself but the room it gets you into. The obligation is proportional. It is not small." },
+      { id:"hs16", type:"rival_concession",
+        hint:"One of the three families is in a position that requires them to approach you on terms they would not have used last year. The approach is correctly worded. The correctly worded approach is its own form of information — it tells you how much they need this, and that they know you know." },
+      { id:"hs17", type:"legacy_offer",
+        hint:"There is an opportunity to build something that will carry the name past the current generation — a patronage, a civic project, a permanent institutional connection. The offer has come because of the name's current standing. The standing is necessary but not sufficient." },
+      { id:"hs18", type:"diplomatic_prize",
+        hint:"A foreign connection, a significant alliance, or an arrangement that would fundamentally change the house's position has presented itself. It requires something that is not money. You have it. The question is whether spending it here is the correct use." },
+    ],
+    low_rep: [
+      { id:"hs19", type:"creditor_pressure",
+        hint:"A creditor — the Exchange, the Masso side, or a private factor — has indicated impatience. Albinosi's greeting this morning was three words shorter than last month. The indication is polite. Polite indications from creditors are the professional version of the ones that follow them." },
+      { id:"hs20", type:"social_erosion",
+        hint:"Something has not happened that would have happened last year. An invitation not received. A contract not renewed. A name omitted from a list you were previously on. The absence is specific enough to be intentional. No one has explained it." },
+      { id:"hs21", type:"desperate_offer",
+        hint:"An offer has arrived that is better than what the market would produce, which means the party offering it needs something more than the transaction. Identifying what they need before agreeing to anything is the only sensible position." },
+      { id:"hs22", type:"internal_crisis",
+        hint:"Something in the house is not working. A loyalty question. A competence failure. A person who has been managing a function that you now discover has been managed differently than described. The discovery is recent. The situation is not." },
+    ],
+  },
+  routes: {
+    standard: [
+      { id:"rs01", type:"captain_decision",
+        hint:"A captain — Casso or one of the others — has sent word requiring direction on a decision that should not have reached you but has, because the decision is one they are not willing to make without your knowledge. This means the decision has consequences beyond the voyage." },
+      { id:"rs02", type:"rival_at_sea",
+        hint:"One of the three families' ships is on a route in a way that is technically legal and practically inconvenient. The overlap is not coincidence. The question is whether the inconvenience is the point, or whether it is cover for something else the ship is doing on that route." },
+      { id:"rs03", type:"cargo_opportunity",
+        hint:"A cargo or contract has appeared with terms that are either very good or contain a condition that makes the terms look very good. Pell has queried the condition. The condition has been explained. The explanation is technically complete. Pell has not removed his query." },
+      { id:"rs04", type:"crew_matter",
+        hint:"A crew matter requires resolution — a claim, a dispute, a man who should be aboard who is not, or a man who is aboard who should not be. The maritime law is clear. The maritime law does not cover the actual situation." },
+      { id:"rs05", type:"port_authority",
+        hint:"Tucci, or a port authority in another harbour, has raised something — a tariff, a new requirement, a question about a manifest — that is bureaucratically legitimate and practically targeted. The question is whether to address it through channels or directly, and whether those are the same thing." },
+      { id:"rs06", type:"weather_and_decision",
+        hint:"Casso has sent word on the season's window. There is a route where the window is shorter than usual this year, for reasons he describes technically. Short window, good margin. His technical description contains a risk he has named precisely and chosen not to contextualise." },
+      { id:"rs07", type:"foreign_contact",
+        hint:"A contact in a foreign port — a merchant, a factor, an official — has proposed something commercial on the surface. Below it is an arrangement requiring the house to become part of something it does not entirely understand. The terms are good. Understanding what you are joining takes time you may not have." },
+      { id:"rs08", type:"contraband_question",
+        hint:"A ship arrived with a manifest discrepancy. The captain's explanation accounts for the weight but not the arrangement of the hold. Pell has the manifest. He has set it in front of you with the relevant section marked with a small line. He has said nothing." },
+      { id:"rs09", type:"navigator_matter",
+        hint:"The navigator on the northern route has been using a different log format than house standard. The deviation is small, possibly personal preference. The new format omits a column. That column records waypoints. The last four months of logs do not record the waypoints." },
+      { id:"rs10", type:"returning_figure",
+        hint:"A ship returned with something unexpected — a person on board not on the manifest, a cargo described differently on departure than arrival, or a captain whose account of the voyage does not map to the route's usual timing. Casso has made a note. The note is attached to the ship's log." },
+      { id:"rs11", type:"contract_windfall",
+        hint:"A contract has become available that a rival house was expected to take. They have not taken it. Nobody has explained why. The window is short and the terms are good. Taking something a better-positioned house chose not to take is either intelligence or ignorance about why they declined." },
+      { id:"rs12", type:"route_advantage",
+        hint:"An opportunity to establish a preferential position on a route has emerged — through a rival's withdrawal, a new port arrangement, or a licence the Exchange is willing to issue. The position is real. The stated obligation is clear. The unstated one is the question." },
+      { id:"rs13", type:"buyer_contact",
+        hint:"A buyer has made contact directly — bypassing the usual guild channels, which means either they have good reasons to avoid those channels or they are not aware of the convention. Neither of those is a comfortable starting point for a relationship. The terms are fair." },
+      { id:"rs14", type:"fleet_decision",
+        hint:"A decision about the fleet's deployment carries more consequence this year than usual. Two options are commercially reasonable. A third is aggressive. Casso has provided assessments of all three. He has not stated a recommendation." },
+    ],
+    high_rep: [
+      { id:"rs15", type:"exclusive_guild",
+        hint:"The Factors' Guild is offering terms not available below Renowned standing. The terms are genuinely better. The obligation that accompanies them is in section four of the document, in standard guild language — technically visible, practically unreviewable without a specific request to Vanzetti, who will note the request." },
+      { id:"rs16", type:"foreign_partnership",
+        hint:"A foreign merchant house has proposed a formal arrangement, correctly worded — which means it was prepared with knowledge of Verantian commercial conventions, which means this is not a first approach. It is the approach they are ready to have you receive." },
+      { id:"rs17", type:"route_dominance",
+        hint:"There is a position on a route — not participation but control — available for the first time in several years, due to a rival's difficulty. The position would change the house's commercial structure. It would also make the house a more interesting target." },
+      { id:"rs18", type:"intelligence_trade",
+        hint:"Information is available that moves only between houses at this standing — an advance reading of a cargo situation, knowledge of a rival's debt arrangement. It arrives through someone who will, in time, want something of equivalent weight in return." },
+    ],
+    low_rep: [
+      { id:"rs19", type:"financial_pressure",
+        hint:"Commercial pressure on the fleet — from a creditor watching the voyages, an exchange commissioner tightening terms, or a factor who has stopped extending credit quietly — has reached a point that requires acknowledgment. The acknowledgment can take several forms. Only some of them involve the acknowledgment being known." },
+      { id:"rs20", type:"captain_defection",
+        hint:"A captain — one of the better ones — has been approached by another house. He has told you about it, which is the correct behaviour. The fact that he is telling you rather than simply refusing tells you something about where he currently stands." },
+      { id:"rs21", type:"cargo_shortfall",
+        hint:"A route has returned badly. The difference between projected and actual is within the range of weather and market variation — explainable. It is also within the range of systematic small interference — investigable. Both things can be true. Casso has not said which he thinks it is." },
+      { id:"rs22", type:"port_trouble",
+        hint:"A harbour has become more expensive or difficult. The official reason has been provided. It does not explain the specific form the difficulty has taken. Either bureaucratic drift or targeted. Casso says the route is still viable, in the way he says things are viable." },
+    ],
+  },
+  ventures: [
+    { id:"v01", type:"unknown_merchant",
+      hint:"A merchant has arrived from a coast that does not appear on your charts by any name you recognise. He has silk of a quality you have not seen. He is urgent in a way he is controlling carefully. He visited three houses before yours. He has not said what happened at the other three. He has the look of someone who has already calculated what he needs from this conversation and is waiting to see if you are going to make him ask for it." },
+    { id:"v02", type:"expedition_prep",
+      hint:"The ship is provisioned. The route goes through water that Casso has seen once — once more than anyone else you have access to. He says the passage is navigable. He says it the way he says things that are technically true. The crew has been told the route in general terms. They are experienced enough to know what general terms means. The ledger is open to a fresh page." },
+    { id:"v03", type:"mid_voyage_crisis",
+      hint:"Three weeks out. The pilot's route has developed a complication he did not describe as possible in Verantia, which means either he has never made this passage without the complication or he decided not to mention it. The crew is calm in the specific way of experienced sailors who are waiting to see whether the person in charge knows what they are doing. The weather is making an argument." },
+    { id:"v04", type:"distant_port",
+      hint:"There is a harbour. It does not appear in any chart you own; it appears in Casso's notes under a name he cannot place. The trade here is real — you can see the volume of it. The customs regime is not what was described. The place requires navigation that is not about the sea. There is an opportunity here that is also a test of whether you understand the situation you are in." },
+    { id:"v05", type:"return_reckoning",
+      hint:"The return is possible. What was gained, what was lost, what the sea took that was not on the manifest — these are the numbers Casso has laid in front of you. Some of what happened will be in the ledger. Some will not, because there is no accounting category for it. The heir is waiting on the dock." },
+  ],
+};
+
+
+// Thread followup seeds (replaces THREAD_FOLLOWUPS scripted events)
+const THREAD_SEEDS = [
+  { id:"ts01", thread:"borracchi",
+    hint:"The deferred Borracchi arrangement has developed. The Borracchi's eldest — who was involved in the original discussion — is no longer visible in any context where they used to be visible. Not announced. Not explained. An absence becoming remarkable by continuing." },
+  { id:"ts02", thread:"borracchi",
+    hint:"The Borracchi have made a secondary move related to the original arrangement without being the original arrangement. A contract in which their name appears adjacent to an interest of yours. Not in conflict. Adjacent. The adjacency has not been explained." },
+  { id:"ts03", thread:"spinetta",
+    hint:"The Spinetta situation has developed in a direction you did not expect — which means either they know something about the original situation that you don't, or the original situation was part of something larger that is now visible from a different angle." },
+  { id:"ts04", thread:"servant",
+    hint:"A second report has emerged about the person who was talking. Not what they said — that is still unclear. Where they were saying it. The location is specific. It implies a connection to a particular party that was not previously visible." },
+  { id:"ts05", thread:"navigator",
+    hint:"The navigator's log question has advanced. Either a pattern has emerged in the missing waypoint data, or the navigator has done something that makes the omissions more legible — changed a route without logging the reason, or been seen in Verantia somewhere that aligns the omissions with a specific party." },
+  { id:"ts06", thread:"saltfish",
+    hint:"The cargo discrepancy has repeated. Not the same cargo — the same dock, the same window, the same differential between manifest and actual. A pattern requires either explanation or a decision about whether you intend to find one." },
+  { id:"ts07", thread:"unsigned_letter",
+    hint:"A second letter has arrived in the same hand. The dock this time was different — the western quay, not the eastern. The difference is directional information about where the letters originate. Someone is still writing. Either closer to being identified than they know, or they no longer care." },
+  { id:"ts08", thread:"calmari",
+    hint:"The outcome of the investment you declined is now visible in the market. The Calmari are in a different position because of it. The representative who made the original approach has been seen in a context suggesting he is no longer constrained by whatever prevented the approach from being stronger." },
+  { id:"ts09", thread:"pamphlet",
+    hint:"A second pamphlet has circulated. The second pamphlet's author is either the same person, a different person with access to the same information, or someone who read the first and decided to continue the argument. The second pamphlet is more specific. It names a house." },
+  { id:"ts10", thread:"heir_patron",
+    hint:"Someone is taking an interest in the heir — educational, social, or commercial — that has not been brought to you. The interest is appropriate on the surface. It is patient and specific in a way that appropriate interests in heirs are not, generally, patient and specific." },
+];
+
+
+// ══════════════════════════════════════════════════════════
+//  THREAD FOLLOWUP EVENTS
+//  These fire when a matching open thread exists.
+//  Each has a `thread` type that must match a gs.threads entry.
+// ══════════════════════════════════════════════════════════
+const THREAD_FOLLOWUPS = [
+  // Borracchi overtures — marriage / alliance deferred
+  { id:"tf01", thread:"borracchi",
+    text:"The Borracchi have not written again about the arrangement. Three months of silence from people who are never silent by accident. Their man at the harbour exchange has been asking questions about your current contracts.",
+    choices:[
+      "Write to them. Name the arrangement. Ask if it still stands.",
+      "Say nothing. If they want it, they will say so. If they do not, this silence is the answer.",
+      "Find out what their man at the exchange was asking. The questions are the information."
+    ],
+    repChoice:"Write to the Borracchi patriarch directly — not about the arrangement, to the patriarch. Tell him the silence has been noted and that if the offer is still on the table, he should present it himself. He will."},
+  { id:"tf02", thread:"borracchi",
+    text:"A Borracchi cousin arrived at the warehouse this morning with a small gift — Calderan wine, good vintage — and no stated purpose. He stayed long enough to be seen and left before being asked anything directly.",
+    choices:[
+      "Send a gift in return. Acknowledge the visit without acknowledging what the visit was about.",
+      "Have Pell find out which cousin and what his position within the Borracchi is. The gift was a question.",
+      "Do nothing. An unanswered gesture creates an obligation on their side, not yours."
+    ],
+    repChoice:"Send for the cousin and ask him, in person, what the Borracchi intend. A house at this standing can ask directly. The cousin will tell you more than he was sent to."},
+
+  // Spinetta weakness — unexploited
+  { id:"tf03", thread:"spinetta",
+    text:"The Spinetta factor who knew the eastern buyers was hired by someone else before you could decide. He has been in that house six months. Long enough to have said what he knew. The Spinetta, however, have not recovered their eastern route.",
+    choices:[
+      "Approach the eastern buyers directly. The factor's information is stale now regardless.",
+      "Find the factor again. Loyalty is conditional on the quality of the offer, and the other house may have disappointed him.",
+      "Leave it. The eastern route was the Spinetta's to lose. Staying out of it has its own value."
+    ]},
+
+  // Servant talking — source unresolved
+  { id:"tf04", thread:"servant",
+    text:"Pell has found out who the servant was talking to. It was not one of the rivals. It was a notary's clerk — one with connections to the harbour exchange. The clerk has since been reassigned. The servant is still in your employ.",
+    choices:[
+      "Dismiss the servant now. The damage is done and the risk is ongoing.",
+      "Keep them and give them false information. If it reaches the exchange, you know the path.",
+      "Leave it entirely. The clerk is reassigned. The chain is broken, probably."
+    ]},
+
+  // Navigator notes — spy unconfirmed
+  { id:"tf05", thread:"navigator",
+    text:"The routes you changed after the navigator's suspicious log have been clean for three seasons. Either whoever was receiving the information has lost interest, or they received the new routes too and are waiting. Pell says both are possible and has a preference he will not state.",
+    choices:[
+      "Change the routes again, differently. If someone is still watching, this maps the gap.",
+      "Have the navigator followed for one season. He is still in your employ and you have still not confronted him.",
+      "Accept that the leak, if there was one, has closed. File it and move on."
+    ]},
+
+  // Salt fish discrepancy — unresolved
+  { id:"tf06", thread:"saltfish",
+    text:"The loading crew was changed after the missing salt fish. The next three manifests were clean. The fourth was short by eight crates — a different cargo, a different crew, the same Masso dockside window.",
+    choices:[
+      "Investigate the dock window specifically. Two incidents at the same loading point is not coincidence.",
+      "Pull the Masso contract entirely for two seasons. Whatever is happening at that dock, remove the opportunity.",
+      "Record it and say nothing. You are building a case. A case requires patience."
+    ]},
+
+  // Unsigned letter — source unknown
+  { id:"tf07", thread:"unsigned_letter",
+    text:"A second unsigned letter arrived. Same hand. It says only: 'The buyer has been identified. You already know them.' The letter was delivered to your warehouse, not the house. Whoever writes these knows where you spend your mornings.",
+    choices:[
+      "Write back to the letter's delivery point — the harbour chandler. Ask who brings these. Directly.",
+      "Sit with the claim. If the buyer is someone you know, the letter is trying to make you act on incomplete information.",
+      "Have the chandler watched without approaching them. You want to know who delivers the letter, not who receives your response."
+    ]},
+
+  // Calmari investment — declined, still watching
+  { id:"tf08", thread:"calmari",
+    text:"The Cape Aldric granary that the Calmari proposed is generating returns. You declined the arrangement. Three other houses invested. One of them is now on the Calmari's council list. You are not.",
+    choices:[
+      "Approach the Calmari directly about a different investment. Something smaller. Establish the relationship without the debt of the first refusal.",
+      "Investigate what the council list actually means. A Calmari invitation is not a compliment — find out what it costs.",
+      "Leave it. You made the correct decision with the information you had. The ledger does not record counterfactuals."
+    ]},
+
+  // Pamphlet — author unfound
+  { id:"tf09", thread:"pamphlet",
+    text:"The pamphlet's author was found — a minor clerk with a history of occasional employment by the Spinetta. He is no longer in Verantia. The Spinetta have expressed, through a third party, that they had no knowledge of the pamphlet. The third party appeared to believe this.",
+    choices:[
+      "Accept the explanation. The clerk is gone. The pamphlet is old. The cost of pursuing it outweighs the benefit.",
+      "Find the clerk. He left the city; he did not disappear. He knows who paid for the paper.",
+      "Send a note to the Spinetta — not about the pamphlet. About something else entirely. See how they respond to normal contact."
+    ]},
+
+  // Marriage arrangement — player's own heir
+  { id:"tf10", thread:"heir_marriage",
+    text:"Your heir's name has come up in three separate conversations this season — twice with the Borracchi, once with a Spinetta cousin who appeared to be speaking for herself but probably was not. No one has put anything in writing. Everyone is waiting for you to.",
+    choices:[
+      "Write to the Borracchi. The name is being circulated; you should be the one who sets its price.",
+      "Write to the Spinetta cousin directly. If she is speaking for herself, that is interesting. If she is not, that is more interesting.",
+      "Say nothing. Your heir is not yet ready and you are not yet ready to have this conversation with anyone who would make it binding."
+    ],
+    repChoice:"Write to both parties simultaneously with your terms. Not asking — setting. The heir's name goes on paper at the price you determine, and both families receive the same letter on the same day."},
+];
