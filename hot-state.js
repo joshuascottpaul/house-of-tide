@@ -16,6 +16,8 @@ let gs = {
   history:[],
   bankLoan:null, shadowLoan:null, creditScore:0, shipMarket:null,
   threads:[],
+  cargo: { saltfish:0, wine:0, alum:0, tin:0 },
+  marketPrices: null,
   rivals:{
     borracchi:{ relationship:0, lastInteraction:0, notes:[] },
     spinetta: { relationship:0, lastInteraction:0, notes:[] },
@@ -59,6 +61,8 @@ function deserialiseState(raw) {
   obj.creditScore     = obj.creditScore     || 0;
   obj.shipMarket      = obj.shipMarket      || null;
   obj.threads         = obj.threads         || [];
+  obj.cargo           = obj.cargo           || { saltfish:0, wine:0, alum:0, tin:0 };
+  obj.marketPrices    = obj.marketPrices    || null;
   obj.rivals          = obj.rivals          || {
     borracchi:{ relationship:0, lastInteraction:0, notes:[] },
     spinetta: { relationship:0, lastInteraction:0, notes:[] },

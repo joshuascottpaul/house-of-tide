@@ -272,6 +272,19 @@
       <button class="btn" id="yearend-btn" onclick="beginYear()">Turn the Page →</button>
     </div>
 
+    <!-- ══ TRADING PANEL ══════════════════════════════════════ -->
+    <div id="panel-trading" style="display:none;" class="panel">
+      <div class="panel-inner">
+        <div class="panel-title">⚓ &nbsp; The Cargo Exchange &nbsp; ⚓</div>
+        <p class="panel-subtitle" id="trading-season-note"></p>
+        <div id="trading-capacity" class="trading-capacity"></div>
+        <div id="trading-market-body"></div>
+        <div class="panel-actions" style="margin-top:1.5rem;">
+          <button class="btn" onclick="advancePhase()">Close the Books →</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Ledger history -->
     <div id="ledger-history">
       <div class="ledger-heading"><span class="glyph glyph-star" style="font-size:.85em;margin-right:.4em;">✦</span>The Permanent Record</div>
@@ -308,6 +321,7 @@
 <script src="hot-state.js"></script>
 <script src="hot-ui.js"></script>
 <script src="hot-economy.js"></script>
+<script src="hot-trading.js"></script>
 <script src="hot-events.js"></script>
 <script src="hot-engine.js"></script>
 

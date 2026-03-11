@@ -438,6 +438,70 @@ footer { text-align:center; padding:1.2rem; border-top:1px solid #2a1e0e;
   font-family:'IM Fell English SC',serif; font-size:.56rem;
   letter-spacing:.1em; color:#7a6840; text-transform:uppercase; }
 
+/* ── Trading Panel ────────────────────────────────────── */
+.trading-capacity {
+  font-family: 'IM Fell English SC', serif;
+  font-size: .68rem;
+  letter-spacing: .12em;
+  color: #7a6040;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #2a1e0e;
+  padding-bottom: .5rem;
+}
+.trading-commodity {
+  display: flex;
+  align-items: baseline;
+  gap: .8rem;
+  margin: .7rem 0;
+  flex-wrap: wrap;
+}
+.trading-name {
+  font-family: 'IM Fell English SC', serif;
+  font-size: .72rem;
+  letter-spacing: .1em;
+  color: #3a2c18;
+  min-width: 100px;
+  text-transform: uppercase;
+}
+.trading-price {
+  font-family: 'IM Fell English', serif;
+  font-size: .78rem;
+  color: #5a4828;
+}
+.trading-stock {
+  font-family: 'IM Fell English SC', serif;
+  font-size: .62rem;
+  color: #7a6040;
+  margin-left: auto;
+}
+.trading-qty {
+  width: 52px;
+  font-family: 'IM Fell English', serif;
+  font-size: .82rem;
+  background: #f0e8d0;
+  border: 1px solid #2a1e0e;
+  color: #1a0e06;
+  padding: .15rem .3rem;
+  text-align: center;
+}
+.trading-btn {
+  font-family: 'IM Fell English SC', serif;
+  font-size: .62rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  background: none;
+  border: 1px solid #2a1e0e;
+  color: #3a2c18;
+  padding: .2rem .5rem;
+  cursor: pointer;
+}
+.trading-btn:hover { background: #2a1e0e; color: #f0e8d0; }
+.trading-btn.sell { border-color: #5a3020; color: #5a3020; }
+.trading-btn.sell:hover { background: #5a3020; color: #f0e8d0; }
+.trading-msg { font-family: 'IM Fell English', serif; font-style: italic;
+  font-size: .76rem; color: #7a4020; margin-top: .4rem; }
+
 /* ── Dynamic Background Image ─────────────────────────── */
 #bg-image {
   position: fixed;

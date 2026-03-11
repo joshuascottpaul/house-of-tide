@@ -54,6 +54,8 @@ function startGame() {
     history:[],
     bankLoan:null, shadowLoan:null, creditScore:0, shipMarket:null,
     threads:[],
+    cargo: { saltfish:0, wine:0, alum:0, tin:0 },
+    marketPrices: null,
     rivals:{
       borracchi:{ relationship:0, lastInteraction:0, notes:[] },
       spinetta: { relationship:0, lastInteraction:0, notes:[] },
@@ -80,6 +82,7 @@ function beginPhase() {
   hideError();
   if      (gs.phase === 'house')   showHouseEvent();
   else if (gs.phase === 'routes')  checkAndShowRoutes();
+  else if (gs.phase === 'trading') showTradingPanel();
   else if (gs.phase === 'yearend') showYearEnd();
 }
 
@@ -89,6 +92,10 @@ function advancePhase() {
     gs.phase = 'routes';
     beginPhase();
   } else if (gs.phase === 'routes') {
+    gs.phase = 'trading';
+    gs.marketPrices = null; // force fresh roll
+    showTradingPanel();
+  } else if (gs.phase === 'trading') {
     gs.phase = 'yearend';
     beginPhase();
   }
