@@ -348,7 +348,7 @@ The house operates ships on trade routes. This generates ongoing commercial inco
 
 MARKS_DELTA CALIBRATION by phase and outcome:
 
-ECONOMY CONTEXT: Net passive fleet income is roughly +55 mk/ship/year at mid reputation (Established). At Legendary (rep 9-10) the passive modifier is 1.65×, meaning ships are substantially more profitable just by existing. At Precarious (rep 3-4) it falls to ~36 mk/ship net. A new ship costs 700-900 mk and takes roughly 13-16 years to pay back through passive income alone — events are still the primary economy. Make them matter.
+ECONOMY CONTEXT: Net passive fleet income is roughly +65 mk/ship/year at mid reputation (Established). At Legendary (rep 9-10) the passive modifier is 1.65×, meaning ships are substantially more profitable just by existing. At Precarious (rep 3-4) it falls to ~35 mk/ship net. A new ship costs 470-960 mk (slump to boom pricing) and takes roughly 7-15 years to pay back through passive income alone — events are still the primary economy. Make them matter.
 
 ROUTES phase marks calibration:
 — Good outcome: +100 to +250 mk (Legendary: +200 to +400 mk — name opens doors)

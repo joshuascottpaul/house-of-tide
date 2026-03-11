@@ -9,18 +9,18 @@ function rollShipMarket() {
   let demand, buyPrice, sellPrice, demandLabel;
   if (roll < 0.20) {
     demand = 'boom';
-    buyPrice  = Math.round((940 + Math.random()*160) * (1+repBonus));
-    sellPrice = Math.round((680 + Math.random()*160) * legSellBonus);
+    buyPrice  = Math.round((800 + Math.random()*160) * (1+repBonus));
+    sellPrice = Math.round((580 + Math.random()*140) * legSellBonus);
     demandLabel = 'The Masso yards are booked three months ahead. Buyers are visible and in competition with each other.';
   } else if (roll < 0.80) {
     demand = 'standard';
-    buyPrice  = Math.round((730 + Math.random()*120) * (1+repBonus));
-    sellPrice = Math.round((470 + Math.random()*130) * legSellBonus);
+    buyPrice  = Math.round((600 + Math.random()*120) * (1+repBonus));
+    sellPrice = Math.round((400 + Math.random()*110) * legSellBonus);
     demandLabel = 'The yards are at standard capacity. Prices are where they have been for the past two seasons.';
   } else {
     demand = 'slump';
-    buyPrice  = Math.round((580 + Math.random()*100) * (1+repBonus));
-    sellPrice = Math.round((290 + Math.random()*140) * legSellBonus);
+    buyPrice  = Math.round((470 + Math.random()*100) * (1+repBonus));
+    sellPrice = Math.round((250 + Math.random()*120) * legSellBonus);
     demandLabel = 'The yards have availability. The harbour has more hulls than buyers. Both will negotiate, which is the polite word for it.';
   }
   gs.shipMarket = { demand, buyPrice, sellPrice, demandLabel };

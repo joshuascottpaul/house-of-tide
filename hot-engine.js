@@ -81,7 +81,7 @@ function beginYear() {
               : 0.40;
   const variance = 0.85 + Math.random() * 0.3;  // ±15%
   const baseRate = 85;   // gross per ship per year
-  const upkeep   = 30;   // crew, berthing, maintenance per ship
+  const upkeep   = 20;   // crew, berthing, maintenance per ship
   const greedyBonus = (gs.heirTrait && gs.heirTrait.key === 'greedy') ? 1.2 : 1.0;
   const gross = Math.round(gs.ships * baseRate * repMod * variance * greedyBonus);
   const cost  = gs.ships * upkeep;
