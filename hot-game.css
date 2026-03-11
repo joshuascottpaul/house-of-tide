@@ -514,4 +514,4 @@ footer { text-align:center; padding:1.2rem; border-top:1px solid #2a1e0e;
   pointer-events: none;
   transition: background-image 2s ease;
 }
-body > *:not(#bg-image) { position: relative; z-index: 1; }
+body > *:not(#bg-image):not(#settings-overlay):not(#debug-panel) { position: relative; z-index: 1; }
