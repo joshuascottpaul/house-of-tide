@@ -74,7 +74,17 @@ function renderChoices(containerId, choices, isVenture) {
 
     // Analyze risk and append hints
     const risk = analyzeChoiceRisk(c);
-    btn.innerHTML = c;
+    
+    // Add visual risk indicators at the start of the choice
+    let choiceHtml = c;
+    const icons = [];
+    if (risk.cost) icons.push('💰');
+    if (risk.warning) icons.push('⚠️');
+    if (icons.length > 0) {
+      choiceHtml = `<span class="choice-risk-icons">${icons.join(' ')}</span> ${c}`;
+    }
+    
+    btn.innerHTML = choiceHtml;
 
     if (risk.cost) {
       const hint = document.createElement('span');
@@ -112,7 +122,17 @@ function renderChoices(containerId, choices, isVenture) {
 
     // Analyze rep choice risk too
     const risk = analyzeChoiceRisk(gs.currentEvent.repChoice);
-    btn.innerHTML = gs.currentEvent.repChoice;
+    
+    // Add visual risk indicators
+    let choiceHtml = gs.currentEvent.repChoice;
+    const icons = [];
+    if (risk.cost) icons.push('💰');
+    if (risk.warning) icons.push('⚠️');
+    if (icons.length > 0) {
+      choiceHtml = `<span class="choice-risk-icons">${icons.join(' ')}</span> ${gs.currentEvent.repChoice}`;
+    }
+    
+    btn.innerHTML = choiceHtml;
 
     if (risk.cost) {
       const hint = document.createElement('span');

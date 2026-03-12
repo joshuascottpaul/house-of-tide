@@ -80,6 +80,7 @@ h1 { font-family:'IM Fell English SC',serif; font-size:clamp(2.8rem,9vw,5.5rem);
 .choice-hint.cost { color:#9a8040; }
 .choice-hint.requirement { color:#6a7888; }
 .choice-hint.warning { color:#a86830; }
+.choice-risk-icons { font-size:1.1em; margin-right:.35rem; display:inline-block; }
 
 /* ── INPUTS ── */
 .name-group { margin-bottom:1.6rem; }

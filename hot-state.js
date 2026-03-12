@@ -81,6 +81,8 @@ function autoSave() {
   if (!gs.dynastyName) return;
   try {
     localStorage.setItem(AUTOSAVE_KEY, serialiseState());
+    // Show subtle save notification
+    showNotification('✓ Auto-saved');
   } catch(e) { /* storage full or unavailable */ }
 }
 
