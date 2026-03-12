@@ -413,9 +413,13 @@ Respond with JSON only.`;
       );
       if (gs.threads.length < before) {
         const closedLabel = parsed.resolve_thread;
+        const closedCount = before - gs.threads.length;
         gs.ledger.unshift({ year:gs.turn, phase:'Ledger', entry:`Thread closed: ${closedLabel}.` });
         showNotification(`⟳ Thread resolved: ${closedLabel}`);
-        debugLog('Thread resolution', closedLabel, `Removed ${before - gs.threads.length} thread(s)`, false);
+        // Track for year-end summary
+        if (!gs._threadsResolvedThisYear) gs._threadsResolvedThisYear = [];
+        gs._threadsResolvedThisYear.push({ label: closedLabel, count: closedCount });
+        debugLog('Thread resolution', closedLabel, `Removed ${closedCount} thread(s)`, false);
       } else {
         debugLog('Thread resolution', parsed.resolve_thread, 'No matching thread found — check fragment vs labels', true);
       }

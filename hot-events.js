@@ -118,9 +118,19 @@ Generate the situation and 3 choices. Present tense. Second person. Junior gothi
     json: true, temperature: 0.92, maxTokens: 650
   });
 
-  // 3. Validate
+  // 3. Validate and normalize choices
   const situation = (parsed.situation || '').trim();
   let choices = Array.isArray(parsed.choices) ? parsed.choices.filter(ch => ch && ch.trim()) : [];
+  
+  // Handle case where model returns JSON objects inside choices instead of plain strings
+  choices = choices.map(c => {
+    if (typeof c === 'object' && c.choice) {
+      // Model returned {"choice": "...", "cost": "..."} instead of plain string
+      return c.choice;
+    }
+    return c;
+  });
+  
   if (choices.length < 2) throw new Error('AI returned too few choices');
   while (choices.length < 3) choices.push('Observe, and say nothing for now.');
   choices = choices.slice(0, 3);
@@ -242,6 +252,15 @@ SPECIAL INSTRUCTIONS FOR VENTURES:
 
     const situation = (parsed.situation || '').trim();
     let choices = Array.isArray(parsed.choices) ? parsed.choices.filter(c => c && c.trim()) : [];
+    
+    // Handle case where model returns JSON objects inside choices
+    choices = choices.map(c => {
+      if (typeof c === 'object' && c.choice) {
+        return c.choice;
+      }
+      return c;
+    });
+    
     while (choices.length < 3) choices.push('Wait for better conditions.');
     choices = choices.slice(0, 3);
 
@@ -319,15 +338,32 @@ function showYearEnd() {
   // ── Open threads display ────────────────────────────
   const threadsEl = document.getElementById('ye-threads');
   if (threadsEl) {
+    let thtml = '';
+    
+    // Show resolved threads this year
+    if (gs._threadsResolvedThisYear && gs._threadsResolvedThisYear.length > 0) {
+      thtml += '<div class="finance-section-title" style="color:#5a8030;">✓ Threads Resolved This Year</div>';
+      gs._threadsResolvedThisYear.forEach(r => {
+        thtml += `<div style="font-family:'IM Fell English',serif;font-style:italic;font-size:.76rem;color:#6a9838;margin:.2rem 0 .1rem;">— ${r.label}</div>`;
+      });
+      thtml += '<div style="height:1px;background:#2a1e0e;margin:.8rem 0;"></div>';
+      // Clear for next year
+      gs._threadsResolvedThisYear = [];
+    }
+    
+    // Show open threads
     const alive = (gs.threads||[]).filter(t => gs.turn >= t.year);
     if (alive.length > 0) {
-      let thtml = '<div class="finance-section-title" style="color:#7a6040;">⟳ Open Threads — Unfinished Business</div>';
+      thtml += '<div class="finance-section-title" style="color:#7a6040;">⟳ Open Threads — Unfinished Business</div>';
       alive.forEach(t => {
         const age = gs.turn - t.year;
         const ageStr = age === 0 ? 'this year' : age === 1 ? 'one year open' : `${age} years open`;
         thtml += `<div style="font-family:'IM Fell English',serif;font-style:italic;font-size:.76rem;color:#9a8040;margin:.2rem 0 .1rem;">— ${t.label}</div>`
                + `<div style="font-family:'IM Fell English SC',serif;font-size:.56rem;letter-spacing:.1em;color:#5a4820;margin-bottom:.35rem;">${ageStr}</div>`;
       });
+    }
+    
+    if (thtml) {
       threadsEl.innerHTML = thtml;
       threadsEl.style.display = 'block';
     } else {
