@@ -150,6 +150,8 @@ function beginYear() {
 //  PRE-FETCH CACHE (speeds up Ollama / MLX responses)
 // ══════════════════════════════════════════════════════════
 let _prefetchCache = {};
+let _prefetchStatus = {}; // { choiceText: 'pending' | 'complete' | 'failed' }
+let _prefetchResults = {}; // { choiceText: parsedResult }
 
 function _buildChoiceUserMsg(choice, isVenture) {
   const recentHistory = gs.ledger.slice(0, 8)
@@ -211,16 +213,43 @@ Respond with JSON only.`;
 function prefetchOutcomes(choices, isVenture) {
   // Only pre-fetch for local backends (saves cloud API costs)
   if (!CFG || (CFG.backend !== 'ollama' && CFG.backend !== 'mlx')) return;
-  _prefetchCache = {}; // clear previous event's cache
+  
+  // Clear previous cache and mark all as pending
+  _prefetchCache = {};
+  _prefetchStatus = {};
+  _prefetchResults = {};
+  
   const allChoices = [...choices];
   if (!isVenture && gs.currentEvent && gs.currentEvent.repChoice) {
     allChoices.push(gs.currentEvent.repChoice);
   }
+  
+  // Mark all as pending
+  allChoices.forEach(c => {
+    _prefetchStatus[c] = 'pending';
+  });
+  
+  // Expose to window for UI access
+  window._prefetchStatus = _prefetchStatus;
+  
+  // Update UI to show loading state
+  if (typeof renderChoiceStatus === 'function') renderChoiceStatus();
+  
+  // Fetch all outcomes
   allChoices.forEach(c => {
     const userMsg = _buildChoiceUserMsg(c, isVenture);
     callLLM(SYSTEM_PROMPT, userMsg, { json:true, temperature:0.88, maxTokens:900 })
-      .then(parsed => { _prefetchCache[c] = parsed; })
-      .catch(() => {}); // silent fail — makeChoice retries normally
+      .then(parsed => { 
+        _prefetchStatus[c] = 'complete';
+        _prefetchResults[c] = parsed;
+        window._prefetchStatus = _prefetchStatus;
+        if (typeof renderChoiceStatus === 'function') renderChoiceStatus();
+      })
+      .catch(() => {
+        _prefetchStatus[c] = 'failed';
+        window._prefetchStatus = _prefetchStatus;
+        if (typeof renderChoiceStatus === 'function') renderChoiceStatus();
+      }); // silent fail — makeChoice retries normally
   });
 }
 
@@ -312,8 +341,8 @@ Respond with JSON only.`;
 
   try {
     // Use pre-fetched result if available (local backends only)
-    const _cached = _prefetchCache[choice];
-    if (_cached) delete _prefetchCache[choice];
+    const _cached = _prefetchResults[choice];
+    if (_cached) delete _prefetchResults[choice];
     const parsed = _cached || await callLLM(SYSTEM_PROMPT, userMsg, {
       json: true, temperature: 0.88, maxTokens: 900
     });

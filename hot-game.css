@@ -82,6 +82,42 @@ h1 { font-family:'IM Fell English SC',serif; font-size:clamp(2.8rem,9vw,5.5rem);
 .choice-hint.warning { color:#a86830; }
 .choice-risk-icons { font-size:1.1em; margin-right:.35rem; display:inline-block; }
 
+/* ── PREFETCH STATUS INDICATORS ── */
+.choice-btn { position: relative; padding-right: 2.2rem; }
+.choice-btn.choice-loading::after {
+  content: '⏳';
+  position: absolute;
+  top: 0.5rem;
+  right: 0.8rem;
+  font-size: 0.95em;
+  opacity: 0.7;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+.choice-btn.choice-cached::after {
+  content: '✓';
+  position: absolute;
+  top: 0.5rem;
+  right: 0.8rem;
+  font-size: 0.95em;
+  color: #6a9838;
+  opacity: 0.9;
+  font-weight: bold;
+}
+.choice-btn.choice-failed::after {
+  content: '○';
+  position: absolute;
+  top: 0.5rem;
+  right: 0.8rem;
+  font-size: 0.95em;
+  color: #9a8040;
+  opacity: 0.6;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.9; }
+}
+
 /* ── INPUTS ── */
 .name-group { margin-bottom:1.6rem; }
 .field-label { font-family:'IM Fell English SC',serif; font-size:.72rem;

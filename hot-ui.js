@@ -185,6 +185,34 @@ function renderThreadTracker() {
   }).join('');
 }
 
+function renderChoiceStatus() {
+  // Find all choice buttons and add status indicators
+  if (typeof window._prefetchStatus !== 'undefined') {
+    document.querySelectorAll('.choice-btn').forEach(btn => {
+      // Get choice text (first line, trimmed)
+      const choiceText = btn.childNodes[0]?.textContent?.trim() || btn.textContent?.split('\n')[0]?.trim();
+      if (!choiceText) return;
+      
+      const status = window._prefetchStatus[choiceText];
+      
+      // Remove existing status classes
+      btn.classList.remove('choice-cached', 'choice-loading', 'choice-failed');
+      
+      // Add status class and tooltip
+      if (status === 'pending') {
+        btn.classList.add('choice-loading');
+        btn.title = 'Loading outcome...';
+      } else if (status === 'complete') {
+        btn.classList.add('choice-cached');
+        btn.title = 'Outcome ready - instant response';
+      } else if (status === 'failed') {
+        btn.classList.add('choice-failed');
+        btn.title = 'Will load when selected';
+      }
+    });
+  }
+}
+
 function toggleThreads() {
   const list = document.getElementById('thread-tracker-list');
   if (list) list.style.display = list.style.display === 'none' ? 'block' : 'none';
