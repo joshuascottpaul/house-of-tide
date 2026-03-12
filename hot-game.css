@@ -101,7 +101,17 @@ input[type=text]:focus { border-bottom-color:var(--rust); }
   align-items:center; flex-wrap:wrap; gap:.4rem;
   position:sticky; top:0; z-index:20; }
 #dynasty-label { font-family:'IM Fell English SC',serif; font-size:.88rem;
-  color:var(--gold); letter-spacing:.08em; }
+  color:var(--gold); letter-spacing:.08em; cursor:help; }
+#dynasty-label:hover { color:var(--gold-hi); }
+#dynasty-label[title]:hover::after {
+  content: attr(title);
+  position:absolute; top:100%; left:0; z-index:100;
+  background:#1a1008; border:1px solid #4a3820;
+  color:#c8a870; font-family:'IM Fell English',serif;
+  font-size:.75rem; padding:.5rem .7rem; margin-top:.3rem;
+  white-space:pre-line; max-width:280px; line-height:1.6;
+  box-shadow:0 4px 12px rgba(0,0,0,.4);
+}
 .heir-badge { font-family:'IM Fell English',serif; font-style:italic;
   font-size:.85rem; color:#a89060; }
 .heir-badge .ht { color:#d4b46a; }

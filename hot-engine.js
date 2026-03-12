@@ -11,15 +11,15 @@ function updateBackground() {
   const ships = gs.ships || 1;
 
   let keyword;
-  if (rep >= 9)          keyword = 'renaissance venice palazzo grand';
-  else if (rep >= 7)     keyword = 'renaissance merchant city harbor';
-  else if (marks < 400)  keyword = 'medieval harbor storm abandoned';
-  else if (ships >= 3)   keyword = 'renaissance harbor fleet sailing ships';
-  else if (gs.phase === 'house') keyword = 'medieval palace courtyard archway';
-  else                   keyword = 'renaissance port dock fishing boats';
+  if (rep >= 9)          keyword = 'venice,palazzo,grand,renaissance';
+  else if (rep >= 7)     keyword = 'venice,merchant,harbor,renaissance';
+  else if (marks < 400)  keyword = 'harbor,storm,abandoned,medieval';
+  else if (ships >= 3)   keyword = 'harbor,fleet,sailing,ships,renaissance';
+  else if (gs.phase === 'house') keyword = 'palazzo,courtyard,archway,medieval';
+  else                   keyword = 'port,dock,fishing,boats,renaissance';
 
-  // Unsplash Source API — free, no key required
-  const url = `https://source.unsplash.com/1600x900/?${encodeURIComponent(keyword)}`;
+  // LoremFlickr — free, no API key required, supports keywords
+  const url = `https://loremflickr.com/1600/900/${encodeURIComponent(keyword)}?lock=${gs.turn}`;
   el.style.backgroundImage = `url(${url})`;
 }
 
@@ -67,6 +67,7 @@ function startGame() {
   updateStatusBar();
   updateBackground();
   document.getElementById('dynasty-label').textContent = `House ${gs.dynastyName} — ${gs.founderName}`;
+  updateRivalTooltip();
   // Show onboarding first
   onboardPage = 0;
   renderOnboard();
@@ -471,6 +472,7 @@ Respond with JSON only.`;
 
     // ── Rival relationship tracking ───────────────────────
     detectAndUpdateRivals(choice, parsed.narrative || '');
+    updateRivalTooltip();
     // ─────────────────────────────────────────────────────
 
     updateStatusBar();

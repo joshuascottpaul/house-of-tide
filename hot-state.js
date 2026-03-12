@@ -117,6 +117,7 @@ function loadFromSlot(slot) {
     closeSaveOverlay();
     updateStatusBar();
     document.getElementById('dynasty-label').textContent = `House ${gs.dynastyName} — ${gs.founderName}`;
+    updateRivalTooltip();
     document.getElementById('advisor-toggle').style.display = 'block';
     showScreen('screen-game');
     // Restore correct panel state
@@ -317,6 +318,13 @@ function getRivalContext() {
     const recentNote = r.notes[0] ? ` (${r.notes[0]})` : '';
     return `${labels[fam]}: ${tiers(r.relationship)} (${r.relationship >= 0 ? '+' : ''}${r.relationship})${recentNote}`;
   }).join('\n');
+}
+
+// Update rival tooltip in status bar
+function updateRivalTooltip() {
+  const label = document.getElementById('dynasty-label');
+  if (!label) return;
+  label.title = getRivalContext();
 }
 
 function detectAndUpdateRivals(choiceText, narrativeText) {
