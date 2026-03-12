@@ -199,7 +199,7 @@ If any entry in the ledger or decisions above connects to this situation — wea
 OPEN THREADS — things the player deferred, refused, or left unresolved (these should return):
 ${threadContext}
 
-RIVAL FAMILY STANDINGS (persistent memory — reference past interactions when relevant):
+RIVAL FAMILY STANDINGS (persistent memory — CRITICAL: If a rival family appears in this event, you MUST reference your last interaction with them. Example: "Rinaldo approaches you again, still bitter about your refusal last year." or "The Borracchi remember your alliance and offer favourable terms."):
 ${rivalContext}
 
 PLAYER ACTION TYPE: ${actionType}
@@ -302,7 +302,7 @@ If any entry in the ledger or decisions above connects to this situation — a p
 OPEN THREADS — things the player deferred, refused, or left unresolved (these should return):
 ${threadContext}
 
-RIVAL FAMILY STANDINGS (persistent memory — reference past interactions when relevant):
+RIVAL FAMILY STANDINGS (persistent memory — CRITICAL: If a rival family appears, reference your last interaction. Example: "Rinaldo remembers your refusal" or "The Borracchi honour your alliance"):
 ${rivalContext}
 
 PLAYER ACTION TYPE: ${actionType}

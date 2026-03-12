@@ -327,6 +327,33 @@ function updateRivalTooltip() {
   label.title = getRivalContext();
 }
 
+// Update rival relationship score
+function updateRivalRelationship(family, delta, reason) {
+  if (!gs.rivals || !gs.rivals[family]) return;
+  const r = gs.rivals[family];
+  
+  // Clamp relationship between -5 and +5
+  r.relationship = Math.max(-5, Math.min(5, r.relationship + delta));
+  r.lastInteraction = gs.turn;
+  
+  // Add note (keep last 3)
+  if (reason) {
+    r.notes.unshift(`${reason} (Year ${gs.turn})`);
+    if (r.notes.length > 3) r.notes.pop();
+  }
+  
+  // Update tooltip immediately
+  updateRivalTooltip();
+  
+  // Show notification
+  const labels = {
+    borracchi:'The Borracchi', spinetta:'The Spinetta',
+    calmari:'The Calmari', liyuen:"Li Yuen's Network",
+  };
+  const change = delta > 0 ? 'improved' : delta < 0 ? 'worsened' : 'changed';
+  showNotification(`${labels[family]} relationship ${change}`);
+}
+
 function detectAndUpdateRivals(choiceText, narrativeText) {
   const combined = (choiceText + ' ' + (narrativeText || '')).toLowerCase();
   const year = gs.turn;
@@ -348,9 +375,9 @@ function detectAndUpdateRivals(choiceText, narrativeText) {
     if (!mentioned) continue;
 
     if (posWords.test(choiceText.toLowerCase())) {
-      updateRivalRelationship(key, +1, `Favourable interaction — "${choiceText.slice(0,60)}"`);
+      updateRivalRelationship(key, +1, `Favourable interaction`);
     } else if (negWords.test(choiceText.toLowerCase())) {
-      updateRivalRelationship(key, -1, `Hostile action — "${choiceText.slice(0,60)}"`);
+      updateRivalRelationship(key, -1, `Hostile action`);
     } else {
       // Neutral mention — just record last interaction year
       if (gs.rivals[key]) gs.rivals[key].lastInteraction = year;
