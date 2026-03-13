@@ -684,15 +684,15 @@ npx playwright show-report
 | Category | Total | Done | Remaining |
 |----------|-------|------|-----------|
 | **🔥 Critical Bugs** | 1 | 1 ✅ | 0 |
-| **Quick Wins** | 6 | 5 ✅ | 1 |
-| **UI Improvements** | 4 | 1 ✅ | 3 |
-| **Performance** | 3 | 1 ✅ | 2 |
-| **Gameplay Features** | 4 | 0 | 4 |
+| **Quick Wins** | 6 | 6 ✅ | 0 |
+| **UI Improvements** | 8 | 3 ✅ | 1 |
+| **Performance** | 3 | 2 ✅ | 0 ❌ |
+| **Gameplay Features** | 4 | 2 ✅ | 2 |
 | **Ollama Setup** | 2 | 1 ✅ | 1 |
 | **Playwright Tests** | 37 | 16 ✅ | 21 |
 | **Manual Testing** | 10 | 0 | 10 |
 | **Easy Mode (Optional)** | 5 | 0 | 5 |
-| **TOTAL** | 73 | 25 ✅ | **48 Remaining** |
+| **TOTAL** | 76 | 31 ✅ | **40** (5 deprecated) |
 
 ---
 
@@ -702,22 +702,22 @@ npx playwright show-report
 1. ~~**Loading Indicator for AI Calls**~~ — ✅ DONE
 2. ~~**Backend Status Indicator**~~ — ✅ DONE
 3. ~~**Better Error Messages**~~ — ✅ DONE
-4. [ ] **Auto-Save Notification** — ✅ DONE
-5. [ ] **Choice Risk Indicators** — ✅ DONE
-6. [ ] **Faster Default Model** — Change default or add speed ratings (30 min) **← NEXT**
+4. ~~**Auto-Save Notification**~~ — ✅ DONE
+5. ~~**Choice Risk Indicators**~~ — ✅ DONE
+6. ~~**Faster Default Model**~~ — ✅ DONE (speed ratings added)
 
 ### UI Improvements (1-2 hours each)
-7. [ ] **Rival Status Tooltip** — Hover over dynasty name to see rival relationships (1-2 hrs)
-8. [ ] **Keyboard Shortcuts** — `1,2,3` choices, `S` save, `L` load, `P` settings (1-2 hrs)
+7. ~~**Rival Status Tooltip**~~ — ✅ DONE
+8. [ ] **Keyboard Shortcuts** — `1,2,3` choices, `S` save, `L` load, `P` settings (1-2 hrs) **← NEXT**
 
 ### Performance (2-4 hours)
-9. [ ] **Prefetch Visual Indicator** — Show when choices are cached (2 hrs)
-10. [ ] **Reduce AI Calls** — Cache similar events, reuse outcomes (2-4 hrs)
+9. ~~**Prefetch Visual Indicator**~~ — ✅ DONE
+10. ~~**Reduce AI Calls**~~ — ❌ REMOVED (would make game stale - AI should stay fresh!)
 
 ### Gameplay Features (4-8 hours each)
-11. [ ] **Rival Memory System** (Phase 2) — Auto-track relationships, AI remembers past interactions (4-6 hrs)
+11. ~~**Rival Memory System**~~ — ✅ DONE
 12. [ ] **Trading Layer** (Phase 3) — Buy/sell commodities between routes and year-end (6-8 hrs)
-13. [ ] **Thread Resolution** — Better tracking of open story threads (4 hrs)
+13. ~~**Thread Resolution**~~ — ✅ DONE
 14. [ ] **Heir Influence** — Heir personality affects available choices as they age (4-8 hrs)
 
 ### Ollama Setup Improvements
@@ -743,6 +743,13 @@ These are nice-to-have features that can be done when you have extra time:
 
 ### Current Problem
 Users must run these commands manually:
+
+---
+
+## ⚠️ DEPRECATED / NOT RECOMMENDED
+
+### ~~Reduce AI Calls~~ — **REMOVED**
+**Why:** Caching similar events would make the game stale and repetitive. The AI dungeon master should keep interactions fresh and interesting, not stale and repetitive. The prefetch system we built is the correct approach - it caches outcomes for CURRENT choices only, maintaining variety while improving responsiveness.
 ```bash
 launchctl setenv OLLAMA_ORIGINS "*"
 killall Ollama
