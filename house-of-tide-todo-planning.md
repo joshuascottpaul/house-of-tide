@@ -687,14 +687,14 @@ npx playwright show-report
 | **Quick Wins** | 6 | 6 ✅ | 0 |
 | **UI Improvements** | 8 | 3 ✅ | 1 |
 | **Performance** | 3 | 2 ✅ | 0 ❌ |
-| **Gameplay Features** | 4 | 3 ✅ | 1 |
+| **Gameplay Features** | 5 | 3 ✅ | 2 |
 | **Ollama Setup** | 2 | 1 ✅ | 1 |
 | **Tech Debt / Refactoring** | 9 | 4 ✅ | 5 |
 | **Playwright Tests** | 37 | 16 ✅ | 21 |
-| **Test Coverage Gaps** | 26 | 0 | 26 |
+| **Test Coverage Gaps** | 30 | 15 ✅ | 15 |
 | **Manual Testing** | 10 | 0 | 10 |
 | **Easy Mode (Optional)** | 5 | 0 | 5 |
-| **TOTAL** | 111 | 36 ✅ | **70** (5 deprecated) |
+| **TOTAL** | 117 | 51 ✅ | **61** (5 deprecated) |
 
 ---
 
@@ -733,6 +733,7 @@ npx playwright show-report
 12. ~~**Trading Layer**~~ — ✅ DONE (was already implemented!)
 13. ~~**Thread Resolution**~~ — ✅ DONE
 14. [ ] **Heir Influence** — Heir personality affects available choices as they age (4-8 hrs)
+15. [ ] **Heir Influence Tests** — Test coverage for heir personality effects (1 hr, 4 tests)
 
 ---
 
@@ -821,6 +822,12 @@ npx playwright show-report
 10. [ ] **Fallback Event Generation** (2 tests, 30 min)
     - `createFallbackEvent()` returns valid event structure
     - Fallback used when AI fails
+
+11. [ ] **Heir Influence** (4 tests, 1 hr) — *After Heir Influence feature implemented*
+    - Diplomatic heir improves negotiation outcomes
+    - Reckless heir unlocks riskier options
+    - Cautious heir provides safer investment options
+    - Heir trait affects choice availability
 
 ---
 
