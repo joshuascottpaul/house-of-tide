@@ -131,6 +131,9 @@ Generate the situation and 3 choices. Present tense. Second person. Junior gothi
   if (choices.length < 2) throw new Error('AI returned too few choices');
   while (choices.length < 3) choices.push('Observe, and say nothing for now.');
   choices = choices.slice(0, 3);
+  
+  // Apply heir influence (heir personality may modify one choice)
+  choices = applyHeirInfluence(choices, seed.id);
 
   return {
     id: seed.id,
@@ -140,6 +143,74 @@ Generate the situation and 3 choices. Present tense. Second person. Junior gothi
     thread_hint: parsed.thread_hint || null,
     _generated: true,
   };
+}
+
+// ══════════════════════════════════════════════════════════
+//  HEIR INFLUENCE — heir personality affects choices
+// ══════════════════════════════════════════════════════════
+function applyHeirInfluence(choices, eventSeed) {
+  if (!gs.heirTrait || !gs.heirName) return choices;
+  
+  const trait = gs.heirTrait.key;
+  const heirAge = gs.heirAge || 7;
+  
+  // Heir influence scales with age (more influence as they mature)
+  const influenceChance = Math.max(0, (heirAge - 10) * 0.15); // 0% at 10, 75% at 15, 100% at 17+
+  
+  if (Math.random() > influenceChance) return choices;
+  
+  // Add heir-specific choice modifier based on trait
+  let heirChoice = null;
+  
+  switch(trait) {
+    case 'diplomatic':
+      if (Math.random() < 0.4) {
+        heirChoice = `Send ${gs.heirName} to negotiate — ${gs.hp.sub} has a gift for finding common ground.`;
+      }
+      break;
+    case 'reckless':
+      if (Math.random() < 0.4) {
+        heirChoice = `Let ${gs.heirName} take the risk — ${gs.hp.cap} learns best from consequences.`;
+      }
+      break;
+    case 'cautious':
+      if (Math.random() < 0.4) {
+        heirChoice = `Have ${gs.heirName} review the matter first — ${gs.hp.sub} sees risks you might miss.`;
+      }
+      break;
+    case 'greedy':
+      if (Math.random() < 0.4) {
+        heirChoice = `Ask ${gs.heirName} to find the profit angle — ${gs.hp.sub} has an eye for opportunity.`;
+      }
+      break;
+    case 'scholarly':
+      if (Math.random() < 0.4) {
+        heirChoice = `Task ${gs.heirName} with research — ${gs.hp.sub} will find the pattern in the details.`;
+      }
+      break;
+    case 'proud':
+      if (Math.random() < 0.4) {
+        heirChoice = `Let ${gs.heirName} handle this — the name ${gs.hp.sub} carries demands respect.`;
+      }
+      break;
+    case 'suspicious':
+      if (Math.random() < 0.4) {
+        heirChoice = `Have ${gs.heirName} investigate — ${gs.hp.sub} trusts nothing, which means ${gs.hp.sub} sees everything.`;
+      }
+      break;
+    case 'romantic':
+      if (Math.random() < 0.4) {
+        heirChoice = `Send ${gs.heirName} — ${gs.hp.cap} believes in people, and people respond to that.`;
+      }
+      break;
+  }
+  
+  // Add heir choice if generated (replace last choice to maintain 3 choices)
+  if (heirChoice && choices.length > 0) {
+    choices = [...choices.slice(0, -1), heirChoice];
+  }
+  
+  return choices;
 }
 
 
@@ -260,6 +331,9 @@ SPECIAL INSTRUCTIONS FOR VENTURES:
     
     while (choices.length < 3) choices.push('Wait for better conditions.');
     choices = choices.slice(0, 3);
+    
+    // Apply heir influence to venture choices too
+    choices = applyHeirInfluence(choices, 'venture_' + seed.id);
 
     const ev = { id: seed.id, text: situation, choices,
       repChoice: (gs.reputation >= REP_THRESHOLDS.LEGENDARY && parsed.repChoice) ? parsed.repChoice : null,
