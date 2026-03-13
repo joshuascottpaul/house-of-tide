@@ -184,14 +184,19 @@ JSON only. No preamble. No markdown. No text outside the object.
 situation: The actual scene, in register. Not a summary of the scene type.
 choices: Exactly 3. Complete sentences. A=action (costs information), B=intelligence (costs time), C=honest position (player decides if cowardice or strategy). Do not label them. Do not make A obviously better than C.
 
-CRITICAL: When choices have costs or requirements, MENTION THEM IN THE CHOICE TEXT:
-- If a choice costs marks, include the amount: "Commission a second vessel from the Masso yards — this will require approximately 600 marks."
-- If a choice requires ships, mention it: "Dispatch two ships to the northern passage with Casso leading."
-- If a choice is risky, let Pell's caution show: "Challenge Rinaldo directly at the exchange — Pell has set his pen down."
-- For investigations/bribes, mention small costs: "Send Pell to the archive — 50 marks for the notary's consideration."
-- For hiring/commissions, always state the cost explicitly.
+CRITICAL: CHOICES MUST BE PLAIN TEXT STRINGS ONLY. Do NOT wrap choices in JSON objects. Do NOT include "choice": or "cost": fields inside the choices array.
 
-DO NOT generate choices without cost information when the action clearly requires spending marks.
+WRONG (do NOT do this):
+{"choices":[{"choice":"Do something","cost":"50 marks"},{"choice":"Do another thing","cost":null}]}
+
+RIGHT (do this):
+{"choices":["Do something — this will require 50 marks.","Do another thing.","Observe without committing."]}
+
+When choices have costs or requirements, MENTION THEM IN THE CHOICE TEXT as natural prose:
+✓ "Commission a second vessel from the Masso yards — this will require approximately 600 marks."
+✓ "Dispatch two ships to the northern passage with Casso leading."
+✓ "Send Pell to the archive — 50 marks for the notary's consideration."
+✗ {"choice":"Commission a vessel","cost":"600 marks"}  ← WRONG!
 
 repChoice: If reputation is 9-10 AND warranted: a 4th choice that exists only because of the house's standing. Not a negotiation — a declaration. Prefix with "✦". Otherwise null.
 thread_hint: If this situation naturally creates an open thread, return a 1-3 word type: "borracchi", "navigator", "sealed_document", "heir_patron", "returning_figure", etc. Otherwise null.

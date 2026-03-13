@@ -202,51 +202,164 @@ async function testConnection() {
   res.textContent = '';
 
   try {
-    const resp = await fetch('http://localhost:11434/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: CFG.ollamaModel === 'custom' ? (document.getElementById('s-ollama-custom')?.value || 'qwen3.5:4b') : CFG.ollamaModel,
-        stream: false,
-        options: { temperature: 0.5, num_predict: 40 },
+    let resp, data, raw, clean, reply;
+
+    if (CFG.backend === 'mlx') {
+      // ── MLX Test ─────────────────────────────────────────
+      const body = {
+        model: CFG.mlxModel,
+        max_tokens: 40,
+        temperature: 0.5,
         messages: [
           { role: 'system', content: 'You are a laconic harbourmaster. Respond in one short sentence in the style of a ledger note. Dry, precise.' },
-          { role: 'user',   content: 'Confirm you are open for business. /no_think' }
+          { role: 'user', content: 'Confirm you are open for business. /no_think' }
         ]
-      })
-    });
+      };
+      const headers = { 'Content-Type': 'application/json' };
+      if (CFG.mlxHfToken) headers['Authorization'] = `Bearer ${CFG.mlxHfToken}`;
 
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      if (resp.status === 404 || (err.error && err.error.includes('not found'))) {
-        res.style.color = '#b05040';
-        res.textContent = 'Model not found. Run: ollama pull ' + TEST_MODEL;
-      } else {
-        res.style.color = '#b05040';
-        res.textContent = 'Ollama returned an error (' + resp.status + '). Check that it is running.';
+      resp = await fetch('http://127.0.0.1:8000/v1/chat/completions', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(body)
+      });
+
+      if (!resp.ok) throw new Error(`MLX server returned ${resp.status}`);
+      data = await resp.json();
+      raw = data.choices?.[0]?.message?.content || '';
+      clean = raw.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+      reply = clean.length > 0 ? clean : 'Connection established.';
+
+    } else if (CFG.backend === 'openai') {
+      // ── OpenAI Test ──────────────────────────────────────
+      if (!CFG.openaiApiKey) throw new Error('OpenAI API key not set. Open ⊞ Settings to add one.');
+      
+      const body = {
+        model: CFG.openaiModel,
+        max_tokens: 40,
+        temperature: 0.5,
+        messages: [
+          { role: 'system', content: 'You are a laconic harbourmaster. Respond in one short sentence in the style of a ledger note. Dry, precise.' },
+          { role: 'user', content: 'Confirm you are open for business. /no_think' }
+        ]
+      };
+
+      resp = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${CFG.openaiApiKey}`
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        throw new Error(`OpenAI API ${resp.status}: ${err.error?.message || resp.statusText}`);
       }
-      return;
-    }
+      
+      data = await resp.json();
+      raw = data.choices?.[0]?.message?.content || '';
+      clean = raw.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+      reply = clean.length > 0 ? clean : 'Connection established.';
 
-    const data  = await resp.json();
-    const raw   = data.message?.content || '';
-    const clean = raw.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
-    const reply = clean.length > 0 ? clean : 'Connection established.';
+    } else if (CFG.backend === 'claude') {
+      // ── Claude Test ──────────────────────────────────────
+      if (!CFG.claudeApiKey) throw new Error('Claude API key not set. Open ⊞ Settings to add one.');
+      
+      const body = {
+        model: CFG.claudeModel,
+        max_tokens: 40,
+        system: 'You are a laconic harbourmaster. Respond in one short sentence in the style of a ledger note. Dry, precise.',
+        messages: [
+          { role: 'user', content: 'Confirm you are open for business. /no_think' }
+        ]
+      };
+
+      resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': CFG.claudeApiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        throw new Error(`Claude API ${resp.status}: ${err.error?.message || resp.statusText}`);
+      }
+      
+      data = await resp.json();
+      raw = data.content?.[0]?.text || '';
+      clean = raw.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+      reply = clean.length > 0 ? clean : 'Connection established.';
+
+    } else {
+      // ── Ollama Test ──────────────────────────────────────
+      resp = await fetch('http://localhost:11434/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: CFG.ollamaModel === 'custom' ? (document.getElementById('s-ollama-custom')?.value || 'qwen3.5:4b') : CFG.ollamaModel,
+          stream: false,
+          options: { temperature: 0.5, num_predict: 40 },
+          messages: [
+            { role: 'system', content: 'You are a laconic harbourmaster. Respond in one short sentence in the style of a ledger note. Dry, precise.' },
+            { role: 'user', content: 'Confirm you are open for business. /no_think' }
+          ]
+        })
+      });
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        if (resp.status === 404 || (err.error && err.error.includes('not found'))) {
+          res.style.color = '#b05040';
+          res.textContent = 'Model not found. Run: ollama pull ' + CFG.ollamaModel;
+          return;
+        } else {
+          res.style.color = '#b05040';
+          res.textContent = 'Ollama returned an error (' + resp.status + '). Check that it is running.';
+          return;
+        }
+      }
+
+      data = await resp.json();
+      raw = data.message?.content || '';
+      clean = raw.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+      reply = clean.length > 0 ? clean : 'Connection established.';
+    }
 
     res.style.color = '#5a8030';
     res.innerHTML = '✓ &nbsp;<em>' + reply + '</em>';
 
   } catch(e) {
     res.style.color = '#b05040';
-    if (e.message && (e.message.includes('fetch') || e.message.includes('Failed') || e.message.includes('NetworkError') || e.message.includes('CORS'))) {
+    if (CFG.backend === 'mlx') {
+      res.innerHTML =
+        '<strong style="color:#c04030">Connection blocked.</strong> Two possible causes:<br><br>' +
+        '<strong style="color:#a08848">1. MLX server is not running.</strong> Run in Terminal:<br>' +
+        '<code style="display:block;margin:.5rem 0;padding:.4rem .6rem;background:#0c0a06;border:1px solid #3a2c18;color:#c8a870;font-size:.85rem;font-family:monospace;user-select:all;">mlx-openai-server launch --model-path ' + (CFG.mlxModel || '<model-path>') + ' --model-type lm</code>' +
+        '<strong style="color:#a08848">2. CORS not set.</strong> The MLX server should enable CORS by default. Check the server logs.';
+    } else if (CFG.backend === 'openai') {
+      res.innerHTML =
+        '<strong style="color:#c04030">OpenAI API Error:</strong><br><br>' +
+        '<code style="display:block;margin:.5rem 0;padding:.4rem .6rem;background:#0c0a06;border:1px solid #3a2c18;color:#c8a870;font-size:.85rem;font-family:monospace;">' + e.message + '</code><br><br>' +
+        '<strong style="color:#a08848">Check:</strong> API key is valid and has credits.';
+    } else if (CFG.backend === 'claude') {
+      res.innerHTML =
+        '<strong style="color:#c04030">Claude API Error:</strong><br><br>' +
+        '<code style="display:block;margin:.5rem 0;padding:.4rem .6rem;background:#0c0a06;border:1px solid #3a2c18;color:#c8a870;font-size:.85rem;font-family:monospace;">' + e.message + '</code><br><br>' +
+        '<strong style="color:#a08848">Check:</strong> API key is valid and has credits.';
+    } else {
       res.innerHTML =
         '<strong style="color:#c04030">Connection blocked.</strong> Two possible causes:<br><br>' +
         '<strong style="color:#a08848">1. Ollama is not running.</strong> Open the Ollama app from Applications and wait for the llama icon to appear in the menu bar.<br><br>' +
         '<strong style="color:#a08848">2. CORS not set (most likely).</strong> Run this in Terminal, then quit and reopen Ollama:<br>' +
         '<code style="display:block;margin:.5rem 0;padding:.4rem .6rem;background:#0c0a06;border:1px solid #3a2c18;color:#c8a870;font-size:.85rem;font-family:monospace;user-select:all;">launchctl setenv OLLAMA_ORIGINS "*"</code>' +
         'Then click Test Connection again.';
-    } else {
-      res.innerHTML = 'Error: ' + e.message;
     }
   } finally {
     btn.disabled = false;
