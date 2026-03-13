@@ -128,8 +128,8 @@ test.describe('Appearance Settings', () => {
     
     await page.waitForTimeout(500);
     
-    // Close settings with Escape
-    await page.keyboard.press('Escape');
+    // Close settings by clicking Cancel button
+    await page.click('button:has-text("Cancel")');
     await page.waitForSelector('#settings-overlay.open', { state: 'hidden', timeout: 5000 });
     
     // Reload page
