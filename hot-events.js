@@ -146,6 +146,41 @@ Generate the situation and 3 choices. Present tense. Second person. Junior gothi
 }
 
 // ══════════════════════════════════════════════════════════
+//  FALLBACK EVENT GENERATION
+// ══════════════════════════════════════════════════════════
+function createFallbackEvent(phase) {
+  if (phase === 'house') {
+    return {
+      id: 'fallback_house',
+      text: 'The house awaits your direction. Pell is at his desk.',
+      choices: ['Attend to correspondence.', 'Review the ledger.', 'Walk the dock.'],
+      repChoice: null
+    };
+  } else if (phase === 'routes') {
+    return {
+      id: 'fallback_routes',
+      text: 'The fleet awaits orders. Casso has sent no word yet.',
+      choices: ['Hold the current route.', 'Dispatch a fast messenger.', 'Review the manifest.'],
+      repChoice: null
+    };
+  } else if (phase === 'venture') {
+    return {
+      id: 'fallback_venture',
+      text: 'The horizon offers something. The ledger is not yet sure what to call it.',
+      choices: ['Press on.', 'Consolidate.', 'Turn back.'],
+      repChoice: null
+    };
+  }
+  // Default fallback
+  return {
+    id: 'fallback_generic',
+    text: 'The ledger waits. The sea does not.',
+    choices: ['Consider your options.', 'Consult the archive.', 'Wait for clearer signs.'],
+    repChoice: null
+  };
+}
+
+// ══════════════════════════════════════════════════════════
 //  HEIR INFLUENCE — heir personality affects choices
 // ══════════════════════════════════════════════════════════
 function applyHeirInfluence(choices, eventSeed) {
@@ -247,7 +282,7 @@ async function showHouseEvent() {
   } catch(err) {
     showError(err);
     // Fallback: generate minimal placeholder event
-    gs.currentEvent = { id:'fallback', text:'The house awaits your direction. Pell is at his desk.', choices:['Attend to correspondence.','Review the ledger.','Walk the dock.'], repChoice:null };
+    gs.currentEvent = createFallbackEvent('house');
     document.getElementById('event-text').textContent = gs.currentEvent.text;
     renderChoices('choices-container', gs.currentEvent.choices, false);
     showPanel('panel-event');
@@ -270,7 +305,7 @@ async function showRoutesEvent() {
     window.scrollTo({ top:0, behavior:'smooth' });
   } catch(err) {
     showError(err);
-    gs.currentEvent = { id:'fallback', text:'The fleet awaits orders. Casso has sent no word yet.', choices:['Hold the current route.','Dispatch a fast messenger.','Review the manifest.'], repChoice:null };
+    gs.currentEvent = createFallbackEvent('routes');
     document.getElementById('event-text').textContent = gs.currentEvent.text;
     renderChoices('choices-container', gs.currentEvent.choices, false);
     showPanel('panel-event');
@@ -346,7 +381,7 @@ SPECIAL INSTRUCTIONS FOR VENTURES:
     window.scrollTo({ top:0, behavior:'smooth' });
   } catch(err) {
     showError(err);
-    gs.currentEvent = { id:'v_fallback', text:'The horizon offers something. The ledger is not yet sure what to call it.', choices:['Press on.','Consolidate.','Turn back.'], repChoice:null };
+    gs.currentEvent = createFallbackEvent('venture');
     document.getElementById('venture-text').textContent = gs.currentEvent.text;
     renderChoices('venture-choices', gs.currentEvent.choices, true);
     showPanel('panel-venture');
