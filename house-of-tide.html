@@ -11,6 +11,7 @@
 
 <!-- ══ BACKGROUND IMAGE ═══════════════════════════════════ -->
 <div id="bg-image" aria-hidden="true"></div>
+<div id="bg-tint" aria-hidden="true"></div>
 
 <!-- ══ TITLE ══════════════════════════════════════════════ -->
 <div id="screen-title" class="screen active">
@@ -431,6 +432,45 @@
         placeholder="https://example.com/background.jpg"
         style="margin-top:.5rem;display:none;" onchange="saveCustomBg()">
       <div class="settings-hint">Choose dynamic backgrounds that reflect your house's state, or set a custom image URL.</div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-label">Visual Appearance</div>
+      
+      <div style="margin-top:.6rem;">
+        <div style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:.3rem;">Background Opacity: <span id="bg-opacity-val">15</span>%</div>
+        <input type="range" class="settings-range" id="s-bg-opacity" min="0" max="40" value="15" oninput="updateAppearanceSettings()">
+      </div>
+      
+      <div style="margin-top:.6rem;">
+        <div style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:.3rem;">Background Grayscale: <span id="bg-grayscale-val">100</span>%</div>
+        <input type="range" class="settings-range" id="s-bg-grayscale" min="0" max="100" value="100" oninput="updateAppearanceSettings()">
+      </div>
+      
+      <div style="margin-top:.6rem;">
+        <div style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:.3rem;">Overlay Darkness: <span id="overlay-opacity-val">95</span>%</div>
+        <input type="range" class="settings-range" id="s-overlay-opacity" min="70" max="100" value="95" oninput="updateAppearanceSettings()">
+      </div>
+      
+      <div style="margin-top:.6rem;">
+        <div style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:.3rem;">Background Tint Color</div>
+        <div style="display:flex;align-items:center;gap:.5rem;">
+          <input type="color" id="s-bg-tint-color" value="#090705" style="width:40px;height:30px;border:none;cursor:pointer;" onchange="updateAppearanceSettings()">
+          <input type="range" id="s-bg-tint-opacity" min="0" max="100" value="0" style="flex:1;" oninput="updateAppearanceSettings()">
+          <span style="font-size:.72rem;color:#7a6840;">Intensity: <span id="tint-opacity-val">0</span>%</span>
+        </div>
+      </div>
+      
+      <div style="margin-top:.6rem;">
+        <div style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:.3rem;">Text Brightness</div>
+        <input type="range" class="settings-range" id="s-text-brightness" min="50" max="100" value="100" oninput="updateAppearanceSettings()">
+        <div style="font-family:'IM Fell English',serif;font-size:.72rem;color:#7a6840;margin-top:.2rem;">Adjust text color from dim to bright</div>
+      </div>
+      
+      <div style="margin-top:.8rem;display:flex;gap:.5rem;">
+        <button class="settings-btn-small" onclick="resetAppearanceSettings()">Reset to Defaults</button>
+      </div>
+      <div class="settings-hint" style="margin-top:.5rem;">All settings are saved automatically and persist between sessions.</div>
     </div>
 
     <div class="settings-section">

@@ -155,6 +155,21 @@ function openSettings() {
   document.getElementById('s-openai-model').value = CFG.openaiModel;
   document.getElementById('s-openai-key').value   = CFG.openaiApiKey;
   document.getElementById('s-debug').checked     = CFG.debugMode;
+  
+  // Appearance settings
+  document.getElementById('s-bg-opacity').value = appearance.bgOpacity;
+  document.getElementById('s-bg-grayscale').value = appearance.bgGrayscale;
+  document.getElementById('s-overlay-opacity').value = appearance.overlayOpacity;
+  document.getElementById('s-bg-tint-color').value = appearance.tintColor;
+  document.getElementById('s-bg-tint-opacity').value = appearance.tintOpacity;
+  document.getElementById('s-text-brightness').value = appearance.textBrightness;
+  
+  // Update value displays
+  document.getElementById('bg-opacity-val').textContent = appearance.bgOpacity;
+  document.getElementById('bg-grayscale-val').textContent = appearance.bgGrayscale;
+  document.getElementById('overlay-opacity-val').textContent = appearance.overlayOpacity;
+  document.getElementById('tint-opacity-val').textContent = appearance.tintOpacity;
+  
   settingsBackendChange();
   updateMlxLaunchCmd();
   ov.classList.add('open');
@@ -262,9 +277,121 @@ function saveMlxSettings() {
 function updateMlxLaunchCmd() {
   const cmdEl = document.getElementById('mlx-launch-cmd');
   if (!cmdEl) return;
-  
+
   const model = CFG.mlxModel || 'mlx-community/Qwen2.5-3B-Instruct-4bit';
   const token = CFG.mlxHfToken ? `HF_TOKEN=${CFG.mlxHfToken} ` : '';
-  
+
   cmdEl.textContent = `${token}mlx-openai-server launch --model-path ${model} --model-type lm`;
 }
+
+// ══════════════════════════════════════════════════════════
+//  APPEARANCE SETTINGS
+// ══════════════════════════════════════════════════════════
+const APPEARANCE_KEY = 'hot_appearance';
+const APPEARANCE_DEFAULTS = {
+  bgOpacity: 15,         // 0-40%
+  bgGrayscale: 100,      // 0-100%
+  overlayOpacity: 95,    // 70-100%
+  tintColor: '#090705',  // hex color
+  tintOpacity: 0,        // 0-100%
+  textBrightness: 100    // 50-100%
+};
+let appearance = { ...APPEARANCE_DEFAULTS };
+
+function loadAppearance() {
+  try {
+    const saved = localStorage.getItem(APPEARANCE_KEY);
+    if (saved) appearance = { ...APPEARANCE_DEFAULTS, ...JSON.parse(saved) };
+  } catch(_) {}
+  applyAppearanceSettings();
+}
+
+function saveAppearance() {
+  try { localStorage.setItem(APPEARANCE_KEY, JSON.stringify(appearance)); } catch(_) {}
+}
+
+function applyAppearanceSettings() {
+  const root = document.documentElement;
+  if (!root) return;
+  
+  // Background image filter
+  root.style.setProperty('--bg-opacity', appearance.bgOpacity / 100);
+  root.style.setProperty('--bg-grayscale', appearance.bgGrayscale + '%');
+  
+  // Content overlay
+  root.style.setProperty('--overlay-opacity', appearance.overlayOpacity / 100);
+  
+  // Background tint
+  const tintAlpha = appearance.tintOpacity / 100;
+  root.style.setProperty('--bg-tint-color', hexToRgba(appearance.tintColor, tintAlpha));
+  
+  // Text brightness
+  const brightness = appearance.textBrightness / 100;
+  const baseColor = { r: 245, g: 240, b: 224 }; // #f5f0e0
+  const dimColor = { r: 160, g: 136, b: 72 };  // #a08848
+  const r = Math.round(dimColor.r + (baseColor.r - dimColor.r) * brightness);
+  const g = Math.round(dimColor.g + (baseColor.g - dimColor.g) * brightness);
+  const b = Math.round(dimColor.b + (baseColor.b - dimColor.b) * brightness);
+  root.style.setProperty('--text-color', `rgb(${r},${g},${b})`);
+  
+  // Text shadow intensity
+  const shadowIntensity = 0.5 + (brightness * 0.5);
+  root.style.setProperty('--text-shadow', shadowIntensity);
+}
+
+function updateAppearanceSettings() {
+  const bgOpacity = document.getElementById('s-bg-opacity');
+  const bgGrayscale = document.getElementById('s-bg-grayscale');
+  const overlayOpacity = document.getElementById('s-overlay-opacity');
+  const tintColor = document.getElementById('s-bg-tint-color');
+  const tintOpacity = document.getElementById('s-bg-tint-opacity');
+  const textBrightness = document.getElementById('s-text-brightness');
+  
+  if (!bgOpacity || !bgGrayscale || !overlayOpacity || !tintColor || !tintOpacity || !textBrightness) return;
+  
+  appearance.bgOpacity = parseInt(bgOpacity.value);
+  appearance.bgGrayscale = parseInt(bgGrayscale.value);
+  appearance.overlayOpacity = parseInt(overlayOpacity.value);
+  appearance.tintColor = tintColor.value;
+  appearance.tintOpacity = parseInt(tintOpacity.value);
+  appearance.textBrightness = parseInt(textBrightness.value);
+  
+  // Update value displays
+  document.getElementById('bg-opacity-val').textContent = appearance.bgOpacity;
+  document.getElementById('bg-grayscale-val').textContent = appearance.bgGrayscale;
+  document.getElementById('overlay-opacity-val').textContent = appearance.overlayOpacity;
+  document.getElementById('tint-opacity-val').textContent = appearance.tintOpacity;
+  
+  applyAppearanceSettings();
+  saveAppearance();
+}
+
+function resetAppearanceSettings() {
+  appearance = { ...APPEARANCE_DEFAULTS };
+  
+  document.getElementById('s-bg-opacity').value = APPEARANCE_DEFAULTS.bgOpacity;
+  document.getElementById('s-bg-grayscale').value = APPEARANCE_DEFAULTS.bgGrayscale;
+  document.getElementById('s-overlay-opacity').value = APPEARANCE_DEFAULTS.overlayOpacity;
+  document.getElementById('s-bg-tint-color').value = APPEARANCE_DEFAULTS.tintColor;
+  document.getElementById('s-bg-tint-opacity').value = APPEARANCE_DEFAULTS.tintOpacity;
+  document.getElementById('s-text-brightness').value = APPEARANCE_DEFAULTS.textBrightness;
+  
+  document.getElementById('bg-opacity-val').textContent = APPEARANCE_DEFAULTS.bgOpacity;
+  document.getElementById('bg-grayscale-val').textContent = APPEARANCE_DEFAULTS.bgGrayscale;
+  document.getElementById('overlay-opacity-val').textContent = APPEARANCE_DEFAULTS.overlayOpacity;
+  document.getElementById('tint-opacity-val').textContent = APPEARANCE_DEFAULTS.tintOpacity;
+  
+  applyAppearanceSettings();
+  saveAppearance();
+  showNotification('Appearance settings reset to defaults');
+}
+
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+// Load appearance settings on page load
+document.addEventListener('DOMContentLoaded', loadAppearance);
