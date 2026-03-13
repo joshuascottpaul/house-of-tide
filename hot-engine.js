@@ -26,8 +26,13 @@ function updateBackground() {
   else                   keyword = 'port,dock,fishing,boats,renaissance';
 
   // LoremFlickr — free, no API key required, supports keywords
-  // Use lock=keyword to get same image for same game state, timestamp to bust cache
-  const url = `https://loremflickr.com/1600/900/${encodeURIComponent(keyword)}?lock=${keyword}&t=${Date.now()}`;
+  // Random image on each game start, then same image for same game state
+  let randomSeed = sessionStorage.getItem('bg_seed');
+  if (!randomSeed) {
+    randomSeed = Math.random().toString(36).substr(2, 9);
+    sessionStorage.setItem('bg_seed', randomSeed);
+  }
+  const url = `https://loremflickr.com/1600/900/${encodeURIComponent(keyword)}?lock=${keyword}${randomSeed}`;
   el.style.backgroundImage = `url(${url})`;
 }
 
