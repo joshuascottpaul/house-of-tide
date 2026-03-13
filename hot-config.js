@@ -212,3 +212,29 @@ function saveSettings() {
   document.getElementById('debug-toggle').style.display = CFG.debugMode ? 'block' : 'none';
   closeSettings();
 }
+
+// ══════════════════════════════════════════════════════════
+//  BACKGROUND SETTINGS
+// ══════════════════════════════════════════════════════════
+function backgroundSelectChange() {
+  const select = document.getElementById('s-bg-select');
+  const customInput = document.getElementById('s-bg-custom');
+  if (!select || !customInput) return;
+  
+  if (select.value === 'custom') {
+    customInput.style.display = 'block';
+    customInput.value = localStorage.getItem('hot_custom_bg') || '';
+  } else {
+    customInput.style.display = 'none';
+    setCustomBackground('');
+  }
+}
+
+function saveCustomBg() {
+  const select = document.getElementById('s-bg-select');
+  const customInput = document.getElementById('s-bg-custom');
+  if (!customInput) return;
+  
+  const url = customInput.value.trim();
+  setCustomBackground(url || null);
+}

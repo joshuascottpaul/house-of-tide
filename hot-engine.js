@@ -5,6 +5,13 @@ function updateBackground() {
   const el = document.getElementById('bg-image');
   if (!el) return;
 
+  // Check for custom background preference
+  const customBg = localStorage.getItem('hot_custom_bg');
+  if (customBg && customBg !== 'dynamic') {
+    el.style.backgroundImage = `url(${customBg})`;
+    return;
+  }
+
   // Build a context-appropriate search keyword
   const rep = gs.reputation || 5;
   const marks = gs.marks || 0;
@@ -21,6 +28,15 @@ function updateBackground() {
   // LoremFlickr — free, no API key required, supports keywords
   const url = `https://loremflickr.com/1600/900/${encodeURIComponent(keyword)}?lock=${gs.turn}`;
   el.style.backgroundImage = `url(${url})`;
+}
+
+function setCustomBackground(url) {
+  if (!url) {
+    localStorage.removeItem('hot_custom_bg');
+  } else {
+    localStorage.setItem('hot_custom_bg', url);
+  }
+  updateBackground();
 }
 
 // ══════════════════════════════════════════════════════════

@@ -403,6 +403,18 @@
     </div>
 
     <div class="settings-section">
+      <div class="settings-label">Background Image</div>
+      <select class="settings-select" id="s-bg-select" onchange="backgroundSelectChange()">
+        <option value="dynamic">Dynamic (changes with game state)</option>
+        <option value="custom">Custom URL…</option>
+      </select>
+      <input type="text" class="settings-input" id="s-bg-custom"
+        placeholder="https://example.com/background.jpg"
+        style="margin-top:.5rem;display:none;" onchange="saveCustomBg()">
+      <div class="settings-hint">Choose dynamic backgrounds that reflect your house's state, or set a custom image URL.</div>
+    </div>
+
+    <div class="settings-section">
       <div class="settings-label">Debug Log</div>
       <label class="settings-radio">
         <input type="checkbox" id="s-debug">
