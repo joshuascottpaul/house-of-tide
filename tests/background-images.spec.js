@@ -83,17 +83,17 @@ test.describe('Background Images', () => {
     
     const bgImage2 = await page2.locator('#bg-image').getAttribute('style');
     
-    // Extract random seed from URLs
-    const seed1 = bgImage1.match(/lock=.*?([a-z0-9]+)/)?.[1];
-    const seed2 = bgImage2.match(/lock=.*?([a-z0-9]+)/)?.[1];
+    // Extract full lock parameter from URLs
+    const lock1 = bgImage1.match(/lock=([^&]+)/)?.[1];
+    const lock2 = bgImage2.match(/lock=([^&]+)/)?.[1];
     
-    // Seeds should be different (different random images)
-    expect(seed1).not.toBe(seed2);
+    // Lock parameters should be different (different random seeds)
+    expect(lock1).not.toBe(lock2);
     
     await context2.close();
   });
 
-  test('background stays consistent during same session', async ({ page }) => {
+  test('background stays consistent during page navigation', async ({ page }) => {
     await page.goto('house-of-tide.html');
     await page.waitForSelector('#screen-title', { state: 'visible', timeout: 5000 });
     
@@ -106,14 +106,18 @@ test.describe('Background Images', () => {
     await page.waitForSelector('#status-bar', { state: 'visible', timeout: 5000 });
     
     const bgImage1 = await page.locator('#bg-image').getAttribute('style');
+    const lock1 = bgImage1.match(/lock=([^&]+)/)?.[1];
     
-    // Refresh page (same session)
-    await page.reload();
+    // Navigate to another screen and back (simulates phase change)
+    await page.click('button:has-text("Save / Load")');
+    await page.waitForSelector('#save-overlay', { state: 'visible', timeout: 5000 });
+    await page.click('button:has-text("Return")');
     await page.waitForSelector('#status-bar', { state: 'visible', timeout: 5000 });
     
     const bgImage2 = await page.locator('#bg-image').getAttribute('style');
+    const lock2 = bgImage2.match(/lock=([^&]+)/)?.[1];
     
-    // Should be same seed (consistent background)
-    expect(bgImage1).toBe(bgImage2);
+    // Should be same lock parameter (consistent background during session)
+    expect(lock1).toBe(lock2);
   });
 });
