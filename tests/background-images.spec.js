@@ -5,6 +5,7 @@ const { test, expect } = require('@playwright/test');
  * BACKGROUND IMAGE TESTS
  * 
  * Tests that background images change correctly
+ * Works for both file:// and https:// protocols
  */
 
 test.describe('Background Images', () => {
@@ -83,12 +84,12 @@ test.describe('Background Images', () => {
     
     const bgImage2 = await page2.locator('#bg-image').getAttribute('style');
     
-    // Extract full lock parameter from URLs
-    const lock1 = bgImage1.match(/lock=([^&]+)/)?.[1];
-    const lock2 = bgImage2.match(/lock=([^&]+)/)?.[1];
+    // Extract random parameter from URLs
+    const random1 = bgImage1.match(/random=([^&]+)/)?.[1];
+    const random2 = bgImage2.match(/random=([^&]+)/)?.[1];
     
-    // Lock parameters should be different (different random seeds)
-    expect(lock1).not.toBe(lock2);
+    // Random parameters should be different (different random seeds)
+    expect(random1).not.toBe(random2);
     
     await context2.close();
   });
@@ -106,7 +107,7 @@ test.describe('Background Images', () => {
     await page.waitForSelector('#status-bar', { state: 'visible', timeout: 5000 });
     
     const bgImage1 = await page.locator('#bg-image').getAttribute('style');
-    const lock1 = bgImage1.match(/lock=([^&]+)/)?.[1];
+    const lock1 = bgImage1.match(/random=([^&]+)/)?.[1];
     
     // Navigate to another screen and back (simulates phase change)
     await page.click('button:has-text("Save / Load")');
@@ -115,9 +116,9 @@ test.describe('Background Images', () => {
     await page.waitForSelector('#status-bar', { state: 'visible', timeout: 5000 });
     
     const bgImage2 = await page.locator('#bg-image').getAttribute('style');
-    const lock2 = bgImage2.match(/lock=([^&]+)/)?.[1];
+    const lock2 = bgImage2.match(/random=([^&]+)/)?.[1];
     
-    // Should be same lock parameter (consistent background during session)
+    // Should be same random parameter (consistent background during session)
     expect(lock1).toBe(lock2);
   });
 });
