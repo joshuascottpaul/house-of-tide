@@ -28,7 +28,7 @@ test.describe('Prefetch Status Transitions', () => {
     
     const hasVariables = await page.evaluate(() => {
       return typeof _prefetchStatus !== 'undefined' &&
-             typeof _prefetchResults !== 'undefined';
+             typeof _prefetchOutcomes !== 'undefined';
     });
     
     expect(hasVariables).toBeTruthy();

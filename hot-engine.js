@@ -150,7 +150,7 @@ function beginYear() {
 //  PRE-FETCH CACHE (speeds up Ollama / MLX responses)
 // ══════════════════════════════════════════════════════════
 let _prefetchStatus = {}; // { choiceText: 'pending' | 'complete' | 'failed' }
-let _prefetchResults = {}; // { choiceText: parsedResult }
+let _prefetchOutcomes = {}; // { choiceText: parsedResult }
 
 function _buildChoiceUserMsg(choice, isVenture) {
   const recentHistory = gs.ledger.slice(0, 8)
@@ -216,7 +216,7 @@ function prefetchOutcomes(choices, isVenture) {
   // Clear previous cache and mark all as pending
   _prefetchCache = {};
   _prefetchStatus = {};
-  _prefetchResults = {};
+  _prefetchOutcomes = {};
   
   const allChoices = [...choices];
   if (!isVenture && gs.currentEvent && gs.currentEvent.repChoice) {
@@ -240,7 +240,7 @@ function prefetchOutcomes(choices, isVenture) {
     callLLM(SYSTEM_PROMPT, userMsg, { json:true, temperature:0.88, maxTokens:900 })
       .then(parsed => { 
         _prefetchStatus[c] = 'complete';
-        _prefetchResults[c] = parsed;
+        _prefetchOutcomes[c] = parsed;
         window._prefetchStatus = _prefetchStatus;
         if (typeof renderChoiceStatus === 'function') renderChoiceStatus();
       })
@@ -340,8 +340,8 @@ Respond with JSON only.`;
 
   try {
     // Use pre-fetched result if available (local backends only)
-    const _cached = _prefetchResults[choice];
-    if (_cached) delete _prefetchResults[choice];
+    const _cached = _prefetchOutcomes[choice];
+    if (_cached) delete _prefetchOutcomes[choice];
     const parsed = _cached || await callLLM(SYSTEM_PROMPT, userMsg, {
       json: true, temperature: 0.88, maxTokens: 900
     });
