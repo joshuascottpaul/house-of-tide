@@ -27,12 +27,13 @@ function updateBackground() {
 
   // LoremFlickr — free, no API key required, supports keywords
   // Random image on each game start, then same image for same game state
+  // Exclude cats with ~cats operator
   let randomSeed = sessionStorage.getItem('bg_seed');
   if (!randomSeed) {
     randomSeed = Math.random().toString(36).substr(2, 9);
     sessionStorage.setItem('bg_seed', randomSeed);
   }
-  const url = `https://loremflickr.com/1600/900/${encodeURIComponent(keyword)}?lock=${keyword}${randomSeed}`;
+  const url = `https://loremflickr.com/1600/900/${encodeURIComponent(keyword)}~cats?lock=${keyword}${randomSeed}`;
   el.style.backgroundImage = `url(${url})`;
 }
 
