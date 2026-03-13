@@ -687,41 +687,52 @@ npx playwright show-report
 | **Quick Wins** | 6 | 6 ✅ | 0 |
 | **UI Improvements** | 8 | 3 ✅ | 1 |
 | **Performance** | 3 | 2 ✅ | 0 ❌ |
-| **Gameplay Features** | 4 | 2 ✅ | 2 |
+| **Gameplay Features** | 4 | 3 ✅ | 1 |
 | **Ollama Setup** | 2 | 1 ✅ | 1 |
-| **Tech Debt / Refactoring** | 9 | 0 | 9 |
+| **Tech Debt / Refactoring** | 9 | 4 ✅ | 5 |
 | **Playwright Tests** | 37 | 16 ✅ | 21 |
+| **Test Coverage Gaps** | 26 | 0 | 26 |
 | **Manual Testing** | 10 | 0 | 10 |
 | **Easy Mode (Optional)** | 5 | 0 | 5 |
-| **TOTAL** | 85 | 31 ✅ | **49** (5 deprecated) |
+| **TOTAL** | 111 | 36 ✅ | **70** (5 deprecated) |
 
 ---
 
 ## 🎯 NEXT RECOMMENDED TASKS (In Order)
 
+### 🧪 Test Coverage Gaps — HIGH PRIORITY (2 hours)
+**Rationale:** Core features implemented but untested - risk of regressions
+
+1. [ ] **Reputation Helpers Tests** (30 min) — Test `getRepTier()`, `getRepLabel()`, constants
+2. [ ] **Auto-Save Notification Tests** (30 min) — Verify notification appears
+3. [ ] **Choice Risk Indicator Tests** (45 min) — Test 💰⚠️ icons appear correctly
+4. [ ] **Backend Status Indicator Tests** (30 min) — Test 🟢🔵🟠 badges
+
+**Total: 2 hours | Risk: Low | Impact: High (prevents regressions)**
+
+---
+
 ### 🔴 Tech Debt — HIGH PRIORITY (Fix Before Trading Layer)
 **Rationale:** Makes Trading Layer implementation cleaner, reduces duplication, low risk
 
-1. [ ] **Reputation Tier Helper Function** (30 min) — `getRepTier()` to replace 6+ duplicated ternary chains
-2. [ ] **Reputation Threshold Constants** (30 min) — `REP_THRESHOLDS` object for magic numbers (9, 7, 5, 3)
-3. [ ] **Move getSeason() to hot-data.js** (15 min) — Currently in hot-events.js, used in hot-trading.js
-4. [ ] **Remove Unused _prefetchCache** (20 min) — Legacy variable, _prefetchResults is used instead
-
-**Total: 1.5 hours | Risk: Low | Impact: High**
+5. ~~**Reputation Tier Helper Function**~~ — ✅ DONE
+6. ~~**Reputation Threshold Constants**~~ — ✅ DONE
+7. ~~**Move getSeason() to hot-data.js**~~ — ✅ DONE
+8. ~~**Remove Unused _prefetchCache**~~ — ✅ DONE
 
 ---
 
 ### UI Improvements (1-2 hours each)
-5. ~~**Rival Status Tooltip**~~ — ✅ DONE
-6. [ ] **Keyboard Shortcuts** — `1,2,3` choices, `S` save, `L` load, `P` settings (1-2 hrs)
+9. ~~**Rival Status Tooltip**~~ — ✅ DONE
+10. [ ] **Keyboard Shortcuts** — `1,2,3` choices, `S` save, `L` load, `P` settings (1-2 hrs)
 
 ---
 
 ### Gameplay Features (4-8 hours each)
-7. ~~**Rival Memory System**~~ — ✅ DONE
-8. [ ] **Trading Layer** (Phase 3) — Buy/sell commodities between routes and year-end (6-8 hrs)
-9. ~~**Thread Resolution**~~ — ✅ DONE
-10. [ ] **Heir Influence** — Heir personality affects available choices as they age (4-8 hrs)
+11. ~~**Rival Memory System**~~ — ✅ DONE
+12. ~~**Trading Layer**~~ — ✅ DONE (was already implemented!)
+13. ~~**Thread Resolution**~~ — ✅ DONE
+14. [ ] **Heir Influence** — Heir personality affects available choices as they age (4-8 hrs)
 
 ---
 
@@ -750,6 +761,66 @@ npx playwright show-report
 ### Ollama Setup Improvements
 17. ~~**✅ One-Click Ollama Setup**~~ — Created `/usr/local/bin/ollama-cors` script
 18. [ ] **Ollama Setup Wizard** — In-game detection + instructions if Ollama selected but CORS not set (1 hr)
+
+---
+
+## 🧪 PLAYWRIGHT TEST COVERAGE GAPS
+
+**Current:** 33 passing tests across 9 test files
+
+**Missing Coverage:**
+
+### 🔴 HIGH PRIORITY (Core Features Untested)
+
+1. [ ] **Reputation Helpers** (3 tests, 30 min)
+   - `getRepTier()` returns correct tier for each threshold
+   - `getRepLabel()` returns correct label
+   - `REP_THRESHOLDS` constants are correct values
+
+2. [ ] **Auto-Save Notification** (2 tests, 30 min)
+   - Notification appears after auto-save
+   - Notification shows "✓ Auto-saved" text
+
+3. [ ] **Choice Risk Indicators** (3 tests, 45 min)
+   - 💰 icon appears on choices with cost
+   - ⚠️ icon appears on choices with warning
+   - Icons don't appear on neutral choices
+
+4. [ ] **Backend Status Indicator** (2 tests, 30 min)
+   - 🟢 MLX badge shows when MLX selected
+   - 🔵 OpenAI badge shows when OpenAI selected
+
+### 🟡 MEDIUM PRIORITY (Feature Gaps)
+
+5. [ ] **Rival Memory Auto-Tracking** (4 tests, 1 hr)
+   - Positive keywords increase relationship
+   - Negative keywords decrease relationship
+   - Relationship clamped to -5 to +5
+   - Notes track last 3 interactions
+
+6. [ ] **Year-End Thread Summary** (2 tests, 30 min)
+   - "Threads Resolved This Year" section appears
+   - Resolved threads list shows correct labels
+
+7. [ ] **Trading Layer Full Flow** (5 tests, 1.5 hrs)
+   - Buy cargo reduces marks, increases cargo
+   - Sell cargo increases marks, decreases cargo
+   - Capacity limits enforced
+   - Season modifiers affect prices
+   - Trading panel appears after routes phase
+
+### 🟢 LOW PRIORITY (Edge Cases)
+
+8. [ ] **Prefetch Status Transitions** (2 tests, 30 min)
+   - ⏳ shows while prefetching
+   - ✓ shows after prefetch complete
+
+9. [ ] **getSeason() Location** (1 test, 15 min)
+   - Function exists in hot-data.js (not hot-events.js)
+
+10. [ ] **Fallback Event Generation** (2 tests, 30 min)
+    - `createFallbackEvent()` returns valid event structure
+    - Fallback used when AI fails
 
 ---
 
