@@ -148,6 +148,14 @@ const SITUATION_SEEDS = {
         hint:"The house has information it was not supposed to have. It arrived by accident or through a route that implicates the person who sent it. Using it directly would reveal you have it. Not using it may be the more expensive option." },
       { id:"hs14", type:"alliance_offer",
         hint:"A house or institution is proposing a formal arrangement. The arrangement is reasonable. The thing being asked for in return has not been stated as the thing being asked for; it has been stated as a condition. Pell has read the condition and said nothing." },
+      { id:"hs23", type:"harbour_opportunity",
+        hint:"A berth has become available at the western quay — not the best position, but better than what you have. The harbour master has made it clear that availability is temporary and that others are interested. The price has not been stated as a price." },
+      { id:"hs24", type:"guild_privilege",
+        hint:"The Factors' Guild is offering early access to a contract round — a courtesy extended to houses in good standing. The contracts are visible. The terms are standard. The advantage is being able to see them before others do." },
+      { id:"hs25", type:"family_connection",
+        hint:"A distant relation has made contact — a cousin twice removed, a deceased uncle's widow, someone whose connection to the house is real but attenuated. They have brought something: information, a small inheritance, a claim. The value is unclear." },
+      { id:"hs26", type:"competitor_weakness",
+        hint:"One of the rival houses is showing signs of strain — a captain has left, a contract has failed, a person of importance has stopped attending their dinners. The weakness is visible but not yet exploitable. Acting too soon would reveal your intentions." },
     ],
     high_rep: [
       { id:"hs15", type:"council_seat",
@@ -158,6 +166,8 @@ const SITUATION_SEEDS = {
         hint:"There is an opportunity to build something that will carry the name past the current generation — a patronage, a civic project, a permanent institutional connection. The offer has come because of the name's current standing. The standing is necessary but not sufficient." },
       { id:"hs18", type:"diplomatic_prize",
         hint:"A foreign connection, a significant alliance, or an arrangement that would fundamentally change the house's position has presented itself. It requires something that is not money. You have it. The question is whether spending it here is the correct use." },
+      { id:"hs27", type:"royal_commission",
+        hint:"The council has need of a house with your standing for a matter of civic importance. The commission comes with resources and visibility. It also comes with expectations and scrutiny. Declining is possible but would be remembered." },
     ],
     low_rep: [
       { id:"hs19", type:"creditor_pressure",
@@ -168,6 +178,8 @@ const SITUATION_SEEDS = {
         hint:"An offer has arrived that is better than what the market would produce, which means the party offering it needs something more than the transaction. Identifying what they need before agreeing to anything is the only sensible position." },
       { id:"hs22", type:"internal_crisis",
         hint:"Something in the house is not working. A loyalty question. A competence failure. A person who has been managing a function that you now discover has been managed differently than described. The discovery is recent. The situation is not." },
+      { id:"hs28", type:"reputation_damage",
+        hint:"Word has spread about something — a failed contract, a public embarrassment, a decision that looked one way and proved to be another. The word is not yet at the level of scandal. It is at the level of people adjusting their tone when your name comes up." },
     ],
   },
   routes: {
