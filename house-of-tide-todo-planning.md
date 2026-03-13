@@ -689,40 +689,67 @@ npx playwright show-report
 | **Performance** | 3 | 2 ✅ | 0 ❌ |
 | **Gameplay Features** | 4 | 2 ✅ | 2 |
 | **Ollama Setup** | 2 | 1 ✅ | 1 |
+| **Tech Debt / Refactoring** | 9 | 0 | 9 |
 | **Playwright Tests** | 37 | 16 ✅ | 21 |
 | **Manual Testing** | 10 | 0 | 10 |
 | **Easy Mode (Optional)** | 5 | 0 | 5 |
-| **TOTAL** | 76 | 31 ✅ | **40** (5 deprecated) |
+| **TOTAL** | 85 | 31 ✅ | **49** (5 deprecated) |
 
 ---
 
 ## 🎯 NEXT RECOMMENDED TASKS (In Order)
 
-### Quick Wins (30 min each)
-1. ~~**Loading Indicator for AI Calls**~~ — ✅ DONE
-2. ~~**Backend Status Indicator**~~ — ✅ DONE
-3. ~~**Better Error Messages**~~ — ✅ DONE
-4. ~~**Auto-Save Notification**~~ — ✅ DONE
-5. ~~**Choice Risk Indicators**~~ — ✅ DONE
-6. ~~**Faster Default Model**~~ — ✅ DONE (speed ratings added)
+### 🔴 Tech Debt — HIGH PRIORITY (Fix Before Trading Layer)
+**Rationale:** Makes Trading Layer implementation cleaner, reduces duplication, low risk
+
+1. [ ] **Reputation Tier Helper Function** (30 min) — `getRepTier()` to replace 6+ duplicated ternary chains
+2. [ ] **Reputation Threshold Constants** (30 min) — `REP_THRESHOLDS` object for magic numbers (9, 7, 5, 3)
+3. [ ] **Move getSeason() to hot-data.js** (15 min) — Currently in hot-events.js, used in hot-trading.js
+4. [ ] **Remove Unused _prefetchCache** (20 min) — Legacy variable, _prefetchResults is used instead
+
+**Total: 1.5 hours | Risk: Low | Impact: High**
+
+---
 
 ### UI Improvements (1-2 hours each)
-7. ~~**Rival Status Tooltip**~~ — ✅ DONE
-8. [ ] **Keyboard Shortcuts** — `1,2,3` choices, `S` save, `L` load, `P` settings (1-2 hrs) **← NEXT**
+5. ~~**Rival Status Tooltip**~~ — ✅ DONE
+6. [ ] **Keyboard Shortcuts** — `1,2,3` choices, `S` save, `L` load, `P` settings (1-2 hrs)
 
-### Performance (2-4 hours)
-9. ~~**Prefetch Visual Indicator**~~ — ✅ DONE
-10. ~~**Reduce AI Calls**~~ — ❌ REMOVED (would make game stale - AI should stay fresh!)
+---
 
 ### Gameplay Features (4-8 hours each)
-11. ~~**Rival Memory System**~~ — ✅ DONE
-12. [ ] **Trading Layer** (Phase 3) — Buy/sell commodities between routes and year-end (6-8 hrs)
-13. ~~**Thread Resolution**~~ — ✅ DONE
-14. [ ] **Heir Influence** — Heir personality affects available choices as they age (4-8 hrs)
+7. ~~**Rival Memory System**~~ — ✅ DONE
+8. [ ] **Trading Layer** (Phase 3) — Buy/sell commodities between routes and year-end (6-8 hrs)
+9. ~~**Thread Resolution**~~ — ✅ DONE
+10. [ ] **Heir Influence** — Heir personality affects available choices as they age (4-8 hrs)
+
+---
+
+### 🟡 Tech Debt — MEDIUM PRIORITY (Before Release)
+**Rationale:** Improves code maintainability, not blocking features
+
+11. [ ] **Add Marks Helper Functions** (2-3 hrs) — `addMarks()`, `spendMarks()` to centralize ledger tracking
+12. [ ] **Consolidate Fallback Events** (30 min) — Single `createFallbackEvent()` function
+13. [ ] **Clarify Prefetch Variable Names** (20 min) — Rename `_prefetchResults` to `_prefetchOutcomes`
+
+**Total: 3-4 hours | Risk: Medium | Impact: Medium**
+
+---
+
+### 🟢 Tech Debt — LOW PRIORITY (Nice to Have)
+**Rationale:** Code cleanliness, not user-facing
+
+14. [ ] **Event ID Constants** (45 min) — Replace `'h01'`, `'r10'` magic strings with named constants
+15. [ ] **Heir Text Formatting Helper** (20 min) — Extract pronoun replacement logic
+16. [ ] **Standardize CSS Naming** (1 hr) — Consistent full-word class names
+
+**Total: 2-2.5 hours | Risk: Low | Impact: Low**
+
+---
 
 ### Ollama Setup Improvements
-15. ~~**✅ One-Click Ollama Setup**~~ — Created `/usr/local/bin/ollama-cors` script
-16. [ ] **Ollama Setup Wizard** — In-game detection + instructions if Ollama selected but CORS not set (1 hr)
+17. ~~**✅ One-Click Ollama Setup**~~ — Created `/usr/local/bin/ollama-cors` script
+18. [ ] **Ollama Setup Wizard** — In-game detection + instructions if Ollama selected but CORS not set (1 hr)
 
 ---
 
