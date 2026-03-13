@@ -3,6 +3,40 @@
 // ══════════════════════════════════════════════════════════
 const TEST_MODEL = 'qwen3.5:4b'; // change this if you change the model name
 
+// ══════════════════════════════════════════════════════════
+//  REPUTATION THRESHOLDS & HELPERS
+// ══════════════════════════════════════════════════════════
+const REP_THRESHOLDS = {
+  LEGENDARY: 9,
+  RENOWNED: 7,
+  ESTABLISHED: 5,
+  PRECARIOUS: 3,
+};
+
+function getRepTier(rep) {
+  return rep >= REP_THRESHOLDS.LEGENDARY ? 'Legendary'
+    : rep >= REP_THRESHOLDS.RENOWNED ? 'Renowned'
+    : rep >= REP_THRESHOLDS.ESTABLISHED ? 'Established'
+    : rep >= REP_THRESHOLDS.PRECARIOUS ? 'Precarious'
+    : 'Disgraced';
+}
+
+function getRepLabel(rep) {
+  return rep >= REP_THRESHOLDS.LEGENDARY ? 'the name sets the terms'
+    : rep >= REP_THRESHOLDS.RENOWNED ? 'favourable terms'
+    : rep >= REP_THRESHOLDS.ESTABLISHED ? 'standard terms'
+    : rep >= REP_THRESHOLDS.PRECARIOUS ? 'reduced terms'
+    : 'hostile terms';
+}
+
+// ══════════════════════════════════════════════════════════
+//  SEASON HELPER
+// ══════════════════════════════════════════════════════════
+function getSeason(turn) {
+  // 4-season cycle: Spring→Summer→Autumn→Winter repeating
+  return ['Spring','Summer','Autumn','Winter'][((turn - 1) % 4)];
+}
+
 const EPIGRAMS = [
   { t:"The sea keeps better records than any notary. It simply does not share them.", a:"— The Ledger" },
   { t:"A merchant who does not count his enemies has not been counting long enough.", a:"— Harbourmaster Pell, Verantia" },

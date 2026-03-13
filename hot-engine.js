@@ -114,10 +114,10 @@ function beginYear() {
   // Gross trade income minus upkeep. Net is modest by design —
   // events are the primary economy. Passive trickle should not
   // make bankruptcy impossible.
-  const repMod = gs.reputation >= 9 ? 1.65
-              : gs.reputation >= 7 ? 1.3
-              : gs.reputation >= 5 ? 1.0
-              : gs.reputation >= 3 ? 0.65
+  const repMod = gs.reputation >= REP_THRESHOLDS.LEGENDARY ? 1.65
+              : gs.reputation >= REP_THRESHOLDS.RENOWNED ? 1.3
+              : gs.reputation >= REP_THRESHOLDS.ESTABLISHED ? 1.0
+              : gs.reputation >= REP_THRESHOLDS.PRECARIOUS ? 0.65
               : 0.40;
   const variance = 0.85 + Math.random() * 0.3;  // ±15%
   const baseRate = 85;   // gross per ship per year
@@ -149,7 +149,6 @@ function beginYear() {
 // ══════════════════════════════════════════════════════════
 //  PRE-FETCH CACHE (speeds up Ollama / MLX responses)
 // ══════════════════════════════════════════════════════════
-let _prefetchCache = {};
 let _prefetchStatus = {}; // { choiceText: 'pending' | 'complete' | 'failed' }
 let _prefetchResults = {}; // { choiceText: parsedResult }
 
@@ -548,7 +547,7 @@ async function askAdvisor() {
   const situationMsg =
 `CURRENT STATE:
 House ${gs.dynastyName} | ${gs.founderName}, age ${gs.age}, Year ${gs.turn}
-Treasury: ${gs.marks} marks | Reputation: ${gs.reputation}/10 (${gs.reputation >= 9 ? 'Legendary' : gs.reputation >= 7 ? 'Renowned' : gs.reputation >= 5 ? 'Established' : gs.reputation >= 3 ? 'Precarious' : 'Disgraced'})
+Treasury: ${gs.marks} marks | Reputation: ${gs.reputation}/10 (${getRepTier(gs.reputation)})
 Ships: ${gs.ships} | Heir: ${gs.heirName}, ${gs.heirAge}, ${gs.heirTrait ? gs.heirTrait.label : 'unknown'} (${gs.hp.sub}/${gs.hp.pos})
 Phase: ${gs.phase === 'house' ? 'The House' : gs.phase === 'routes' ? 'The Routes' : 'Year End'}
 

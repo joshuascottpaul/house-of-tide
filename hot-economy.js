@@ -4,8 +4,8 @@
 
 function rollShipMarket() {
   const roll = Math.random();
-  const repBonus = gs.reputation >= 7 ? 0.06 : 0;
-  const legSellBonus = gs.reputation >= 9 ? 1.18 : 1.0; // name commands a premium
+  const repBonus = gs.reputation >= REP_THRESHOLDS.RENOWNED ? 0.06 : 0;
+  const legSellBonus = gs.reputation >= REP_THRESHOLDS.LEGENDARY ? 1.18 : 1.0;
   let demand, buyPrice, sellPrice, demandLabel;
   if (roll < 0.20) {
     demand = 'boom';
@@ -64,7 +64,7 @@ function sellShip(confirmed) {
 // ══════════════════════════════════════════════════════════
 
 function getBankRate() {
-  const legBonus = gs.reputation >= 9 ? 0.03 : 0; // Legendary: Exchange wants the business
+  const legBonus = gs.reputation >= REP_THRESHOLDS.LEGENDARY ? 0.03 : 0;
   return Math.max(0.07, 0.15 - Math.min(gs.creditScore||0, 3)*0.02 - legBonus);
 }
 
@@ -203,11 +203,11 @@ function showYearEndFinance() {
 
   // Bank section
   if (!gs.bankLoan) {
-    if (gs.reputation >= 5) {
+    if (gs.reputation >= REP_THRESHOLDS.ESTABLISHED) {
       const rate = getBankRate();
       const rateStr = Math.round(rate*100)+'%';
-      const maxAmt  = gs.reputation >= 9 ? 2000 : (gs.creditScore||0) >= 2 ? 1400 : 1000;
-      const creditLabel = gs.reputation >= 9 ? `Legendary standing — ${rateStr} per annum (Exchange extended terms)`
+      const maxAmt  = gs.reputation >= REP_THRESHOLDS.LEGENDARY ? 2000 : (gs.creditScore||0) >= 2 ? 1400 : 1000;
+      const creditLabel = gs.reputation >= REP_THRESHOLDS.LEGENDARY ? `Legendary standing — ${rateStr} per annum (Exchange extended terms)`
         : (gs.creditScore||0) >= 2 ? `Good standing — ${rateStr} per annum` : `Standard — ${rateStr} per annum`;
       html += `<p class="finance-note">The Merchant Exchange extends credit at ${rateStr} per annum. Clean, documented, recoverable — provided the schedule is honoured within four years.</p>
         <div class="finance-prices">${creditLabel}</div>

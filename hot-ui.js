@@ -232,10 +232,11 @@ function updateStatusBar() {
   rp.className   = 'stat-val' + (gs.reputation <= 2 ? ' danger' : '');
 
   const tier = document.getElementById('stat-rep-tier');
-  if      (gs.reputation >= 9) { tier.textContent='Legendary';   tier.className='rep-tier leg'; }
-  else if (gs.reputation >= 7) { tier.textContent='Renowned';    tier.className='rep-tier hi'; }
-  else if (gs.reputation >= 5) { tier.textContent='Established'; tier.className='rep-tier mid'; }
-  else if (gs.reputation >= 3) { tier.textContent='Precarious';  tier.className='rep-tier lo'; }
+  const repTier = getRepTier(gs.reputation);
+  if      (gs.reputation >= REP_THRESHOLDS.LEGENDARY) { tier.textContent='Legendary';   tier.className='rep-tier leg'; }
+  else if (gs.reputation >= REP_THRESHOLDS.RENOWNED)  { tier.textContent='Renowned';    tier.className='rep-tier hi'; }
+  else if (gs.reputation >= REP_THRESHOLDS.ESTABLISHED) { tier.textContent='Established'; tier.className='rep-tier mid'; }
+  else if (gs.reputation >= REP_THRESHOLDS.PRECARIOUS) { tier.textContent='Precarious';  tier.className='rep-tier lo'; }
   else                          { tier.textContent='Disgraced';   tier.className='rep-tier lo'; }
 
   const ph = document.getElementById('stat-phase');

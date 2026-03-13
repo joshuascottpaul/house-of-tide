@@ -73,10 +73,7 @@ async function generateEvent(phase) {
     ? activeThreads.map(t => `— ${t.label} (Year ${t.year})`).join('\n')
     : 'None.';
 
-  const repLabel = gs.reputation >= 9 ? 'Legendary'
-    : gs.reputation >= 7 ? 'Renowned'
-    : gs.reputation >= 5 ? 'Established'
-    : gs.reputation >= 3 ? 'Precarious' : 'Disgraced';
+  const repLabel = getRepTier(gs.reputation);
 
   const hasDebt = !!(gs.bankLoan || gs.shadowLoan);
   const debtCtx = hasDebt
@@ -139,7 +136,7 @@ Generate the situation and 3 choices. Present tense. Second person. Junior gothi
     id: seed.id,
     text: situation,
     choices,
-    repChoice: (gs.reputation >= 9 && parsed.repChoice && parsed.repChoice.trim()) ? parsed.repChoice.trim() : null,
+    repChoice: (gs.reputation >= REP_THRESHOLDS.LEGENDARY && parsed.repChoice && parsed.repChoice.trim()) ? parsed.repChoice.trim() : null,
     thread_hint: parsed.thread_hint || null,
     _generated: true,
   };
@@ -265,7 +262,7 @@ SPECIAL INSTRUCTIONS FOR VENTURES:
     choices = choices.slice(0, 3);
 
     const ev = { id: seed.id, text: situation, choices,
-      repChoice: (gs.reputation >= 9 && parsed.repChoice) ? parsed.repChoice : null,
+      repChoice: (gs.reputation >= REP_THRESHOLDS.LEGENDARY && parsed.repChoice) ? parsed.repChoice : null,
       _generated: true };
     gs.currentEvent = ev;
 
@@ -310,11 +307,7 @@ function showYearEnd() {
   // ── Fix E: year-end settlement display ──
   const settleEl = document.getElementById('ye-settlement');
   if (gs._yearIncome !== undefined) {
-    const repLabel = gs.reputation >= 9 ? 'the name sets the terms'
-      : gs.reputation >= 7 ? 'favourable terms'
-      : gs.reputation >= 5 ? 'standard terms'
-      : gs.reputation >= 3 ? 'reduced terms — the name opens fewer doors'
-      : 'hostile terms — the name is a liability';
+    const repLabel = getRepLabel(gs.reputation);
     const shipWord = gs.ships === 1 ? 'vessel' : 'ships';
     const net = gs._yearIncome || 0;
     const netStr = net >= 0 ? `+${net} mk net` : `${net} mk net`;
