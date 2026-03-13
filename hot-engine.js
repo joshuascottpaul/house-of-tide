@@ -33,7 +33,9 @@ function updateBackground() {
     randomSeed = Math.random().toString(36).substr(2, 9);
     sessionStorage.setItem('bg_seed', randomSeed);
   }
-  const url = `https://loremflickr.com/1600/900/${encodeURIComponent(keyword)}~cats?lock=${keyword}${randomSeed}`;
+  // Add version cache-buster to force new image on app update
+  const version = typeof APP_VERSION !== 'undefined' ? APP_VERSION : 'v1';
+  const url = `https://loremflickr.com/1600/900/${encodeURIComponent(keyword)}~cats?lock=${keyword}${randomSeed}&v=${version}`;
   el.style.backgroundImage = `url(${url})`;
 }
 
