@@ -2,11 +2,13 @@
 //  UNIFIED LLM CALLER
 // ══════════════════════════════════════════════════════════
 async function callLLM(systemPrompt, userMsg, opts = {}) {
-  // opts: { json: bool, temperature: float, maxTokens: int, noThink: bool }
+  // opts: { json: bool, temperature: float, maxTokens: int, noThink: bool, stream: bool, onChunk: function }
   const isJson    = opts.json    !== false;
   const temp      = opts.temperature ?? 0.88;
   const maxTok    = opts.maxTokens   ?? 900;
   const noThink   = opts.noThink     !== false;
+  const stream    = opts.stream      && !isJson; // Can't stream JSON parsing easily
+  const onChunk   = opts.onChunk     || null;
   const msgText   = noThink ? userMsg + ' /no_think' : userMsg;
 
   let raw = '';
@@ -52,29 +54,80 @@ async function callLLM(systemPrompt, userMsg, opts = {}) {
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user',   content: msgText }
-      ]
+      ],
+      stream: stream // Enable streaming for OpenAI
     };
     if (isJson) {
       body.response_format = { type: 'json_object' };
     }
 
-    const resp = await fetch('https://api.openai.com/v1/chat/completions', {
-      method:  'POST',
-      headers: {
-        'Content-Type':  'application/json',
-        'Authorization': `Bearer ${CFG.openaiApiKey}`
-      },
-      body: JSON.stringify(body)
-    });
+    if (stream) {
+      // Streaming response
+      const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+        method:  'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${CFG.openaiApiKey}`
+        },
+        body: JSON.stringify(body)
+      });
 
-    if (!resp.ok) {
-      const errBody = await resp.json().catch(() => ({}));
-      const detail  = errBody?.error?.message || resp.statusText;
-      throw new Error(`OpenAI API ${resp.status}: ${detail}`);
+      if (!resp.ok) {
+        const errBody = await resp.json().catch(() => ({}));
+        const detail  = errBody?.error?.message || resp.statusText;
+        throw new Error(`OpenAI API ${resp.status}: ${detail}`);
+      }
+
+      // Read streaming response
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      raw = '';
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6);
+            if (data === '[DONE]') continue;
+            
+            try {
+              const parsed = JSON.parse(data);
+              const content = parsed.choices?.[0]?.delta?.content || '';
+              if (content) {
+                raw += content;
+                if (onChunk) onChunk(raw);
+              }
+            } catch (e) {
+              // Skip invalid JSON chunks
+            }
+          }
+        }
+      }
+    } else {
+      // Non-streaming response
+      const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+        method:  'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${CFG.openaiApiKey}`
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!resp.ok) {
+        const errBody = await resp.json().catch(() => ({}));
+        const detail  = errBody?.error?.message || resp.statusText;
+        throw new Error(`OpenAI API ${resp.status}: ${detail}`);
+      }
+
+      const data = await resp.json();
+      raw = data.choices?.[0]?.message?.content || '';
     }
-
-    const data = await resp.json();
-    raw = data.choices?.[0]?.message?.content || '';
 
   } else if (CFG.backend === 'claude') {
     // ── Claude API ─────────────────────────────────────────

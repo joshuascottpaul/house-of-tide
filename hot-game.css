@@ -208,6 +208,22 @@ input[type=text]:focus { border-bottom-color:var(--rust); }
 #loading-panel { display:none; text-align:center; padding:4rem 2rem; }
 .loading-msg { font-style:italic; color:#a08858; font-size:1.05rem; letter-spacing:.02em; }
 
+/* Streaming indicator */
+.streaming-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 1.2em;
+  background: #a08858;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
 /* ── NARRATIVE ── */
 .narrative-block { border-left:2px solid #1e1508; padding-left:1.5rem; margin-bottom:2rem; }
 .narrative-para { font-size:1.1rem; line-height:2; color:#c8a878; margin-bottom:1.1rem; }
