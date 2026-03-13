@@ -589,6 +589,85 @@ showResult = function(parsed, isVenture) {
   autoSave();
 };
 
+// ══════════════════════════════════════════════════════════
+//  KEYBOARD SHORTCUTS
+// ══════════════════════════════════════════════════════════
+document.addEventListener('keydown', (e) => {
+  // Ignore shortcuts if typing in an input
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  
+  // Number keys 1-3: Select choice buttons
+  if (e.key >= '1' && e.key <= '3') {
+    const choices = document.querySelectorAll('.choice-btn');
+    const index = parseInt(e.key) - 1;
+    if (choices[index] && !choices[index].disabled) {
+      choices[index].click();
+      e.preventDefault();
+    }
+  }
+  
+  // S: Save game
+  if (e.key.toLowerCase() === 's' && !e.ctrlKey && !e.metaKey) {
+    const saveBtn = document.querySelector('button[onclick="openSaveOverlay()"]');
+    if (saveBtn) {
+      saveBtn.click();
+      e.preventDefault();
+    }
+  }
+  
+  // L: Load game (when save overlay is open)
+  if (e.key.toLowerCase() === 'l') {
+    const saveOverlay = document.getElementById('save-overlay');
+    if (saveOverlay && saveOverlay.classList.contains('open')) {
+      // Click first non-empty save slot
+      const slots = document.querySelectorAll('.save-slot-content');
+      for (const slot of slots) {
+        if (slot && !slot.textContent.includes('Empty')) {
+          slot.click();
+          e.preventDefault();
+          break;
+        }
+      }
+    }
+  }
+  
+  // P: Open settings
+  if (e.key.toLowerCase() === 'p') {
+    const settingsBtn = document.querySelector('button[onclick="openSettings()"]');
+    if (settingsBtn) {
+      settingsBtn.click();
+      e.preventDefault();
+    }
+  }
+  
+  // Enter: Continue/advance (when continue button visible)
+  if (e.key === 'Enter') {
+    const continueBtn = document.querySelector('#continue-btn, #yearend-btn, button:has-text("Continue"), button:has-text("Turn the Page")');
+    if (continueBtn && !continueBtn.disabled) {
+      continueBtn.click();
+      e.preventDefault();
+    }
+  }
+  
+  // Escape: Close overlays
+  if (e.key === 'Escape') {
+    const saveOverlay = document.getElementById('save-overlay');
+    const settingsOverlay = document.getElementById('settings-overlay');
+    const advisorPanel = document.getElementById('advisor-panel');
+    
+    if (saveOverlay && saveOverlay.classList.contains('open')) {
+      closeSaveOverlay();
+      e.preventDefault();
+    } else if (settingsOverlay && settingsOverlay.classList.contains('open')) {
+      closeSettings();
+      e.preventDefault();
+    } else if (advisorPanel && advisorPanel.classList.contains('open')) {
+      toggleAdvisor();
+      e.preventDefault();
+    }
+  }
+});
+
 // ── Init ──────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
   loadCFG();
