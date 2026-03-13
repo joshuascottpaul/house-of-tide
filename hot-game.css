@@ -573,7 +573,7 @@ footer { text-align:center; padding:1.2rem; border-top:1px solid #2a1e0e;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  filter: grayscale(100%) opacity(0.12);
+  filter: grayscale(100%) opacity(0.15);
   pointer-events: none;
   transition: background-image 2s ease;
 }
@@ -581,7 +581,22 @@ body > *:not(#bg-image):not(#settings-overlay):not(#debug-panel) { position: rel
 
 /* ── Content Overlay for Readability ──────────────────── */
 #screen-game, #screen-title, #screen-name, #screen-onboard, #screen-death {
-  background: rgba(9, 7, 5, 0.85);
+  background: rgba(5, 4, 3, 0.95);
+}
+
+/* ── Text Color Contrast ──────────────────────────────── */
+.event-text, .narrative-para {
+  color: #f5f0e0 !important;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+}
+
+.choice-btn {
+  color: #f0e8d8 !important;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+
+#status-bar, .stat-name, .stat-val {
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 
 /* ── RESPONSIVE MOBILE ── */
