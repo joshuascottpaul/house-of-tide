@@ -324,6 +324,7 @@
 <script src="hot-trading.js"></script>
 <script src="hot-events.js"></script>
 <script src="hot-engine.js"></script>
+<script src="hot-sfx.js"></script>
 
 <!-- ══ SETTINGS MODAL ═══════════════════════════════════ -->
 <div id="settings-overlay" onclick="if(event.target===this)closeSettings()">
@@ -412,6 +413,15 @@
         placeholder="https://example.com/background.jpg"
         style="margin-top:.5rem;display:none;" onchange="saveCustomBg()">
       <div class="settings-hint">Choose dynamic backgrounds that reflect your house's state, or set a custom image URL.</div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-label">Sound Effects</div>
+      <label class="settings-radio">
+        <input type="checkbox" id="s-sfx" onchange="toggleSoundEffects()">
+        <span>Enable sound effects</span>
+      </label>
+      <div class="settings-hint">Play subtle sounds for clicks, saves, and notifications.</div>
     </div>
 
     <div class="settings-section">
