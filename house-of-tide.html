@@ -387,11 +387,12 @@
     <div class="settings-section" id="s-mlx-section" style="display:none;">
       <div class="settings-label">MLX Model Path</div>
       <input type="text" class="settings-input" id="s-mlx-model"
-        placeholder="mlx-community/Qwen2.5-3B-Instruct-4bit">
+        placeholder="mlx-community/Qwen2.5-3B-Instruct-4bit" onchange="saveMlxSettings()">
       <div class="settings-label" style="margin-top:.9rem;">HuggingFace Token</div>
       <input type="password" class="settings-input" id="s-mlx-token"
-        placeholder="hf_…" autocomplete="off">
-      <div class="settings-hint">Stored locally in your browser only. Required to download models from HuggingFace. Then start the server: <code style="color:#7a6840">HF_TOKEN=&lt;your-token&gt; mlx-openai-server launch --model-path &lt;path&gt; --model-type lm</code></div>
+        placeholder="hf_…" autocomplete="off" onchange="saveMlxSettings()">
+      <div class="settings-hint">Stored locally in your browser only. Required to download models from HuggingFace. Then start the server:</div>
+      <code id="mlx-launch-cmd" style="display:block;margin-top:.4rem;padding:.4rem .6rem;background:#0c0a06;border:1px solid #3a2c18;color:#c8a870;font-size:.75rem;font-family:monospace;user-select:all;">mlx-openai-server launch --model-path mlx-community/Qwen2.5-3B-Instruct-4bit --model-type lm</code>
     </div>
 
     <div class="settings-section" id="s-claude-section" style="display:none;">

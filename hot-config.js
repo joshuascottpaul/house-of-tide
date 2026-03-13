@@ -156,6 +156,7 @@ function openSettings() {
   document.getElementById('s-openai-key').value   = CFG.openaiApiKey;
   document.getElementById('s-debug').checked     = CFG.debugMode;
   settingsBackendChange();
+  updateMlxLaunchCmd();
   ov.classList.add('open');
 }
 
@@ -237,4 +238,33 @@ function saveCustomBg() {
   
   const url = customInput.value.trim();
   setCustomBackground(url || null);
+}
+
+// ══════════════════════════════════════════════════════════
+//  MLX SETTINGS (Auto-save)
+// ══════════════════════════════════════════════════════════
+function saveMlxSettings() {
+  const modelInput = document.getElementById('s-mlx-model');
+  const tokenInput = document.getElementById('s-mlx-token');
+  if (!modelInput || !tokenInput) return;
+  
+  // Save to CFG
+  CFG.mlxModel = modelInput.value.trim() || 'mlx-community/Qwen2.5-3B-Instruct-4bit';
+  CFG.mlxHfToken = tokenInput.value.trim();
+  
+  // Save to localStorage
+  saveCFG();
+  
+  // Update launch command display
+  updateMlxLaunchCmd();
+}
+
+function updateMlxLaunchCmd() {
+  const cmdEl = document.getElementById('mlx-launch-cmd');
+  if (!cmdEl) return;
+  
+  const model = CFG.mlxModel || 'mlx-community/Qwen2.5-3B-Instruct-4bit';
+  const token = CFG.mlxHfToken ? `HF_TOKEN=${CFG.mlxHfToken} ` : '';
+  
+  cmdEl.textContent = `${token}mlx-openai-server launch --model-path ${model} --model-type lm`;
 }
