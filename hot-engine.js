@@ -26,7 +26,8 @@ function updateBackground() {
   else                   keyword = 'port,dock,fishing,boats,renaissance';
 
   // LoremFlickr — free, no API key required, supports keywords
-  const url = `https://loremflickr.com/1600/900/${encodeURIComponent(keyword)}?lock=${gs.turn}`;
+  // Use lock=keyword to get same image for same game state, timestamp to bust cache
+  const url = `https://loremflickr.com/1600/900/${encodeURIComponent(keyword)}?lock=${keyword}&t=${Date.now()}`;
   el.style.backgroundImage = `url(${url})`;
 }
 
@@ -96,6 +97,7 @@ function startGame() {
 // ══════════════════════════════════════════════════════════
 function beginPhase() {
   updateStatusBar();
+  updateBackground(); // Update background when phase changes
   hideError();
   if      (gs.phase === 'house')   showHouseEvent();
   else if (gs.phase === 'routes')  checkAndShowRoutes();

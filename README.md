@@ -120,6 +120,62 @@ npx playwright show-report
 
 ---
 
+## ✅ Manual Testing Checklist
+
+Before each release, run through this checklist:
+
+### Core Gameplay (30 min)
+- [ ] Start new game, complete onboarding
+- [ ] Play through 5 complete years
+- [ ] Make varied choices (not always option A)
+- [ ] Trigger at least one Grand Venture
+- [ ] Verify rival relationships change based on choices
+- [ ] Verify heir personality affects available choices
+- [ ] Save game, reload, verify state persists
+- [ ] Die and verify generational handoff works
+- [ ] Play 3 years as heir
+
+### Economic Systems (15 min)
+- [ ] Take a bank loan, verify interest compounds
+- [ ] Repay loan, verify credit score improves
+- [ ] Take shadow loan, let it go overdue, verify enforcement
+- [ ] Buy a ship, verify fleet grows
+- [ ] Sell a ship, verify marks increase
+- [ ] Trade commodities, verify prices change by season
+
+### Narrative Continuity (15 min)
+- [ ] Defer a Borracchi event, verify thread opens
+- [ ] Wait 2-3 years, verify thread returns
+- [ ] Resolve thread, verify it closes
+- [ ] Check that ledger entries reference past events
+
+### Edge Cases (15 min)
+- [ ] Reach 0 marks → verify death screen
+- [ ] Reach 0 ships → verify death screen
+- [ ] Reach reputation 10 → verify Legendary effects
+- [ ] Reach reputation 1 → verify Disgraced effects
+- [ ] Test all 4 backends (MLX, OpenAI, Claude, Ollama)
+- [ ] Test keyboard shortcuts (1,2,3,S,L,P,Enter,Escape)
+
+### UI/UX (10 min)
+- [ ] Verify loading spinner appears during AI calls
+- [ ] Verify risk indicators (💰⚠️) appear on appropriate choices
+- [ ] Verify backend status badge shows correct backend
+- [ ] Verify statistics dashboard opens and shows data
+- [ ] Verify custom background can be set
+- [ ] Verify sound effects toggle works
+- [ ] Verify save/load overlay works correctly
+
+### Accessibility (5 min)
+- [ ] Test keyboard-only navigation
+- [ ] Test with screen reader (VoiceOver/NVDA)
+- [ ] Verify all buttons have ARIA labels
+- [ ] Verify high contrast is readable
+
+**Total Time:** ~90 minutes
+
+---
+
 ## 📁 Project Structure
 
 ```
@@ -157,7 +213,7 @@ house-of-tide/
 - **Save/load** — 3 save slots + auto-save
 
 ### UI/UX
-- **Dynamic backgrounds** — Change based on game state
+- **Dynamic backgrounds** — Change based on game state (reputation, wealth, phase)
 - **Risk indicators** — 💰 for cost, ⚠️ for danger
 - **Backend status** — 🟢 MLX, 🔵 OpenAI, 🟠 Ollama, 🟣 Claude
 - **Keyboard shortcuts** — Full keyboard navigation

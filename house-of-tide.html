@@ -29,7 +29,7 @@
     </p>
     <div style="margin-top:2rem;display:flex;align-items:center;justify-content:center;gap:.9rem;">
       <span id="engine-label" style="font-family:'IM Fell English SC',serif;font-size:.68rem;color:#7a6840;letter-spacing:.1em;text-transform:uppercase;"></span>
-      <button onclick="showStatsDashboard()" aria-label="View game statistics" style="background:none;border:1px solid #2a1e0e;font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.1em;color:#5a4828;text-transform:uppercase;padding:.2rem .55rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.color='#a08848';this.style.borderColor='#3a2c18'" onmouseout="this.style.color='#5a4828';this.style.borderColor='#2a1e0e'">📊 Stats</button>
+      <button onclick="showStatsDashboard()" aria-label="View game statistics" style="background:none;border:1px solid #2a1e0e;font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.1em;color:#5a4828;text-transform:uppercase;padding:.2rem .55rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.color='#a08848';this.style.borderColor='#3a2c18'" onmouseout="this.style.color='#5a4828';this.style.borderColor='#2a1e0e'">Statistics</button>
       <button onclick="openSettings()" aria-label="Open game settings" style="background:none;border:1px solid #2a1e0e;font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.1em;color:#5a4828;text-transform:uppercase;padding:.2rem .55rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.color='#a08848';this.style.borderColor='#3a2c18'" onmouseout="this.style.color='#5a4828';this.style.borderColor='#2a1e0e'">⊞ Settings</button>
     </div>
     <button class="btn" onclick="showScreen('screen-name')">Begin the Founding</button>
@@ -369,6 +369,17 @@
         placeholder="model name e.g. gemma3:4b"
         style="margin-top:.5rem;display:none;">
       <div class="settings-hint">Models must be pulled first: <code style="color:#7a6840">ollama pull &lt;model&gt;</code></div>
+      
+      <div style="margin-top:.8rem;padding:.6rem .7rem;background:#1a1008;border:1px solid #3a2c18;border-radius:4px;">
+        <div style="font-family:'IM Fell English SC',serif;font-size:.62rem;letter-spacing:.1em;color:#a08848;text-transform:uppercase;margin-bottom:.4rem;">⚠️ Connection Issues?</div>
+        <div style="font-family:'IM Fell English',serif;font-size:.78rem;color:#9a8858;line-height:1.6;margin-bottom:.4rem;">
+          If Test Connection fails, run this in Terminal then restart Ollama:
+        </div>
+        <code style="display:block;padding:.4rem .6rem;background:#0c0a06;border:1px solid #4a3820;color:#c8a870;font-size:.75rem;font-family:monospace;user-select:all;">launchctl setenv OLLAMA_ORIGINS "*"</code>
+        <div style="font-family:'IM Fell English',serif;font-size:.72rem;color:#7a6840;margin-top:.3rem;">
+          Or use the automated script: <code style="color:#9a8858">ollama-cors</code>
+        </div>
+      </div>
     </div>
 
     <div class="settings-section" id="s-mlx-section" style="display:none;">
