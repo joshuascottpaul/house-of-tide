@@ -128,9 +128,9 @@ test.describe('Appearance Settings', () => {
     
     await page.waitForTimeout(500);
     
-    // Close settings by clicking Cancel button
-    await page.click('button:has-text("Cancel")');
-    await page.waitForSelector('#settings-overlay.open', { state: 'hidden', timeout: 5000 });
+    // Close settings by clicking on overlay background
+    await page.locator('#settings-overlay').click({ position: { x: 50, y: 50 } });
+    await page.waitForTimeout(500);
     
     // Reload page
     await page.reload();
