@@ -50,5 +50,6 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./
         publish_branch: gh-pages
-        # Removed force_orphan to preserve manual deployment
-        keep_files: true
+        force_orphan: false
+        keep_files: false
+        commit_message: "Deploy ${{ github.sha }}"
