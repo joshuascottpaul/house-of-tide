@@ -387,6 +387,13 @@ function updateLedgerHistory() {
 // ══════════════════════════════════════════════════════════
 //  DEATH SCREEN
 // ══════════════════════════════════════════════════════════
+function formatHeirText(template, pronouns) {
+  return template
+    .replace(/\bthey\b/g, pronouns.sub)
+    .replace(/\btheir\b/g, pronouns.pos)
+    .replace(/\bThere\b/g, pronouns.cap);
+}
+
 function showDeathScreen() {
   const age = gs.age;
   const ageDesc = age < 42 ? 'far too young, though the sea does not consider age a mitigating circumstance'
@@ -423,7 +430,7 @@ function showDeathScreen() {
     debtNote = `The heir also inherits the outstanding debt: ${parts.join(' and ')}. The ledger notes this without opinion.`;
   }
   const heirEl = document.getElementById('death-heir-note');
-  const baseHeirText = `${gs.heirName} inherits at ${gs.heirAge} — ${gs.heirTrait.death.replace(/\bthey\b/g, gs.hp.sub).replace(/\btheir\b/g, gs.hp.pos).replace(/\bThere\b/g, gs.hp.cap)}`;
+  const baseHeirText = `${gs.heirName} inherits at ${gs.heirAge} — ${formatHeirText(gs.heirTrait.death, gs.hp)}`;
   heirEl.textContent = debtNote ? baseHeirText + ' ' + debtNote : baseHeirText;
 
   const ledgerEl = document.getElementById('death-ledger');
