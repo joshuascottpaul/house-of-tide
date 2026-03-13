@@ -1,4 +1,32 @@
 // ══════════════════════════════════════════════════════════
+//  MARKS HELPER FUNCTIONS
+// ══════════════════════════════════════════════════════════
+
+function addMarks(amount, reason) {
+  gs.marks += amount;
+  if (reason) {
+    gs.ledger.unshift({
+      year: gs.turn,
+      phase: 'Income',
+      entry: `${reason}: +${amount} mk`
+    });
+  }
+}
+
+function spendMarks(amount, reason) {
+  if (gs.marks < amount) return false;
+  gs.marks -= amount;
+  if (reason) {
+    gs.ledger.unshift({
+      year: gs.turn,
+      phase: 'Expense',
+      entry: `${reason}: -${amount} mk`
+    });
+  }
+  return true;
+}
+
+// ══════════════════════════════════════════════════════════
 //  SHIP MARKET
 // ══════════════════════════════════════════════════════════
 
