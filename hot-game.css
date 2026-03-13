@@ -73,7 +73,7 @@ h1 { font-family:'IM Fell English SC',serif; font-size:clamp(2.8rem,9vw,5.5rem);
   font-size:.8em; opacity:.8; letter-spacing:.05em; }
 .choice-btn-rep:hover:not(:disabled) { border-color:#d4b030; color:#fad840;
   background:rgba(200,160,30,.1); }
-.rep-tier.leg { color:#d4a030; letter-spacing:.18em; }
+.rep-tier.legendary { color:#d4a030; letter-spacing:.18em; }
 .choice-hint { font-family:'IM Fell English SC',serif; font-size:.68rem;
   letter-spacing:.08em; color:#7a6840; font-style:normal; display:block;
   margin-top:.35rem; opacity:.85; }
@@ -188,9 +188,9 @@ input[type=text]:focus { border-bottom-color:var(--rust); }
 .phase-pip.venture { color:#8878c0; border-color:#3a3068; }
 .rep-tier { font-family:'IM Fell English SC',serif; font-size:.62rem;
   letter-spacing:.08em; display:block; }
-.rep-tier.hi  { color:#7aaa40; }
-.rep-tier.mid { color:#9a8848; }
-.rep-tier.lo  { color:#c04030; }
+.rep-tier.high   { color:#7aaa40; }
+.rep-tier.medium { color:#9a8848; }
+.rep-tier.low    { color:#c04030; }
 
 /* ── GAME CONTENT ── */
 #game-content { max-width:680px; margin:0 auto; padding:2rem 1.5rem 5rem; width:100%; }

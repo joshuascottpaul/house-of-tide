@@ -233,11 +233,11 @@ function updateStatusBar() {
 
   const tier = document.getElementById('stat-rep-tier');
   const repTier = getRepTier(gs.reputation);
-  if      (gs.reputation >= REP_THRESHOLDS.LEGENDARY) { tier.textContent='Legendary';   tier.className='rep-tier leg'; }
-  else if (gs.reputation >= REP_THRESHOLDS.RENOWNED)  { tier.textContent='Renowned';    tier.className='rep-tier hi'; }
-  else if (gs.reputation >= REP_THRESHOLDS.ESTABLISHED) { tier.textContent='Established'; tier.className='rep-tier mid'; }
-  else if (gs.reputation >= REP_THRESHOLDS.PRECARIOUS) { tier.textContent='Precarious';  tier.className='rep-tier lo'; }
-  else                          { tier.textContent='Disgraced';   tier.className='rep-tier lo'; }
+  if      (gs.reputation >= REP_THRESHOLDS.LEGENDARY) { tier.textContent='Legendary';   tier.className='rep-tier legendary'; }
+  else if (gs.reputation >= REP_THRESHOLDS.RENOWNED)  { tier.textContent='Renowned';    tier.className='rep-tier high'; }
+  else if (gs.reputation >= REP_THRESHOLDS.ESTABLISHED) { tier.textContent='Established'; tier.className='rep-tier medium'; }
+  else if (gs.reputation >= REP_THRESHOLDS.PRECARIOUS) { tier.textContent='Precarious';  tier.className='rep-tier low'; }
+  else                          { tier.textContent='Disgraced';   tier.className='rep-tier low'; }
 
   const ph = document.getElementById('stat-phase');
   if (gs.ventureAvailable && gs.phase === 'routes') {
