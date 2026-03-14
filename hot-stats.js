@@ -152,9 +152,11 @@ window.updateStats = updateStats;
 window.showStatsDashboard = showStatsDashboard;
 window.getStats = getStats;
 
-// Ensure functions are available even if called before DOM ready
-document.addEventListener('DOMContentLoaded', () => {
-  window.updateStats = updateStats;
-  window.showStatsDashboard = showStatsDashboard;
-  window.getStats = getStats;
-});
+// Also export after DOM ready (belt and suspenders)
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    window.updateStats = updateStats;
+    window.showStatsDashboard = showStatsDashboard;
+    window.getStats = getStats;
+  });
+}

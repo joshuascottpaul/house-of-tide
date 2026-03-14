@@ -439,16 +439,30 @@ function hexToRgba(hex, alpha) {
 // Load appearance settings on page load
 document.addEventListener('DOMContentLoaded', loadAppearance);
 
-// Ensure settings functions are available globally
-document.addEventListener('DOMContentLoaded', () => {
-  window.openSettings = openSettings;
-  window.closeSettings = closeSettings;
-  window.saveSettings = saveSettings;
-  window.settingsBackendChange = settingsBackendChange;
-  window.backgroundSelectChange = backgroundSelectChange;
-  window.saveCustomBg = saveCustomBg;
-  window.saveMlxSettings = saveMlxSettings;
-  window.updateMlxLaunchCmd = updateMlxLaunchCmd;
-  window.updateAppearanceSettings = updateAppearanceSettings;
-  window.resetAppearanceSettings = resetAppearanceSettings;
-});
+// Ensure settings functions are available globally - immediate export
+window.openSettings = openSettings;
+window.closeSettings = closeSettings;
+window.saveSettings = saveSettings;
+window.settingsBackendChange = settingsBackendChange;
+window.backgroundSelectChange = backgroundSelectChange;
+window.saveCustomBg = saveCustomBg;
+window.saveMlxSettings = saveMlxSettings;
+window.updateMlxLaunchCmd = updateMlxLaunchCmd;
+window.updateAppearanceSettings = updateAppearanceSettings;
+window.resetAppearanceSettings = resetAppearanceSettings;
+
+// Also export after DOM ready (belt and suspenders)
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    window.openSettings = openSettings;
+    window.closeSettings = closeSettings;
+    window.saveSettings = saveSettings;
+    window.settingsBackendChange = settingsBackendChange;
+    window.backgroundSelectChange = backgroundSelectChange;
+    window.saveCustomBg = saveCustomBg;
+    window.saveMlxSettings = saveMlxSettings;
+    window.updateMlxLaunchCmd = updateMlxLaunchCmd;
+    window.updateAppearanceSettings = updateAppearanceSettings;
+    window.resetAppearanceSettings = resetAppearanceSettings;
+  });
+}
