@@ -199,3 +199,10 @@ if (_origUpdateStats) {
 window.getAchievements = getAchievements;
 window.unlockAchievement = unlockAchievement;
 window.showAchievementsPanel = showAchievementsPanel;
+
+// Ensure functions are available even if called before DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  window.getAchievements = getAchievements;
+  window.unlockAchievement = unlockAchievement;
+  window.showAchievementsPanel = showAchievementsPanel;
+});

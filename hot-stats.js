@@ -151,3 +151,10 @@ const _origUpdateStats = window.updateStats;
 window.updateStats = updateStats;
 window.showStatsDashboard = showStatsDashboard;
 window.getStats = getStats;
+
+// Ensure functions are available even if called before DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  window.updateStats = updateStats;
+  window.showStatsDashboard = showStatsDashboard;
+  window.getStats = getStats;
+});
