@@ -11,6 +11,7 @@
 
 <!-- ══ BACKGROUND IMAGE ═══════════════════════════════════ -->
 <div id="bg-image" aria-hidden="true"></div>
+<div id="bg-tint" aria-hidden="true"></div>
 
 <!-- ══ TITLE ══════════════════════════════════════════════ -->
 <div id="screen-title" class="screen active">
@@ -32,6 +33,9 @@
       <button onclick="showAchievementsPanel()" aria-label="View achievements" style="background:none;border:1px solid #2a1e0e;font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.1em;color:#5a4828;text-transform:uppercase;padding:.2rem .55rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.color='#a08848';this.style.borderColor='#3a2c18'" onmouseout="this.style.color='#5a4828';this.style.borderColor='#2a1e0e'">🏆 Achievements</button>
       <button onclick="showStatsDashboard()" aria-label="View game statistics" style="background:none;border:1px solid #2a1e0e;font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.1em;color:#5a4828;text-transform:uppercase;padding:.2rem .55rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.color='#a08848';this.style.borderColor='#3a2c18'" onmouseout="this.style.color='#5a4828';this.style.borderColor='#2a1e0e'">Statistics</button>
       <button onclick="openSettings()" aria-label="Open game settings" style="background:none;border:1px solid #2a1e0e;font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.1em;color:#5a4828;text-transform:uppercase;padding:.2rem .55rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.color='#a08848';this.style.borderColor='#3a2c18'" onmouseout="this.style.color='#5a4828';this.style.borderColor='#2a1e0e'">⊞ Settings</button>
+    </div>
+    <div style="margin-top:.5rem;display:flex;align-items:center;justify-content:center;gap:.9rem;">
+      <button onclick="window.HOT_SCREENSHOT_LIVE.isCapturing() ? window.HOT_SCREENSHOT_LIVE.stopCapture() : window.HOT_SCREENSHOT_LIVE.startLiveCapture(3)" aria-label="Toggle live screen capture for sharing gameplay" style="background:none;border:1px solid #2a1e0e;font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.1em;color:#5a4828;text-transform:uppercase;padding:.2rem .55rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.color='#a08848';this.style.borderColor='#3a2c18'" onmouseout="this.style.color='#5a4828';this.style.borderColor='#2a1e0e'">🔴 Live Share</button>
     </div>
     <button class="btn" onclick="showScreen('screen-name')">Begin the Founding</button>
     <div style="margin-top:.8rem;">
@@ -316,6 +320,9 @@
   </div>
 </div>
 
+<!-- Cache-busting version - update with each deployment -->
+<script>const APP_VERSION = '20260313-v2';</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="hot-data.js"></script>
 <script src="hot-prompts.js"></script>
 <script src="hot-config.js"></script>
@@ -329,6 +336,8 @@
 <script src="hot-sfx.js"></script>
 <script src="hot-stats.js"></script>
 <script src="hot-achievements.js"></script>
+<script src="hot-screenshot.js"></script>
+<script src="hot-screenshot-live.js"></script>
 
 <!-- ══ SETTINGS MODAL ═══════════════════════════════════ -->
 <div id="settings-overlay" onclick="if(event.target===this)closeSettings()">
@@ -387,11 +396,12 @@
     <div class="settings-section" id="s-mlx-section" style="display:none;">
       <div class="settings-label">MLX Model Path</div>
       <input type="text" class="settings-input" id="s-mlx-model"
-        placeholder="mlx-community/Qwen2.5-3B-Instruct-4bit">
+        placeholder="mlx-community/Qwen2.5-3B-Instruct-4bit" onchange="saveMlxSettings()">
       <div class="settings-label" style="margin-top:.9rem;">HuggingFace Token</div>
       <input type="password" class="settings-input" id="s-mlx-token"
-        placeholder="hf_…" autocomplete="off">
-      <div class="settings-hint">Stored locally in your browser only. Required to download models from HuggingFace. Then start the server: <code style="color:#7a6840">HF_TOKEN=&lt;your-token&gt; mlx-openai-server launch --model-path &lt;path&gt; --model-type lm</code></div>
+        placeholder="hf_…" autocomplete="off" onchange="saveMlxSettings()">
+      <div class="settings-hint">Stored locally in your browser only. Required to download models from HuggingFace. Then start the server:</div>
+      <code id="mlx-launch-cmd" style="display:block;margin-top:.4rem;padding:.4rem .6rem;background:#0c0a06;border:1px solid #3a2c18;color:#c8a870;font-size:.75rem;font-family:monospace;user-select:all;">mlx-openai-server launch --model-path mlx-community/Qwen2.5-3B-Instruct-4bit --model-type lm</code>
     </div>
 
     <div class="settings-section" id="s-claude-section" style="display:none;">
@@ -428,6 +438,68 @@
         placeholder="https://example.com/background.jpg"
         style="margin-top:.5rem;display:none;" onchange="saveCustomBg()">
       <div class="settings-hint">Choose dynamic backgrounds that reflect your house's state, or set a custom image URL.</div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-label">Visual Appearance</div>
+      
+      <div style="margin-top:.6rem;">
+        <div style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:.3rem;">Background Opacity: <span id="bg-opacity-val">15</span>%</div>
+        <input type="range" class="settings-range" id="s-bg-opacity" min="0" max="40" value="15" oninput="updateAppearanceSettings()">
+      </div>
+      
+      <div style="margin-top:.6rem;">
+        <div style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:.3rem;">Background Grayscale: <span id="bg-grayscale-val">100</span>%</div>
+        <input type="range" class="settings-range" id="s-bg-grayscale" min="0" max="100" value="100" oninput="updateAppearanceSettings()">
+      </div>
+      
+      <div style="margin-top:.6rem;">
+        <div style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:.3rem;">Overlay Darkness: <span id="overlay-opacity-val">95</span>%</div>
+        <input type="range" class="settings-range" id="s-overlay-opacity" min="70" max="100" value="95" oninput="updateAppearanceSettings()">
+      </div>
+      
+      <div style="margin-top:.6rem;">
+        <div style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:.3rem;">Background Tint Color</div>
+        <div style="display:flex;align-items:center;gap:.5rem;">
+          <input type="color" id="s-bg-tint-color" value="#090705" style="width:40px;height:30px;border:none;cursor:pointer;" onchange="updateAppearanceSettings()">
+          <input type="range" id="s-bg-tint-opacity" min="0" max="100" value="0" style="flex:1;" oninput="updateAppearanceSettings()">
+          <span style="font-size:.72rem;color:#7a6840;">Intensity: <span id="tint-opacity-val">0</span>%</span>
+        </div>
+      </div>
+      
+      <div style="margin-top:.6rem;">
+        <div style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:.3rem;">Text Brightness</div>
+        <input type="range" class="settings-range" id="s-text-brightness" min="50" max="100" value="100" oninput="updateAppearanceSettings()">
+        <div style="font-family:'IM Fell English',serif;font-size:.72rem;color:#7a6840;margin-top:.2rem;">Adjust text color from dim to bright</div>
+      </div>
+      
+      <div style="margin-top:.8rem;display:flex;gap:.5rem;">
+        <button class="settings-btn-small" onclick="resetAppearanceSettings()">Reset to Defaults</button>
+      </div>
+      <div class="settings-hint" style="margin-top:.5rem;">All settings are saved automatically and persist between sessions.</div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-label">Keyboard Shortcuts &amp; Help</div>
+      <div style="font-family:'IM Fell English',serif;font-size:.78rem;color:#9a8858;line-height:1.8;">
+        <div style="margin-bottom:.8rem;">
+          <div style="font-family:'IM Fell English SC',serif;font-size:.7rem;letter-spacing:.1em;color:#a08848;text-transform:uppercase;margin-bottom:.3rem;">Gameplay Controls</div>
+          <div><code style="color:#7a6840">1, 2, 3</code> — Select choice</div>
+          <div><code style="color:#7a6840">S</code> — Save/Load menu</div>
+          <div><code style="color:#7a6840">P</code> — Settings panel</div>
+          <div><code style="color:#7a6840">Enter</code> — Continue/advance</div>
+          <div><code style="color:#7a6840">Escape</code> — Close overlays</div>
+          <div><code style="color:#7a6840">⌘⇧D</code> — Toggle debug log</div>
+        </div>
+        <div style="margin-bottom:.8rem;">
+          <div style="font-family:'IM Fell English SC',serif;font-size:.7rem;letter-spacing:.1em;color:#a08848;text-transform:uppercase;margin-bottom:.3rem;">Screenshot Sharing</div>
+          <div><code style="color:#7a6840">Ctrl+Shift+L</code> — Toggle live recording</div>
+          <div style="margin-top:.3rem;">Or use <span style="color:#a08848">🔴 Live Share</span> button on title screen</div>
+          <div style="font-size:.72rem;color:#7a6840;margin-top:.3rem;">• Screenshots save to your chosen location every 3 seconds</div>
+          <div style="font-size:.72rem;color:#7a6840;">• Share the file path to let others see your gameplay</div>
+          <div style="font-size:.72rem;color:#7a6840;">• Works best in Chrome/Edge browsers</div>
+        </div>
+      </div>
     </div>
 
     <div class="settings-section">
@@ -468,4 +540,3 @@
 
 </body>
 </html>
-<!-- CI/CD Test Trigger -->
