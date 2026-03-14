@@ -114,7 +114,7 @@ function debugCopyLast() {
   ).catch(()=>{});
 }
 
-// keyboard shortcut: Cmd/Ctrl+Shift+D
+// keyboard shortcut: Cmd/Ctrl+Shift+D for debug
 document.addEventListener('keydown', e => {
   if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'D') {
     e.preventDefault();
@@ -124,52 +124,95 @@ document.addEventListener('keydown', e => {
   }
 });
 
+// keyboard shortcut: P for settings
+document.addEventListener('keydown', e => {
+  if (e.key === 'p' || e.key === 'P') {
+    e.preventDefault();
+    openSettings();
+  }
+});
+
 // ══════════════════════════════════════════════════════════
 //  SETTINGS MODAL
 // ══════════════════════════════════════════════════════════
 function openSettings() {
   const ov = document.getElementById('settings-overlay');
+  if (!ov) return;
+  
   // populate from CFG
-  document.getElementById('s-ollama').checked = (CFG.backend === 'ollama');
-  document.getElementById('s-claude').checked = (CFG.backend === 'claude');
-  document.getElementById('s-openai').checked = (CFG.backend === 'openai');
-  document.getElementById('s-mlx').checked    = (CFG.backend === 'mlx');
+  const ollamaRadio = document.getElementById('s-ollama');
+  if (ollamaRadio) ollamaRadio.checked = (CFG.backend === 'ollama');
+  const claudeRadio = document.getElementById('s-claude');
+  if (claudeRadio) claudeRadio.checked = (CFG.backend === 'claude');
+  const openaiRadio = document.getElementById('s-openai');
+  if (openaiRadio) openaiRadio.checked = (CFG.backend === 'openai');
+  const mlxRadio = document.getElementById('s-mlx');
+  if (mlxRadio) mlxRadio.checked = (CFG.backend === 'mlx');
+  
   // ollama model
   const oSel = document.getElementById('s-ollama-model');
   const known = ['qwen3.5:4b','qwen2.5:7b','mistral:latest','llama3.1:8b'];
-  if (known.includes(CFG.ollamaModel)) {
-    oSel.value = CFG.ollamaModel;
-    document.getElementById('s-ollama-custom').style.display = 'none';
-  } else {
-    oSel.value = 'custom';
-    document.getElementById('s-ollama-custom').style.display = 'block';
-    document.getElementById('s-ollama-custom').value = CFG.ollamaModel;
+  if (oSel) {
+    if (known.includes(CFG.ollamaModel)) {
+      oSel.value = CFG.ollamaModel;
+      document.getElementById('s-ollama-custom').style.display = 'none';
+    } else {
+      oSel.value = 'custom';
+      document.getElementById('s-ollama-custom').style.display = 'block';
+      const customInput = document.getElementById('s-ollama-custom');
+      if (customInput) customInput.value = CFG.ollamaModel;
+    }
   }
+  
   // mlx model
-  document.getElementById('s-mlx-model').value    = CFG.mlxModel;
-  document.getElementById('s-mlx-token').value    = CFG.mlxHfToken;
+  const mlxModelInput = document.getElementById('s-mlx-model');
+  if (mlxModelInput) mlxModelInput.value = CFG.mlxModel;
+  const mlxTokenInput = document.getElementById('s-mlx-token');
+  if (mlxTokenInput) mlxTokenInput.value = CFG.mlxHfToken;
+  
   // claude model
-  document.getElementById('s-claude-model').value = CFG.claudeModel;
-  document.getElementById('s-api-key').value     = CFG.claudeApiKey;
+  const claudeModelSel = document.getElementById('s-claude-model');
+  if (claudeModelSel) claudeModelSel.value = CFG.claudeModel;
+  const apiKeyInput = document.getElementById('s-api-key');
+  if (apiKeyInput) apiKeyInput.value = CFG.claudeApiKey;
+  
   // openai model
-  document.getElementById('s-openai-model').value = CFG.openaiModel;
-  document.getElementById('s-openai-key').value   = CFG.openaiApiKey;
-  document.getElementById('s-debug').checked     = CFG.debugMode;
+  const openaiModelSel = document.getElementById('s-openai-model');
+  if (openaiModelSel) openaiModelSel.value = CFG.openaiModel;
+  const openaiKeyInput = document.getElementById('s-openai-key');
+  if (openaiKeyInput) openaiKeyInput.value = CFG.openaiApiKey;
   
-  // Appearance settings
-  document.getElementById('s-bg-opacity').value = appearance.bgOpacity;
-  document.getElementById('s-bg-grayscale').value = appearance.bgGrayscale;
-  document.getElementById('s-overlay-opacity').value = appearance.overlayOpacity;
-  document.getElementById('s-bg-tint-color').value = appearance.tintColor;
-  document.getElementById('s-bg-tint-opacity').value = appearance.tintOpacity;
-  document.getElementById('s-text-brightness').value = appearance.textBrightness;
+  const debugCheckbox = document.getElementById('s-debug');
+  if (debugCheckbox) debugCheckbox.checked = CFG.debugMode;
+
+  // Appearance settings (optional - may not exist in older versions)
+  const appearanceInputs = [
+    { id: 's-bg-opacity', value: appearance?.bgOpacity },
+    { id: 's-bg-grayscale', value: appearance?.bgGrayscale },
+    { id: 's-overlay-opacity', value: appearance?.overlayOpacity },
+    { id: 's-bg-tint-color', value: appearance?.tintColor },
+    { id: 's-bg-tint-opacity', value: appearance?.tintOpacity },
+    { id: 's-text-brightness', value: appearance?.textBrightness }
+  ];
   
+  appearanceInputs.forEach(({ id, value }) => {
+    const el = document.getElementById(id);
+    if (el && value !== undefined) el.value = value;
+  });
+
   // Update value displays
-  document.getElementById('bg-opacity-val').textContent = appearance.bgOpacity;
-  document.getElementById('bg-grayscale-val').textContent = appearance.bgGrayscale;
-  document.getElementById('overlay-opacity-val').textContent = appearance.overlayOpacity;
-  document.getElementById('tint-opacity-val').textContent = appearance.tintOpacity;
+  const displayUpdates = [
+    { id: 'bg-opacity-val', value: appearance?.bgOpacity },
+    { id: 'bg-grayscale-val', value: appearance?.bgGrayscale },
+    { id: 'overlay-opacity-val', value: appearance?.overlayOpacity },
+    { id: 'tint-opacity-val', value: appearance?.tintOpacity }
+  ];
   
+  displayUpdates.forEach(({ id, value }) => {
+    const el = document.getElementById(id);
+    if (el && value !== undefined) el.textContent = value;
+  });
+
   settingsBackendChange();
   updateMlxLaunchCmd();
   ov.classList.add('open');
