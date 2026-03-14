@@ -107,3 +107,38 @@ The game includes a live screenshot sharing feature for gameplay observation:
 - Includes game state metadata (year, marks, ships, reputation, current event)
 - Activated via "🔴 Live Share" button or Ctrl+Shift+L
 - Works on both file:// and GitHub Pages deployments (Chrome/Edge recommended)
+
+## Deployment Workflow
+
+**IMPORTANT**: This project has both local (`file://`) and live (`https://joshuascottpaul.github.io/house-of-tide/`) versions. Changes must be committed and pushed to appear on the live site.
+
+### Testing Both Versions
+```bash
+# Test locally first
+open house-of-tide.html
+
+# Then check live version
+open https://joshuascottpaul.github.io/house-of-tide/
+```
+
+### Deployment Routine
+```bash
+# After making changes:
+git add .
+git commit -m "describe changes"
+git push origin main
+# Wait 2-5 minutes for deployment
+```
+
+### Development Workflow
+1. Make changes locally
+2. Test locally first (`file://`)
+3. Commit & push when satisfied
+4. Verify on live site (`https://`)
+
+### Deployment Checklist
+Always verify before considering work complete:
+- [ ] Test locally (`file://`)
+- [ ] Commit and push changes
+- [ ] Verify on GitHub Pages
+- [ ] Check that features work on both versions
