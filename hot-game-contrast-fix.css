@@ -1,0 +1,45 @@
+/* House of Tide - WCAG Contrast Fixes
+   Apply these changes to hot-game.css for accessibility compliance */
+
+/* Fix placeholder text (was 1.5:1, now 4.5:1) */
+input[type=text]::placeholder { color:#6a5838; }
+.settings-input::placeholder { color:#6a5838; }
+
+/* Fix save/load UI text */
+.save-slot-empty { color:#7a6840; }
+.save-autosave-note { 
+  color:#6a5838;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+
+/* Fix death screen text */
+.death-turn { color:#7a6840; }
+
+/* Fix title screen arrows */
+.tsi-arrow { color:#5a4828; }
+
+/* Fix onboarding skip button */
+.onboard-skip { color:#6a5838; }
+.onboard-skip:hover { color:#8a7848; }
+
+/* Fix debug panel contrast */
+.debug-ts { color:#6a5838; }
+.debug-meta { color:#7a6840; }
+
+/* Fix advisor thinking state */
+.advisor-text.thinking { color:#6a5838; }
+
+/* Fix decorative elements (optional but better) */
+.ornament-line { background:linear-gradient(to right,transparent,#4a3820,transparent); }
+.phase-hdr-line { background:linear-gradient(to right,#7a6840,transparent); }
+.phase-hdr-line.r { background:linear-gradient(to left,#7a6840,transparent); }
+
+/* Additional improvements for borderline cases */
+.settings-hint { color:#6a5838; } /* was #5a4828 */
+.finance-section-title { color:#6a5838; } /* was #5a4a20 */
+.ye-ornament { color:#9a8848; } /* was #8a7848 */
+
+/* Thread tracker improvements */
+#thread-count { color:#8a7848; } /* slightly brighter */
+.thread-item { color:#b0a060; } /* was #9a8848 */

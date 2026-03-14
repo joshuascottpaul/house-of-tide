@@ -92,6 +92,20 @@ ollama pull qwen2.5:7b
 | `Enter` | Continue/advance |
 | `Escape` | Close overlays |
 | `⌘⇧D` | Toggle debug log |
+| `Ctrl+Shift+L` | Toggle live screenshot sharing |
+
+---
+
+## 📸 Screenshot Sharing (New!)
+
+Share your gameplay live with others:
+
+1. Click **"🔴 Live Share"** on the title screen
+2. Choose where to save the screenshot file
+3. Screenshots update to that file every 3 seconds
+4. Share the file path to let others see your gameplay
+
+**Note:** Works best in Chrome/Edge. The red recording indicator shows when active.
 
 ---
 
@@ -165,6 +179,8 @@ Before each release, run through this checklist:
 - [ ] Verify custom background can be set
 - [ ] Verify sound effects toggle works
 - [ ] Verify save/load overlay works correctly
+- [ ] Test screenshot sharing (🔴 Live Share button)
+- [ ] Verify Ctrl+Shift+L toggles live recording
 
 ### Accessibility (5 min)
 - [ ] Test keyboard-only navigation

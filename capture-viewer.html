@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>House of Tide - Screenshot Viewer</title>
+<style>
+body {
+    background: #1a1a1a;
+    color: #d4c896;
+    font-family: 'Courier New', monospace;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+#instruction {
+    text-align: center;
+    font-size: 14px;
+    color: #8a7850;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+#screenshot-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+#current-screenshot {
+    max-width: 100%;
+    height: auto;
+    border: 2px solid #3a2a12;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+#game-state {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(42, 30, 14, 0.3);
+    border: 1px solid #3a2a12;
+    text-align: left;
+    font-size: 14px;
+}
+
+#status {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12px;
+    color: #5a4828;
+}
+
+.state-item {
+    margin: 5px 0;
+}
+
+.state-label {
+    color: #8a7850;
+    display: inline-block;
+    width: 100px;
+}
+
+#no-screenshot {
+    text-align: center;
+    padding: 100px 20px;
+    color: #5a4828;
+}
+</style>
+</head>
+<body>
+<h1>House of Tide - Live Gameplay Viewer</h1>
+<div id="instruction">
+    <p>This page shows the latest screenshot from your House of Tide gameplay session.</p>
+    <p>To start sharing: Open the game → Click "📷 Share Screen" → Play normally</p>
+    <p>Screenshots update every 5 seconds while capture is active.</p>
+    <p>Press Ctrl+Shift+S in the game to toggle capture on/off.</p>
+</div>
+
+<div id="screenshot-container">
+    <div id="no-screenshot">
+        <p>No screenshot available yet.</p>
+        <p>Start screen capture in the game to see live gameplay here.</p>
+    </div>
+    <img id="current-screenshot" style="display:none;" alt="Current game screenshot">
+    <div id="game-state" style="display:none;">
+        <div class="state-item"><span class="state-label">Year:</span> <span id="state-year">-</span></div>
+        <div class="state-item"><span class="state-label">Marks:</span> <span id="state-marks">-</span></div>
+        <div class="state-item"><span class="state-label">Ships:</span> <span id="state-ships">-</span></div>
+        <div class="state-item"><span class="state-label">Reputation:</span> <span id="state-reputation">-</span></div>
+        <div class="state-item"><span class="state-label">Phase:</span> <span id="state-phase">-</span></div>
+        <div class="state-item"><span class="state-label">Current Event:</span> <span id="state-event">-</span></div>
+    </div>
+</div>
+
+<div id="status">Waiting for screenshot data...</div>
+
+<script>
+// Check for screenshot data every 2 seconds
+let lastTimestamp = null;
+
+function checkForScreenshot() {
+    // Try to get the screenshot from the game window
+    const gameWindow = window.opener || window.parent;
+    
+    if (gameWindow && gameWindow.HOT_SCREENSHOT) {
+        const latestScreenshot = gameWindow.HOT_SCREENSHOT.getLatestScreenshot();
+        
+        if (latestScreenshot && latestScreenshot.timestamp !== lastTimestamp) {
+            lastTimestamp = latestScreenshot.timestamp;
+            displayScreenshot(latestScreenshot);
+        }
+    } else if (gameWindow && gameWindow.HOT_LATEST_SCREENSHOT) {
+        // Fallback to simple screenshot storage
+        displaySimpleScreenshot(gameWindow.HOT_LATEST_SCREENSHOT);
+    }
+    
+    // Update status
+    const statusEl = document.getElementById('status');
+    if (gameWindow && gameWindow.HOT_SCREENSHOT && gameWindow.HOT_SCREENSHOT.isCapturing()) {
+        statusEl.textContent = 'Capture active - receiving screenshots';
+        statusEl.style.color = '#4a8848';
+    } else {
+        statusEl.textContent = 'Capture inactive - waiting for screenshots';
+        statusEl.style.color = '#884848';
+    }
+}
+
+function displayScreenshot(screenshot) {
+    document.getElementById('no-screenshot').style.display = 'none';
+    document.getElementById('current-screenshot').style.display = 'block';
+    document.getElementById('current-screenshot').src = screenshot.dataUrl;
+    document.getElementById('game-state').style.display = 'block';
+    
+    // Update game state
+    document.getElementById('state-year').textContent = screenshot.gameState.year;
+    document.getElementById('state-marks').textContent = screenshot.gameState.marks;
+    document.getElementById('state-ships').textContent = screenshot.gameState.ships;
+    document.getElementById('state-reputation').textContent = screenshot.gameState.reputation;
+    document.getElementById('state-phase').textContent = screenshot.gameState.phase;
+    document.getElementById('state-event').textContent = screenshot.gameState.currentEvent + '...';
+}
+
+function displaySimpleScreenshot(dataUrl) {
+    document.getElementById('no-screenshot').style.display = 'none';
+    document.getElementById('current-screenshot').style.display = 'block';
+    document.getElementById('current-screenshot').src = dataUrl;
+}
+
+// Check every 2 seconds
+setInterval(checkForScreenshot, 2000);
+checkForScreenshot(); // Initial check
+</script>
+</body>
+</html>
