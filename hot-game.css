@@ -632,7 +632,7 @@ body > *:not(#bg-image):not(#settings-overlay):not(#debug-panel) { position: rel
 
 /* ── Content Overlay for Readability ──────────────────── */
 #screen-game, #screen-title, #screen-name, #screen-onboard, #screen-death {
-  background: rgba(5, 4, 3, var(--overlay-opacity, 0.95));
+  background: transparent;  /* Background image shows through; tint overlay provides darkness */
 }
 
 /* ── Background Tint Overlay ──────────────────────────── */

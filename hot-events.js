@@ -112,7 +112,7 @@ ${gs.reputation >= 9 ? `NOTE: Legendary standing (${gs.reputation}/10). Include 
 Generate the situation and 3 choices. Present tense. Second person. Junior gothic register. Use named figures from the world: Tucci, Pell, Casso, Rinaldo, Vanzetti, Greve, Albinosi. The situation should feel like the opening of a chapter already in progress.`;
 
   const parsed = await callLLM(EVENT_GEN_PROMPT, userMsg, {
-    json: true, temperature: 0.92, maxTokens: 650
+    json: true, temperature: 0.92, maxTokens: 650, noThink: true
   });
 
   // 3. Validate and normalize choices
@@ -350,7 +350,7 @@ SPECIAL INSTRUCTIONS FOR VENTURES:
 — repChoice: include a venture-specific repChoice for Legendary standing if rep >= ${gs.reputation >= 9 ? '9 (yes, include)' : '9 (no, omit — current rep too low)'}.`;
 
     const parsed = await callLLM(EVENT_GEN_PROMPT, userMsg, {
-      json: true, temperature: 0.95, maxTokens: 600
+      json: true, temperature: 0.95, maxTokens: 600, noThink: true
     });
 
     const situation = (parsed.situation || '').trim();
