@@ -20,6 +20,7 @@ let gs = {
   cargoBasis: { saltfish:0, wine:0, alum:0, tin:0 },  // Tracks total cost basis for each commodity
   marketPrices: null,
   allies: [],  // Named NPCs: Casso, Pell, Tucci, etc.
+  buildings: {},  // Owned buildings: { warehouse: { purchased, founder, generation } }
   rivals:{
     borracchi:{ relationship:0, lastInteraction:0, notes:[] },
     spinetta: { relationship:0, lastInteraction:0, notes:[] },

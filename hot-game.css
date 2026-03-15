@@ -217,6 +217,51 @@ input[type=text]:focus { border-bottom-color:var(--rust); }
   color: #a04080;
 }
 
+/* ── BUILDINGS DISPLAY ────────────────────────────────────── */
+#buildings-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.3rem;
+}
+
+.building-badge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(42, 30, 14, 0.5);
+  border: 1px solid rgba(160, 120, 32, 0.4);
+  border-radius: 3px;
+  padding: 0.2rem 0.5rem;
+  cursor: help;
+  transition: all 0.2s;
+}
+
+.building-badge:hover {
+  background: rgba(42, 30, 14, 0.7);
+  border-color: rgba(160, 120, 32, 0.6);
+}
+
+.building-icon {
+  font-size: 0.9rem;
+}
+
+.building-name {
+  font-family: 'IM Fell English SC', serif;
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  color: #c8a870;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.building-founder {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.45rem;
+  color: #7a6840;
+  font-style: italic;
+}
+
 /* ── MORTALITY PANEL ────────────────────────────────────── */
 #panel-mortality {
   max-width: 600px;
