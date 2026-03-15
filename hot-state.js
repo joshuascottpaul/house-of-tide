@@ -21,6 +21,7 @@ let gs = {
   marketPrices: null,
   allies: [],  // Named NPCs: Casso, Pell, Tucci, etc.
   buildings: {},  // Owned buildings: { warehouse: { purchased, founder, generation } }
+  victoryType: null,  // Victory condition achieved: 'economic', 'political', 'dynastic'
   rivals:{
     borracchi:{ relationship:0, lastInteraction:0, notes:[] },
     spinetta: { relationship:0, lastInteraction:0, notes:[] },

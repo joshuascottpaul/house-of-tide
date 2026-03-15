@@ -217,6 +217,50 @@ input[type=text]:focus { border-bottom-color:var(--rust); }
   color: #a04080;
 }
 
+/* ── VICTORY SCREEN ────────────────────────────────────── */
+#screen-victory {
+  background: radial-gradient(ellipse at center, rgba(160, 120, 32, 0.15) 0%, rgba(9, 7, 5, 0.95) 100%);
+}
+
+.victory-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.victory-epilogue {
+  text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+}
+
+.victory-stat {
+  text-align: center;
+}
+
+.victory-stat .stat-label {
+  display: block;
+  font-size: 0.6rem;
+  color: #7a6840;
+  margin-bottom: 0.3rem;
+}
+
+.victory-ledger .ledger-line {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  color: #c8a870;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid rgba(58, 44, 24, 0.3);
+}
+
+.victory-ledger .ledger-phase {
+  font-family: 'IM Fell English SC', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: #7a6840;
+  text-transform: uppercase;
+  margin-right: 0.5rem;
+}
+
 /* ── BUILDINGS DISPLAY ────────────────────────────────────── */
 #buildings-display {
   display: flex;

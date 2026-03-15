@@ -394,6 +394,46 @@ function formatHeirText(template, pronouns) {
     .replace(/\bThere\b/g, pronouns.cap);
 }
 
+function showVictoryScreen(victoryType) {
+  const victoryTitles = {
+    economic: 'Master of Trade',
+    political: 'Master of Verantia',
+    dynastic: 'Legacy Endures'
+  };
+  
+  const victoryIcon = {
+    economic: '💰',
+    political: '🏛️',
+    dynastic: '🌳'
+  };
+  
+  document.getElementById('victory-title').innerHTML = 
+    `<span class="victory-icon">${victoryIcon[victoryType]}</span> ${victoryTitles[victoryType]}`;
+  
+  document.getElementById('victory-epilogue').textContent = getVictoryEpilogue();
+  
+  // Victory stats
+  document.getElementById('victory-stats').innerHTML = `
+    <div class="victory-stat"><span class="stat-label">Marks:</span> ${gs.marks}</div>
+    <div class="victory-stat"><span class="stat-label">Ships:</span> ${gs.ships}</div>
+    <div class="victory-stat"><span class="stat-label">Reputation:</span> ${gs.reputation}/10</div>
+    <div class="victory-stat"><span class="stat-label">Generations:</span> ${gs.generation}</div>
+    <div class="victory-stat"><span class="stat-label">Buildings:</span> ${Object.keys(gs.buildings).length}</div>
+  `;
+  
+  // Victory ledger highlights
+  const ledgerEl = document.getElementById('victory-ledger');
+  ledgerEl.innerHTML = '';
+  gs.ledger.slice(0, 8).forEach(l => {
+    const div = document.createElement('div');
+    div.className = 'ledger-line';
+    div.innerHTML = `<span class="ledger-phase">${l.phase} ${l.year}</span>${l.entry}`;
+    ledgerEl.appendChild(div);
+  });
+  
+  showScreen('screen-victory');
+}
+
 function showDeathScreen() {
   const age = gs.age;
   const ageDesc = age < 42 ? 'far too young, though the sea does not consider age a mitigating circumstance'

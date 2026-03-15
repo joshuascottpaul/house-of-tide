@@ -89,6 +89,7 @@ function startGame() {
     cargoBasis: { saltfish:0, wine:0, alum:0, tin:0 },
     allies: [],  // Named NPCs generated at game start
     buildings: {},  // Owned buildings
+    victoryType: null,  // Victory condition achieved
     marketPrices: null,
     rivals:{
       borracchi:{ relationship:0, lastInteraction:0, notes:[] },
@@ -265,6 +266,60 @@ function getBuildingsSummary() {
     const info = gs.buildings[id];
     return `${building.name} (Gen ${info.generation}, by ${info.founder})`;
   }).join('; ');
+}
+
+// ══════════════════════════════════════════════════════════
+//  VICTORY CONDITIONS — Multiple paths to win (Paravia)
+// ══════════════════════════════════════════════════════════
+
+const VICTORY_THRESHOLDS = {
+  ECONOMIC: { marks: 10000, ships: 8, buildings: 4 },
+  POLITICAL: { reputation: 10, buildings: 3, rivalAlliances: 2 },
+  DYNASTIC: { generations: 5, reputation: 7, buildings: 2 }
+};
+
+function checkVictoryConditions() {
+  // Economic Victory — Master of Trade
+  if (gs.marks >= VICTORY_THRESHOLDS.ECONOMIC.marks && 
+      gs.ships >= VICTORY_THRESHOLDS.ECONOMIC.ships &&
+      Object.keys(gs.buildings).length >= VICTORY_THRESHOLDS.ECONOMIC.buildings) {
+    gs.victoryType = 'economic';
+    return 'economic';
+  }
+  
+  // Political Victory — Master of Verantia
+  if (gs.reputation >= VICTORY_THRESHOLDS.POLITICAL.reputation &&
+      Object.keys(gs.buildings).length >= VICTORY_THRESHOLDS.POLITICAL.buildings) {
+    // Check rival alliances (simplified: positive relationships)
+    const alliances = Object.values(gs.rivals).filter(r => r.relationship >= 3).length;
+    if (alliances >= VICTORY_THRESHOLDS.POLITICAL.rivalAlliances) {
+      gs.victoryType = 'political';
+      return 'political';
+    }
+  }
+  
+  // Dynastic Victory — Legacy Endures
+  if (gs.generation >= VICTORY_THRESHOLDS.DYNASTIC.generations &&
+      gs.reputation >= VICTORY_THRESHOLDS.DYNASTIC.reputation &&
+      Object.keys(gs.buildings).length >= VICTORY_THRESHOLDS.DYNASTIC.buildings) {
+    gs.victoryType = 'dynastic';
+    return 'dynastic';
+  }
+  
+  return null;
+}
+
+function getVictoryEpilogue() {
+  switch(gs.victoryType) {
+    case 'economic':
+      return `House ${gs.dynastyName} dominates the archipelago. Your fleet commands the seas. The ledger records: ${gs.marks} marks, ${gs.ships} ships. The Borracchi send gifts. The Spinetta seek alliances. The Calmari — for the first time in living memory — request an audience. You have become what you set out to build. The sea acknowledges your mastery.`;
+    case 'political':
+      return `House ${gs.dynastyName} is Verantia. Your seat in the Guild shapes policy. Your name opens doors that were locked to your founder. The harbourmaster bows. The notary seeks your approval. The ledger records not just wealth, but influence. You have not just survived the city — you have become it.`;
+    case 'dynastic':
+      return `Five generations. The palazzo remembers each founder. The warehouse your great-grandfather built still stands. The guild seat bears your name. The sea has taken some of your blood — the ledger does not forget — but the house endures. Your heir will continue. The ledger is still open.`;
+    default:
+      return `House ${gs.dynastyName} continues. The ledger records your deeds. The sea waits.`;
+  }
 }
 
 // ══════════════════════════════════════════════════════════
@@ -671,6 +726,15 @@ function beginYear() {
 
   // ── Loan interest + shadow enforcement ──────────────
   applyLoanInterest();
+  // ─────────────────────────────────────────────────────
+
+  // ── Check victory conditions ────────────────────────
+  const victory = checkVictoryConditions();
+  if (victory) {
+    // Victory achieved! Show special year-end with epilogue
+    showVictoryScreen(victory);
+    return;
+  }
   // ─────────────────────────────────────────────────────
 
   if (gs.age >= 65 || gs.marks <= 0 || gs.reputation <= 0 || gs.ships <= 0) {
