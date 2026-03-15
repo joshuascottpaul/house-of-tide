@@ -12,31 +12,37 @@ function updateBackground() {
     return;
   }
 
-  // Build a context-appropriate search keyword
+  // Build a context-appropriate search keyword based on CURRENT game state
   const rep = gs.reputation || 5;
   const marks = gs.marks || 0;
   const ships = gs.ships || 1;
+  const turn = gs.turn || 1;
+  const phase = gs.phase || 'house';
 
   let keyword;
   if (rep >= 9)          keyword = 'venice,palazzo,grand,renaissance';
   else if (rep >= 7)     keyword = 'venice,merchant,harbor,renaissance';
   else if (marks < 400)  keyword = 'harbor,storm,abandoned,medieval';
   else if (ships >= 3)   keyword = 'harbor,fleet,sailing,ships,renaissance';
-  else if (gs.phase === 'house') keyword = 'palazzo,courtyard,archway,medieval';
+  else if (phase === 'house') keyword = 'palazzo,courtyard,archway,medieval';
+  else if (phase === 'routes') keyword = 'ocean,sea,horizon,sailing,adventure';
+  else if (phase === 'trading') keyword = 'market,merchant,warehouse,trade,renaissance';
+  else if (phase === 'yearend') keyword = 'candle,ledger,study,medieval,night';
   else                   keyword = 'port,dock,fishing,boats,renaissance';
 
-  // LoremFlickr — free, no API key required, supports keywords
-  // Random image on each game start (no lock= parameter for true randomness)
-  // Exclude cats with ~cats operator
-  let randomSeed = sessionStorage.getItem('bg_seed');
-  if (!randomSeed) {
-    randomSeed = Math.random().toString(36).substr(2, 9);
-    sessionStorage.setItem('bg_seed', randomSeed);
-  }
-  // Add version cache-buster and timestamp to force new image on app update and each session
-  const version = typeof APP_VERSION !== 'undefined' ? APP_VERSION : 'v1';
-  const url = `https://loremflickr.com/1600/900/${encodeURIComponent(keyword)}~cats?random=${randomSeed}&v=${version}&t=${Date.now()}`;
-  el.style.backgroundImage = `url(${url})`;
+  // Create a seed that changes with game state (year + turn + phase)
+  // This ensures background changes as the game progresses
+  const stateSeed = `${turn}-${phase}-${rep}-${marks}`;
+  const url = `https://loremflickr.com/1600/900/${encodeURIComponent(keyword)}~cats?lock=${turn}&t=${Date.now()}`;
+  
+  // Force reload by setting opacity to 0, then 1 after image loads
+  el.style.opacity = '0';
+  const img = new Image();
+  img.onload = () => {
+    el.style.backgroundImage = `url(${url})`;
+    el.style.opacity = appearance.bgOpacity / 100;
+  };
+  img.src = url;
 }
 
 function setCustomBackground(url) {

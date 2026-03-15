@@ -301,6 +301,34 @@ async function showRoutesEvent() {
     document.getElementById('event-phase-lbl').innerHTML = '<span class="glyph glyph-anchor" style="font-size:.9em;">⚓</span> &nbsp; From the Routes &nbsp; <span class="glyph glyph-anchor" style="font-size:.9em;">⚓</span>';
     document.getElementById('event-text').textContent = ev.text;
     renderChoices('choices-container', ev.choices, false);
+    
+    // Add port selector after choices
+    const portContainer = document.createElement('div');
+    portContainer.id = 'routes-port-selector';
+    portContainer.style.cssText = 'margin-top:1.5rem;padding:1rem;border:1px solid #3a2c18;border-radius:3px;background:rgba(26,20,8,.3);';
+    portContainer.innerHTML = `
+      <div style="font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.1em;color:#a08848;text-transform:uppercase;margin-bottom:.5rem;">Where does your ship sail this turn?</div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        ${Object.keys(PORTS).map(port => `
+          <button 
+            class="port-btn ${gs.currentPort === port ? 'active' : ''}" 
+            onclick="selectPort('${port}')"
+            data-testid="routes-port-${port.toLowerCase()}"
+          >
+            ${port}
+          </button>
+        `).join('')}
+      </div>
+      <p style="font-family:'IM Fell English',serif;font-style:italic;font-size:.75rem;color:#7a6840;margin-top:.5rem;">
+        ${PORTS[gs.currentPort || 'Verantia'].description}
+      </p>
+    `;
+    
+    const choicesContainer = document.getElementById('choices-container');
+    if (choicesContainer && !document.getElementById('routes-port-selector')) {
+      choicesContainer.parentNode.insertBefore(portContainer, choicesContainer.nextSibling);
+    }
+    
     showPanel('panel-event');
     window.scrollTo({ top:0, behavior:'smooth' });
   } catch(err) {
