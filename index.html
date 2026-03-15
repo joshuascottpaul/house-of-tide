@@ -2,21 +2,470 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0; url=house-of-tide.html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>House of Tide</title>
-<style>
-body { 
-  font-family: Arial, sans-serif; 
-  text-align: center; 
-  padding: 2rem; 
-  background: #090705; 
-  color: #cbb98e; 
-}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=UnifrakturMaguntia&family=Pirata+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="hot-game.css">
 </head>
 <body>
-<h1>House of Tide</h1>
-<p>Redirecting to game...</p>
-<p><a href="house-of-tide.html">Click here if not redirected automatically</a></p>
+
+<!-- ══ BACKGROUND IMAGE ═══════════════════════════════════ -->
+<div id="bg-image" aria-hidden="true"></div>
+
+<!-- ══ TITLE ══════════════════════════════════════════════ -->
+<div id="screen-title" class="screen active">
+  <div class="screen-center">
+    <div class="eyebrow">A Game of Merchants &amp; Heirs</div>
+    <h1>House of Tide</h1>
+    <div class="rule"></div>
+    <p class="epigram" id="title-epigram"></p>
+    <div class="epigram-attr" id="title-attr"></div>
+    <div class="rule"></div>
+    <p class="subtitle" style="max-width:400px;margin:0 auto;">
+      You are the founder of a merchant dynasty.<br>
+      You will trade, govern, and scheme. You will age.<br>
+      When you die, your heir continues.<br>
+      The sea does not care either way.
+    </p>
+    <div style="margin-top:2rem;display:flex;align-items:center;justify-content:center;gap:.9rem;">
+      <span id="engine-label" style="font-family:'IM Fell English SC',serif;font-size:.68rem;color:#7a6840;letter-spacing:.1em;text-transform:uppercase;"></span>
+      <button onclick="showAchievementsPanel()" aria-label="View achievements" style="background:none;border:1px solid #2a1e0e;font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.1em;color:#5a4828;text-transform:uppercase;padding:.2rem .55rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.color='#a08848';this.style.borderColor='#3a2c18'" onmouseout="this.style.color='#5a4828';this.style.borderColor='#2a1e0e'">🏆 Achievements</button>
+      <button onclick="showStatsDashboard()" aria-label="View game statistics" style="background:none;border:1px solid #2a1e0e;font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.1em;color:#5a4828;text-transform:uppercase;padding:.2rem .55rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.color='#a08848';this.style.borderColor='#3a2c18'" onmouseout="this.style.color='#5a4828';this.style.borderColor='#2a1e0e'">Statistics</button>
+      <button onclick="openSettings()" aria-label="Open game settings" style="background:none;border:1px solid #2a1e0e;font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.1em;color:#5a4828;text-transform:uppercase;padding:.2rem .55rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.color='#a08848';this.style.borderColor='#3a2c18'" onmouseout="this.style.color='#5a4828';this.style.borderColor='#2a1e0e'">⊞ Settings</button>
+    </div>
+    <button class="btn" onclick="showScreen('screen-name')">Begin the Founding</button>
+    <div style="margin-top:.8rem;">
+      <button id="test-btn" onclick="testConnection()" style="background:none;border:none;font-family:'IM Fell English SC',serif;font-size:.72rem;letter-spacing:.12em;color:#7a6840;text-transform:uppercase;cursor:pointer;transition:color .2s;padding:.3rem 0;" onmouseover="this.style.color='#5a4020'" onmouseout="this.style.color='#7a6840'">⊞ &nbsp;Test Connection</button>
+      <div id="test-result" style="font-style:italic;font-size:.82rem;margin-top:.5rem;line-height:1.7;min-height:1.2rem;"></div>
+    </div>
+    <div id="title-saves" class="title-saves" style="display:none;">
+      <div class="rule-wide"></div>
+      <div style="font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.2em;color:#3a2a12;text-transform:uppercase;margin-bottom:.8rem;">Continue a House</div>
+      <div id="title-save-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SAVE OVERLAY ════════════════════════════════════════ -->
+<div id="save-overlay">
+  <div class="save-overlay-inner">
+    <div class="save-title"><span class="glyph glyph-star" style="font-size:.8em;margin-right:.3em;">✦</span> The Ledger Vault <span class="glyph glyph-star" style="font-size:.8em;margin-left:.3em;">✦</span></div>
+    <p class="save-subtitle">Three records may be kept. The sea takes no responsibility for what is not written down.</p>
+    <div id="save-slot-1" class="save-slot"></div>
+    <div id="save-slot-2" class="save-slot"></div>
+    <div id="save-slot-3" class="save-slot"></div>
+    <div class="save-autosave-note">✦ &nbsp; The ledger saves automatically after each turn &nbsp; ✦</div>
+    <button class="save-close" onclick="closeSaveOverlay()">Return to the House</button>
+  </div>
+</div>
+<div id="screen-name" class="screen">
+  <div class="screen-center">
+    <div class="eyebrow">Before the Ledger Is Opened</div>
+    <div style="margin-top:1.8rem;margin-bottom:2rem;">
+      <div class="name-group">
+        <div class="field-label">Your dynasty shall be called</div>
+        <div class="name-row">
+          <span class="name-prefix">House</span>
+          <input type="text" id="input-dynasty" placeholder="Solvi" maxlength="20">
+        </div>
+      </div>
+      <div class="name-group">
+        <div class="field-label">The founder's name</div>
+        <input type="text" id="input-founder" placeholder="Maren" maxlength="20">
+      </div>
+    </div>
+    <p style="font-style:italic;color:#7a6840;font-size:.92rem;max-width:300px;line-height:1.85;">
+      An heir will be assigned to you.<br>You did not choose them.<br>They did not choose this.
+    </p>
+    <button class="btn" onclick="startGame()">Open the Ledger</button>
+  </div>
+</div>
+
+<!-- ══ ONBOARDING ══════════════════════════════════════════ -->
+<div id="screen-onboard" class="screen">
+  <div class="onboard-wrap">
+    <div class="onboard-progress">
+      <div class="onboard-dot active" id="od0"></div>
+      <div class="onboard-dot" id="od1"></div>
+      <div class="onboard-dot" id="od2"></div>
+      <div class="onboard-dot" id="od3"></div>
+      <div class="onboard-dot" id="od4"></div>
+    </div>
+
+    <!-- PAGE 0: The Founding -->
+    <div class="onboard-page active" id="op0">
+      <div class="onboard-chapter"><span class="glyph glyph-anchor">⚓</span> &nbsp; I. The Founding &nbsp; <span class="glyph glyph-anchor">⚓</span></div>
+      <div class="onboard-title">The Ledger Opens</div>
+      <div class="onboard-body">
+        <p>You have just signed the founding papers of a merchant house. The ink is still wet on the second page. This is either significant or the notary was in a hurry; you are not yet certain which.</p>
+        <p>Verantia is built on reclaimed marsh, which explains its ambition and the smell. The council chamber leans slightly east. No one mentions this. The city has been performing respectability for three generations, which means it has had enough practice to almost succeed.</p>
+        <p>Three families have been here longer than your house, and they have not forgotten it. The <strong style="color:var(--gold-hi)">Borracchi</strong> control the eastern quay and perform generosity the way weather performs calm — as a preparatory condition. The <strong style="color:var(--gold-hi)">Spinetta</strong> lost the silk route in a bad contract five years ago and have since distributed blame across the city; none of the recipients are wrong. The <strong style="color:var(--gold-hi)">Calmari</strong> appear at council, say nothing, and leave with what they came for. Their palazzo is modest. This does not account for their influence. No one has explained where the difference lives.</p>
+        <p>You are not yet a threat to any of them. This will change, or it will not. The ledger is watching either way.</p>
+      </div>
+    </div>
+
+    <!-- PAGE 1: The Shape of a Year -->
+    <div class="onboard-page" id="op1">
+      <div class="onboard-chapter"><span class="glyph glyph-sword">⚔</span> &nbsp; II. The Year &nbsp; <span class="glyph glyph-sword">⚔</span></div>
+      <div class="onboard-title">Two Demands, One Reckoning</div>
+      <div class="onboard-body">
+        <p>A year in Verantia has a rhythm, and it does not negotiate.</p>
+        <p>The <strong style="color:var(--gold-hi)">house</strong> speaks first. Your palazzo — the one with the roof that has always leaked — requires attention. The family name requires attention. The rival families require attention of a different kind. Decisions must be made from incomplete information, usually before the second letter of the morning. This is called governance. The Calmari call it something else.</p>
+        <p>When the house is done with you, the <strong style="color:var(--gold-hi)">sea</strong> takes its turn. Your fleet — however many ships constitute your fleet at this particular moment — is running routes. Cargo spoils. Captains drink. The Caldera Straits collect their toll whether or not you are watching. Something will go wrong. The question is only which something, and whether you are positioned to survive it.</p>
+        <p>Then the year closes its books. You are older. Your heir is older. The ledger adds a page. Occasionally — rarely, when the ordinary routes have been exhausted and something stranger arrives — the year holds its breath and asks more of you than usual. These moments are not announced in advance. Neither were the ones that made the Borracchi what they are.</p>
+      </div>
+    </div>
+
+    <!-- PAGE 2: What the Ledger Counts -->
+    <div class="onboard-page" id="op2">
+      <div class="onboard-chapter"><span class="glyph glyph-star">✦</span> &nbsp; III. The Ledger &nbsp; <span class="glyph glyph-star">✦</span></div>
+      <div class="onboard-title">Four Things That Can Be Lost</div>
+      <div class="onboard-body">
+        <p>The ledger at the top of every page tracks four things, because these are the four things that end a house.</p>
+        <p><strong style="color:var(--gold-hi)">Treasury.</strong> You begin with eight hundred marks — enough to open a credit line at the harbour exchange, not enough to impress the Borracchi, which means you are precisely where a founding house should be. Watch the number. When it reaches zero, the house does not close quietly.</p>
+        <p><strong style="color:var(--gold-hi)">Name.</strong> In Verantia, reputation is not vanity — it is the rate of exchange between what you are and what people will permit you to do. A name in standing means contracts arrive before you ask, tariffs are quietly lower, and rivals return your correspondence. A name in decay means the reverse of each of these, progressively, until something worse that is not on any list.</p>
+        <p><strong style="color:var(--gold-hi)">Ships.</strong> You begin with one. A fleet of one is technically still a fleet. Lose it and you have nothing moving on the water, which in an archipelago is the same as having nothing moving at all.</p>
+        <p><strong style="color:var(--gold-hi)">Time.</strong> You are twenty-eight. The body keeps its own ledger and has never once accepted a renegotiation.</p>
+      </div>
+    </div>
+
+    <!-- PAGE 3: The Heir -->
+    <div class="onboard-page" id="op3">
+      <div class="onboard-chapter"><span class="glyph glyph-skull">☠</span> &nbsp; IV. The Heir &nbsp; <span class="glyph glyph-skull">☠</span></div>
+      <div class="onboard-title">What the House Becomes After You</div>
+      <div class="onboard-body">
+        <p>You will die. This is not pessimism. It is the foundational accounting principle of the house.</p>
+        <p>When you do, the ledger passes to your heir. The ships, such as they are. The debts, precisely as large as you left them. The reputation, for better or considerably worse. The enemies — these come without annotation; the heir will have to discover them the same way you did. The palazzo with the leaking roof, which you will have either repaired by then or bequeathed as a structural metaphor.</p>
+        <p>Your heir has a character you did not shape and cannot revise. A <strong style="color:var(--gold-hi)">reckless</strong> heir treats the treasury the way weather treats coastlines — with momentum and without apology. A <strong style="color:var(--gold-hi)">cautious</strong> one counts twice and occasionally a third time and sometimes does not act until the moment has passed, which is its own kind of loss. A <strong style="color:var(--gold-hi)">diplomatic</strong> heir says the right thing to the right person and something different but equally right to the next one, and both remain true, which is a skill that either builds empires or dissolves them.</p>
+        <p>When you die, the page turns. The house continues. What you built determines what they inherit. Build with this in mind, or do not — but the ledger will record which choice you made.</p>
+      </div>
+    </div>
+
+    <!-- PAGE 4: Pell -->
+    <div class="onboard-page" id="op4">
+      <div class="onboard-chapter"><span class="glyph glyph-star">✦</span> &nbsp; V. The Archivist &nbsp; <span class="glyph glyph-star">✦</span></div>
+      <div class="onboard-title">A Man Named Pell</div>
+      <div class="onboard-body">
+        <p>There is a man named Pell who keeps the warehouse accounts. He has been with the house since the founding — which is to say, since this morning — and he arrived with the inventory list and the expression of someone who has already identified three problems and is deciding in what order to mention them.</p>
+        <p>He has honest eyes. In Verantia, this is simultaneously a character virtue and a professional liability. He has arranged, somehow, for it to be both.</p>
+        <p>In the corner of the screen, a small door: <strong style="color:var(--gold-hi)">Consult the Archivist.</strong> Open it at any moment and Pell will read the current state of things — the treasury, the name, the year, what the sea has most recently done — and offer a single observation. Not counsel, exactly. An observation with an implication attached, the way a letter arrives already opened.</p>
+        <p>He is not always correct. He is always honest. In the context of Verantia, the distinction matters less than you might hope.</p>
+        <p style="color:var(--gold-lo); font-size:1.05rem; font-style:italic; margin-top:1.2rem;">The ledger is open. The sea is waiting. The Borracchi are already smiling.</p>
+      </div>
+    </div>
+
+    <div class="onboard-nav">
+      <button class="onboard-nav-btn" id="onboard-prev" onclick="onboardPrev()" disabled>← Previous</button>
+      <button class="onboard-skip" onclick="skipOnboard()">Skip →</button>
+      <button class="onboard-nav-btn" id="onboard-next" onclick="onboardNext()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ADVISOR ══════════════════════════════════════════════ -->
+<button id="advisor-toggle" onclick="toggleAdvisor()" style="display:none;">⊕ Consult the Archivist</button>
+<div id="advisor-panel">
+  <div class="advisor-header">
+    <span class="advisor-name">Pell — The Archivist</span>
+    <button class="advisor-ask" id="advisor-ask-btn" onclick="askAdvisor()">Ask Pell</button>
+  </div>
+  <div class="advisor-body">
+    <div id="advisor-text" class="advisor-text">The warehouseman is here. He has honest eyes and nothing to gain. Ask when you are ready.</div>
+  </div>
+  <div class="advisor-footer">⊟ &nbsp; Counsel does not appear in the ledger &nbsp; ⊟</div>
+</div>
+
+<!-- ══ GAME ═══════════════════════════════════════════════ -->
+<div id="screen-game" class="screen">
+  <div id="status-bar">
+    <div style="display:flex;flex-direction:column;gap:.12rem;">
+      <div id="dynasty-label" style="position:relative;cursor:help;" title="Rival relationships will appear here">—</div>
+      <div id="heir-badge" class="heir-badge"></div>
+      <div id="thread-tracker" style="display:none;margin-top:.25rem;">
+        <div id="thread-tracker-header" onclick="toggleThreads()" class="thread-tracker-hdr">
+          ⟳ Open Threads (<span id="thread-count">0</span>)
+        </div>
+        <div id="thread-tracker-list" style="display:none;"></div>
+      </div>
+      <div id="player-trait" style="font-family:'IM Fell English SC',serif;font-size:.58rem;letter-spacing:.13em;color:#5a4820;text-transform:uppercase;margin-top:.08rem;" title="Decision profile"></div>
+      <button onclick="openSaveOverlay()" style="margin-top:.3rem;background:none;border:1px solid #4a3820;font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.1em;color:#a08848;text-transform:uppercase;cursor:pointer;text-align:center;padding:.25rem .7rem;transition:all .2s;" onmouseover="this.style.borderColor='#a07820';this.style.color='#d4b46a'" onmouseout="this.style.borderColor='#4a3820';this.style.color='#a08848'">⊟ Save / Load</button>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.15rem;">
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-name">Phase</span>
+        <span id="stat-phase" class="phase-pip">The House</span>
+      </div>
+      <div class="stat">
+        <span class="stat-name">Year</span>
+        <span id="stat-turn" class="stat-val">1</span>
+      </div>
+      <div class="stat">
+        <span class="stat-name">Age</span>
+        <span id="stat-age" class="stat-val">28</span>
+      </div>
+      <div class="stat">
+        <span class="stat-name">Treasury</span>
+        <span id="stat-marks" class="stat-val">800 mk</span>
+      </div>
+      <div class="stat">
+        <span class="stat-name">Ships</span>
+        <span id="stat-ships" class="stat-val">1</span>
+      </div>
+      <div class="stat">
+        <span class="stat-name">Reputation</span>
+        <span id="stat-rep" class="stat-val">5/10</span>
+        <span id="stat-rep-tier" class="rep-tier mid">Established</span>
+      </div>
+    </div>
+    <div id="stat-debt" style="display:none;font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.1em;color:#c8922a;text-transform:uppercase;padding:.2rem .6rem .15rem;border-left:3px solid #7a4818;background:rgba(90,40,8,.18);white-space:nowrap;"></div>
+    </div>
+  </div>
+
+  <div id="game-content">
+    <div id="error-banner"></div>
+
+    <!-- Event panel -->
+    <div id="panel-event">
+      <div class="phase-hdr">
+        <div class="phase-hdr-line"></div>
+        <div id="event-phase-lbl" class="phase-hdr-lbl">From the House</div>
+        <div class="phase-hdr-line r"></div>
+      </div>
+      <p id="event-text" class="event-text"></p>
+      <div class="choices-lbl">Your response</div>
+      <div id="choices-container"></div>
+    </div>
+
+    <!-- Grand Venture panel -->
+    <div id="panel-venture">
+      <div class="venture-eyebrow" style="font-family:'IM Fell English SC',serif;font-size:1.4rem;letter-spacing:.22em;color:#7868b8;text-transform:uppercase;">The Horizon Opens</div>
+      <p id="venture-text" class="venture-text"></p>
+      <div class="venture-warning">This is Pell has set his pen down. He is watching you the way he watches documents that require a second witness. He has not said anything. He will not say anything. The ledger is still open.</div>
+      <div id="venture-choices"></div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading-panel">
+      <div id="loading-msg" class="loading-msg">The ledger considers what to record…</div>
+    </div>
+
+    <!-- Result panel -->
+    <div id="panel-result">
+      <div id="narrative-block" class="narrative-block"></div>
+      <div class="consequence-box">
+        <div class="consequence-title"><span class="glyph glyph-star" style="font-size:.85em;margin-right:.35em;">✦</span>The Ledger Records</div>
+        <div id="ledger-entry" class="consequence-entry"></div>
+        <div id="deltas" class="consequence-deltas"></div>
+      </div>
+      <button class="btn" id="continue-btn" onclick="advancePhase()">Continue →</button>
+    </div>
+
+    <!-- Year end panel -->
+    <div id="panel-yearend">
+      <div class="ye-ornament"><span class="glyph glyph-star" style="font-size:1.4rem;letter-spacing:.4em;">✦ ✦ ✦</span></div>
+      <p id="ye-note" class="ye-note"></p>
+      <p id="ye-heir" class="ye-heir"></p>
+      <p id="ye-suspicious" style="display:none;font-family:'IM Fell English',serif;font-style:italic;font-size:.82rem;color:#8a6030;margin:.8rem 0 0;padding:.6rem .8rem;border-left:2px solid #3a2810;"></p>
+      <div id="ye-settlement" style="margin-top:1.2rem;padding:.7rem .9rem;border-left:2px solid #2a1e0e;font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.1em;color:#7a6840;text-transform:uppercase;display:none;"></div>
+      <div id="ye-threads" style="display:none;margin-top:1.4rem;padding:.9rem 1rem;border:1px solid #2a1e0e;border-left:3px solid #4a3810;"></div>
+      <div id="ye-finance" class="finance-section" style="display:none;"></div>
+      <div class="ye-ornament" style="margin-top:1.5rem;"><span class="glyph glyph-star" style="font-size:1.4rem;letter-spacing:.4em;">✦ ✦ ✦</span></div>
+      <button class="btn" id="yearend-btn" onclick="beginYear()">Turn the Page →</button>
+    </div>
+
+    <!-- ══ TRADING PANEL ══════════════════════════════════════ -->
+    <div id="panel-trading" style="display:none;" class="panel">
+      <div class="panel-inner">
+        <div class="panel-title">⚓ &nbsp; The Cargo Exchange &nbsp; ⚓</div>
+        <p class="panel-subtitle" id="trading-season-note"></p>
+        <div id="trading-capacity" class="trading-capacity"></div>
+        <div id="trading-market-body"></div>
+        <div class="panel-actions" style="margin-top:1.5rem;">
+          <button class="btn" onclick="advancePhase()">Close the Books →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ledger history -->
+    <div id="ledger-history">
+      <div class="ledger-heading"><span class="glyph glyph-star" style="font-size:.85em;margin-right:.4em;">✦</span>The Permanent Record</div>
+      <div id="ledger-lines"></div>
+    </div>
+  </div>
+
+  <footer><span class="glyph glyph-anchor" style="font-size:1em;opacity:.6;">⚓</span> &nbsp; The Ledger Does Not Grieve &nbsp;—&nbsp; The Ledger Does Not Close Its Eyes &nbsp; <span class="glyph glyph-anchor" style="font-size:1em;opacity:.6;">⚓</span></footer>
+</div>
+
+<!-- ══ DEATH ═══════════════════════════════════════════════ -->
+<div id="screen-death" class="screen">
+  <div class="screen-center">
+    <div style="font-family:'IM Fell English SC',serif;font-size:1.2rem;color:#6a5030;letter-spacing:.2em;text-transform:uppercase;margin-bottom:1rem;"><span class="glyph glyph-skull" style="font-size:1.1rem;">☠</span> &nbsp; Death Notice &nbsp; <span class="glyph glyph-skull" style="font-size:1.2rem;">☠</span></div>
+    <div class="death-block">
+      <p id="death-notice" class="death-notice"></p>
+      <p id="death-epitaph" class="death-epitaph"></p>
+      <p id="death-heir-note" class="death-heir-note"></p>
+      <div class="rule-wide"></div>
+      <div style="font-family:'IM Fell English SC',serif;font-size:.72rem;color:#8a7848;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.8rem;">The Permanent Record</div>
+      <div id="death-ledger" class="death-ledger"></div>
+      <p class="death-pull">The ledger does not grieve. The ledger does not close its eyes.<br>The ledger says: here is what remains.</p>
+      <p class="death-turn">Turn the page.</p>
+    </div>
+    <button class="btn" id="death-handoff-btn" onclick="generationalHandoff()" style="margin-top:2rem;">Turn the Page →</button>
+    <button onclick="resetGame()" style="display:block;margin:.7rem auto 0;background:none;border:none;font-family:'IM Fell English SC',serif;font-size:.63rem;letter-spacing:.12em;color:#4a3820;text-transform:uppercase;cursor:pointer;opacity:.55;transition:opacity .2s;" onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='.55'">Begin a New House</button>
+  </div>
+</div>
+
+<script src="hot-data.js"></script>
+<script src="hot-prompts.js"></script>
+<script src="hot-config.js"></script>
+<script src="hot-llm.js"></script>
+<script src="hot-state.js"></script>
+<script src="hot-ui.js"></script>
+<script src="hot-economy.js"></script>
+<script src="hot-trading.js"></script>
+<script src="hot-events.js"></script>
+<script src="hot-engine.js"></script>
+<script src="hot-sfx.js"></script>
+<script src="hot-stats.js"></script>
+<script src="hot-achievements.js"></script>
+
+<!-- ══ SETTINGS MODAL ═══════════════════════════════════ -->
+<div id="settings-overlay" onclick="if(event.target===this)closeSettings()">
+  <div class="settings-box">
+    <div class="settings-title">⊞ &nbsp; The Ledger's Engine &nbsp; ⊞</div>
+
+    <div class="settings-section">
+      <div class="settings-label">Backend</div>
+      <div class="settings-radio-row">
+        <label class="settings-radio">
+          <input type="radio" name="s-backend" value="ollama" id="s-ollama" onchange="settingsBackendChange()">
+          <span>Ollama (local)</span>
+        </label>
+        <label class="settings-radio">
+          <input type="radio" name="s-backend" value="mlx" id="s-mlx" onchange="settingsBackendChange()">
+          <span>MLX (local)</span>
+        </label>
+        <label class="settings-radio">
+          <input type="radio" name="s-backend" value="openai" id="s-openai" onchange="settingsBackendChange()">
+          <span>OpenAI API</span>
+        </label>
+        <label class="settings-radio">
+          <input type="radio" name="s-backend" value="claude" id="s-claude" onchange="settingsBackendChange()">
+          <span>Claude API</span>
+        </label>
+      </div>
+      <div id="settings-backend-note"></div>
+    </div>
+
+    <div class="settings-section" id="s-ollama-section">
+      <div class="settings-label">Ollama Model</div>
+      <select class="settings-select" id="s-ollama-model">
+        <option value="qwen3.5:4b">⚡⚡⚡ qwen3.5:4b — fastest (~28s), less reliable JSON</option>
+        <option value="qwen2.5:7b">⚡⚡ qwen2.5:7b — balanced (~45s), good JSON</option>
+        <option value="mistral:latest">⚡⚡ mistral:latest — reliable JSON (~40s)</option>
+        <option value="llama3.1:8b">⚡ llama3.1:8b — best prose (~50s)</option>
+        <option value="custom">custom…</option>
+      </select>
+      <input type="text" class="settings-input" id="s-ollama-custom"
+        placeholder="model name e.g. gemma3:4b"
+        style="margin-top:.5rem;display:none;">
+      <div class="settings-hint">Models must be pulled first: <code style="color:#7a6840">ollama pull &lt;model&gt;</code></div>
+      
+      <div style="margin-top:.8rem;padding:.6rem .7rem;background:#1a1008;border:1px solid #3a2c18;border-radius:4px;">
+        <div style="font-family:'IM Fell English SC',serif;font-size:.62rem;letter-spacing:.1em;color:#a08848;text-transform:uppercase;margin-bottom:.4rem;">⚠️ Connection Issues?</div>
+        <div style="font-family:'IM Fell English',serif;font-size:.78rem;color:#9a8858;line-height:1.6;margin-bottom:.4rem;">
+          If Test Connection fails, run this in Terminal then restart Ollama:
+        </div>
+        <code style="display:block;padding:.4rem .6rem;background:#0c0a06;border:1px solid #4a3820;color:#c8a870;font-size:.75rem;font-family:monospace;user-select:all;">launchctl setenv OLLAMA_ORIGINS "*"</code>
+        <div style="font-family:'IM Fell English',serif;font-size:.72rem;color:#7a6840;margin-top:.3rem;">
+          Or use the automated script: <code style="color:#9a8858">ollama-cors</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section" id="s-mlx-section" style="display:none;">
+      <div class="settings-label">MLX Model Path</div>
+      <input type="text" class="settings-input" id="s-mlx-model"
+        placeholder="mlx-community/Qwen2.5-3B-Instruct-4bit">
+      <div class="settings-label" style="margin-top:.9rem;">HuggingFace Token</div>
+      <input type="password" class="settings-input" id="s-mlx-token"
+        placeholder="hf_…" autocomplete="off">
+      <div class="settings-hint">Stored locally in your browser only. Required to download models from HuggingFace. Then start the server: <code style="color:#7a6840">HF_TOKEN=&lt;your-token&gt; mlx-openai-server launch --model-path &lt;path&gt; --model-type lm</code></div>
+    </div>
+
+    <div class="settings-section" id="s-claude-section" style="display:none;">
+      <div class="settings-label">Claude Model</div>
+      <select class="settings-select" id="s-claude-model">
+        <option value="claude-haiku-4-5-20251001">⚡⚡⚡ claude-haiku-4-5 — fastest, cheapest</option>
+        <option value="claude-sonnet-4-6">⚡⚡ claude-sonnet-4-6 — best quality, slower</option>
+      </select>
+      <div class="settings-label" style="margin-top:.9rem;">API Key</div>
+      <input type="password" class="settings-input" id="s-api-key"
+        placeholder="sk-ant-api03-…" autocomplete="off">
+      <div class="settings-hint">Stored locally in your browser only. Calls go directly to api.anthropic.com. Get a key at console.anthropic.com.</div>
+    </div>
+
+    <div class="settings-section" id="s-openai-section" style="display:none;">
+      <div class="settings-label">OpenAI Model</div>
+      <select class="settings-select" id="s-openai-model">
+        <option value="gpt-4o-mini">⚡⚡⚡ gpt-4o-mini — fastest, cheapest, reliable</option>
+        <option value="gpt-4o">⚡⚡ gpt-4o — best quality, slower, more expensive</option>
+      </select>
+      <div class="settings-label" style="margin-top:.9rem;">API Key</div>
+      <input type="password" class="settings-input" id="s-openai-key"
+        placeholder="sk-proj-…" autocomplete="off">
+      <div class="settings-hint">Stored locally in your browser only. Calls go directly to api.openai.com. Get a key at platform.openai.com.</div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-label">Background Image</div>
+      <select class="settings-select" id="s-bg-select" onchange="backgroundSelectChange()">
+        <option value="dynamic">Dynamic (changes with game state)</option>
+        <option value="custom">Custom URL…</option>
+      </select>
+      <input type="text" class="settings-input" id="s-bg-custom"
+        placeholder="https://example.com/background.jpg"
+        style="margin-top:.5rem;display:none;" onchange="saveCustomBg()">
+      <div class="settings-hint">Choose dynamic backgrounds that reflect your house's state, or set a custom image URL.</div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-label">Sound Effects</div>
+      <label class="settings-radio">
+        <input type="checkbox" id="s-sfx" onchange="toggleSoundEffects()">
+        <span>Enable sound effects</span>
+      </label>
+      <div class="settings-hint">Play subtle sounds for clicks, saves, and notifications.</div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-label">Debug Log</div>
+      <label class="settings-radio">
+        <input type="checkbox" id="s-debug">
+        <span>Show raw model output and parse log</span>
+      </label>
+    </div>
+
+    <div class="settings-row">
+      <button class="settings-close" onclick="closeSettings()">Cancel</button>
+      <button class="settings-save" onclick="saveSettings()">Save &amp; Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DEBUG LOG PANEL ════════════════════════════════════ -->
+<div id="debug-panel">
+  <div class="debug-bar">
+    <span class="debug-bar-title">⊞ Debug Log — Raw Model Output</span>
+    <button class="debug-bar-btn" onclick="debugClear()">Clear</button>
+    <button class="debug-bar-btn" onclick="debugCopyLast()">Copy Last</button>
+    <button class="debug-bar-btn" onclick="toggleDebug()">Close</button>
+  </div>
+  <div id="debug-log"><span style="color:#3a2c18;font-style:italic;">No entries yet.</span></div>
+</div>
+<button id="debug-toggle" onclick="toggleDebug()" title="Toggle debug log (⌘⇧D)">debug</button>
+
 </body>
 </html>
+<!-- CI/CD Test Trigger -->

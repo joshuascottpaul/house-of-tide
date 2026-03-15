@@ -263,7 +263,7 @@ function prefetchOutcomes(choices, isVenture) {
   // Fetch all outcomes
   allChoices.forEach(c => {
     const userMsg = _buildChoiceUserMsg(c, isVenture);
-    callLLM(SYSTEM_PROMPT, userMsg, { json:true, temperature:0.88, maxTokens:900 })
+    callLLM(SYSTEM_PROMPT, userMsg, { json:true, temperature:0.88, maxTokens:900, noThink:true })
       .then(parsed => { 
         _prefetchStatus[c] = 'complete';
         _prefetchOutcomes[c] = parsed;

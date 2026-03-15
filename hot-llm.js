@@ -193,8 +193,15 @@ async function callLLM(systemPrompt, userMsg, opts = {}) {
     raw = data.message?.content || '';
   }
 
-  // strip <think> blocks (Qwen)
-  const clean = raw.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+  // strip <think>blocks (Qwen) - handles both <think>... and ... formats
+  let clean = raw.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+  clean = clean.replace(/<think>[\s\S]*?/gi, '').trim();  // Fallback: strip unclosed think
+  clean = clean.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();  // Alternative format
+  clean = clean.replace(/<think>[\s\S]*?/gi, '').trim();  // Unclosed alternative
+
+  // Strip markdown code fences (common with Qwen)
+  clean = clean.replace(/^```(?:json)?\s*/i, '').replace(/```$/i, '').trim();
+  clean = clean.replace(/^```\s*/i, '').replace(/```$/i, '').trim();
 
   if (!isJson) {
     debugLog(metaStr, raw, 'plain text — no parse needed', false);
@@ -208,20 +215,36 @@ async function callLLM(systemPrompt, userMsg, opts = {}) {
     parsed   = JSON.parse(clean);
     parseNote = '✓ direct JSON.parse';
   } catch(_) {
-    const block = clean.match(/\{[\s\S]*\}/);
+    // Try to extract JSON block (handles markdown fences, extra text)
+    let block = clean.match(/\{[\s\S]*\}/);
+    
+    // If no block found, try to find JSON-like content
+    if (!block) {
+      // Look for content that might be JSON with escaped quotes
+      block = clean.match(/\{[\s\S]*/);
+    }
+    
     if (!block) {
       debugLog(metaStr, raw, '✗ No JSON object found in response', true);
       throw new Error('No JSON in response');
     }
+    
+    // Clean up the extracted block (remove trailing text, fix common issues)
+    let blockText = block[0];
+    
+    // Try parsing the cleaned block
     try {
-      parsed   = JSON.parse(block[0]);
+      parsed   = JSON.parse(blockText);
       parseNote = '✓ extracted {} block';
     } catch(_2) {
+      // Field-rescue: extract individual fields from broken JSON
       const nar  = clean.match(/"narrative"\s*:\s*"((?:[^"\\]|\\.)*)"/);
       const mk   = clean.match(/"marks_delta"\s*:\s*(-?\d+)/);
       const rep  = clean.match(/"reputation_delta"\s*:\s*(-?\d+)/);
       const sh   = clean.match(/"ships_delta"\s*:\s*(-?\d+)/);
       const led  = clean.match(/"ledger_entry"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+      const choices = clean.match(/"choices"\s*:\s*\[([\s\S]*?)\]/);
+      
       if (!nar) {
         debugLog(metaStr, raw, '✗ Field rescue also failed — no narrative key', true);
         throw new Error('No JSON in response');
@@ -232,6 +255,7 @@ async function callLLM(systemPrompt, userMsg, opts = {}) {
         reputation_delta: rep ? parseInt(rep[1]) : 0,
         ships_delta:      sh  ? parseInt(sh[1])  : 0,
         ledger_entry:     led ? led[1] : 'The ledger notes the event without comment.',
+        choices:          choices ? JSON.parse('[' + choices[1] + ']') : [],
         open_thread:      null,
         resolve_thread:   null
       };

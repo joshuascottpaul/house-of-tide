@@ -5,7 +5,7 @@ const CFG_KEY = 'hot_config';
 const CFG_DEFAULTS = {
   backend:     'ollama',       // 'ollama' | 'claude' | 'openai' | 'mlx'
   ollamaModel: 'mistral:latest',
-  mlxModel:    'mlx-community/Qwen2.5-3B-Instruct-4bit',
+  mlxModel:    'mlx-community/Qwen2.5-7B-Instruct-4bit',  // Fast, quantized - may need JSON retry
   mlxHfToken:  '',
   claudeModel: 'claude-haiku-4-5-20251001',
   claudeApiKey:'',
@@ -13,6 +13,12 @@ const CFG_DEFAULTS = {
   openaiApiKey:'',
   debugMode:   false
 };
+
+// Alternative MLX models (copy/paste into Settings if needed):
+// - mlx-community/Qwen2.5-3B-Instruct-4bit (smaller, faster, less reliable JSON)
+// - mlx-community/Llama-3.1-8B-Instruct (better JSON compliance)
+// - mlx-community/Meta-Llama-3-8B-Instruct (excellent JSON)
+// - mlx-community/Qwen2.5-14B-Instruct (larger, better reasoning)
 let CFG = { ...CFG_DEFAULTS };
 
 function loadCFG() {
@@ -332,9 +338,9 @@ function updateMlxLaunchCmd() {
 // ══════════════════════════════════════════════════════════
 const APPEARANCE_KEY = 'hot_appearance';
 const APPEARANCE_DEFAULTS = {
-  bgOpacity: 15,         // 0-40%
-  bgGrayscale: 100,      // 0-100%
-  overlayOpacity: 95,    // 70-100%
+  bgOpacity: 35,         // 0-40% - increased from 15% for better visibility
+  bgGrayscale: 60,       // 0-100% - reduced from 100% to allow some color
+  overlayOpacity: 88,    // 70-100% - reduced from 95% for less dark overlay
   tintColor: '#090705',  // hex color
   tintOpacity: 0,        // 0-100%
   textBrightness: 100    // 50-100%
