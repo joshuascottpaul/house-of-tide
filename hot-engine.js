@@ -108,6 +108,207 @@ function startGame() {
 
 
 // ══════════════════════════════════════════════════════════
+//  MORTALITY EVENTS — Death can happen anytime
+// ══════════════════════════════════════════════════════════
+
+const MORTALITY_EVENTS = [
+  {
+    id: 'fever',
+    icon: '🏥',
+    weight: 0.35,
+    text: 'The physician arrives. The diagnosis is not optimistic.',
+    narrative: 'The fever came in the night. The physician speaks of humours and balance. You know only that your head burns and the ledger swims before your eyes.',
+    choices: [
+      { text: 'Pay for the best treatment', cost: 200, survival: 0.85, repCost: 0 },
+      { text: 'Rest and pray', cost: 0, survival: 0.55, repCost: -1 },
+      { text: 'Continue working through it', reward: 50, survival: 0.30, repCost: 0 }
+    ]
+  },
+  {
+    id: 'assassination',
+    icon: '🗡️',
+    weight: 0.25,
+    text: 'A crossbow bolt embeds in the door. The note reads: "Next: your heart."',
+    narrative: 'The bolt took the door where your head was moments before. The note is unsigned. You do not need a name to know who sent it.',
+    choices: [
+      { text: 'Hire guards immediately', cost: 150, survival: 0.90, repCost: 0 },
+      { text: 'Flee the city until it passes', cost: 50, survival: 0.75, repCost: -1 },
+      { text: 'Investigate who sent it', cost: 0, survival: 0.50, repCost: 0 }
+    ]
+  },
+  {
+    id: 'shipwreck',
+    icon: '⛈️',
+    weight: 0.20,
+    text: 'Your flagship never arrived. Survivors speak of rocks in fog.',
+    narrative: 'Three ships returned. One did not. The survivors say the fog was thick as wool, the rocks sharp as knives. Casso records the loss without comment.',
+    choices: [
+      { text: 'Mourn and commission replacement', cost: 400, survival: 0.95, repCost: 0 },
+      { text: 'Blame the captain publicly', cost: 0, survival: 0.80, repCost: 1 },
+      { text: 'Investigate sabotage', cost: 100, survival: 0.70, repCost: 0 }
+    ]
+  },
+  {
+    id: 'poison',
+    icon: '🍷',
+    weight: 0.15,
+    text: 'The wine tastes bitter. Pell knocks the cup from your hand.',
+    narrative: 'The wine shattered on the floor. The dog that lapped it died within the hour. Pell says nothing. His silence is accusation enough.',
+    choices: [
+      { text: 'Purge the household staff', cost: 100, survival: 0.85, repCost: -1 },
+      { text: 'Find who poisoned it', cost: 200, survival: 0.75, repCost: 0 },
+      { text: 'Assume it was a warning', cost: 0, survival: 0.60, repCost: 0 }
+    ]
+  },
+  {
+    id: 'accident',
+    icon: '🏗️',
+    weight: 0.05,
+    text: 'The scaffolding collapsed. You were beneath it.',
+    narrative: 'The palazzo wing was under repair. The scaffolding gave way. You were where it fell. The pain is absolute. The ledger waits.',
+    choices: [
+      { text: 'Sue the builders', cost: 50, survival: 0.70, repCost: 0 },
+      { text: 'Accept it as fate', cost: 0, survival: 0.65, repCost: 0 },
+      { text: 'Demand the builders pay', cost: 0, survival: 0.55, repCost: 1 }
+    ]
+  }
+];
+
+function checkMortalityEvent() {
+  // Base 5% chance per turn
+  let chance = 0.05;
+  
+  // Increase for low reputation
+  if (gs.reputation <= 2) chance += 0.10;
+  else if (gs.reputation <= 4) chance += 0.05;
+  
+  // Increase for hostile rivals
+  const hostileRivals = Object.values(gs.rivals).filter(r => r.relationship < -2).length;
+  chance += hostileRivals * 0.03;
+  
+  // Decrease for high security (future feature)
+  // if (gs.security && gs.security.guards > 5) chance -= 0.02;
+  
+  if (Math.random() > chance) return null;
+  
+  // Select event based on weights
+  const roll = Math.random();
+  let cumulative = 0;
+  let selectedEvent = MORTALITY_EVENTS[0];
+  
+  for (const event of MORTALITY_EVENTS) {
+    cumulative += event.weight;
+    if (roll <= cumulative) {
+      selectedEvent = event;
+      break;
+    }
+  }
+  
+  return selectedEvent;
+}
+
+function showMortalityEvent(event) {
+  // Hide other panels
+  document.getElementById('panel-event').style.display = 'none';
+  document.getElementById('panel-venture').style.display = 'none';
+  document.getElementById('panel-trading').style.display = 'none';
+  document.getElementById('panel-result').style.display = 'none';
+  
+  // Show mortality event
+  const panel = document.getElementById('panel-mortality');
+  if (!panel) return;
+  
+  panel.style.display = 'block';
+  panel.className = 'panel fade-in';
+  
+  // Set event content
+  document.getElementById('mortality-icon').textContent = event.icon;
+  document.getElementById('mortality-text').textContent = event.text;
+  document.getElementById('mortality-narrative').textContent = event.narrative;
+  
+  // Render choices
+  const choicesContainer = document.getElementById('mortality-choices');
+  choicesContainer.innerHTML = event.choices.map((choice, i) => `
+    <button class="choice-btn" data-testid="mortality-choice-${i}" onclick="resolveMortalityChoice(${i})">
+      ${choice.text}
+      <span class="choice-hint">
+        ${choice.survival * 100}% survival
+        ${choice.cost ? ' | -' + choice.cost + ' mk' : ''}
+        ${choice.reward ? ' | +' + choice.reward + ' mk' : ''}
+      </span>
+    </button>
+  `).join('');
+  
+  // Store current event for resolution
+  window._currentMortalityEvent = event;
+}
+
+function resolveMortalityChoice(choiceIndex) {
+  const event = window._currentMortalityEvent;
+  if (!event) return;
+  
+  const choice = event.choices[choiceIndex];
+  
+  // Apply cost/reward
+  if (choice.cost) {
+    gs.marks = Math.max(0, gs.marks - choice.cost);
+  }
+  if (choice.reward) {
+    gs.marks += choice.reward;
+  }
+  
+  // Apply reputation change
+  if (choice.repCost) {
+    gs.reputation = Math.max(0, gs.reputation + choice.repCost);
+  }
+  
+  // Roll for survival
+  const survivalRoll = Math.random();
+  const survived = survivalRoll <= choice.survival;
+  
+  if (!survived) {
+    // Founder died
+    gs.ledger.unshift({
+      year: gs.turn,
+      phase: 'Death',
+      entry: `Died at age ${gs.age}. Cause: ${event.id}. The ledger notes: ${gs.generation} generation${gs.generation > 1 ? 's' : ''} of ${gs.dynastyName}.`
+    });
+    showDeathScreen('mortality');
+  } else {
+    // Survived
+    gs.ledger.unshift({
+      year: gs.turn,
+      phase: 'Survival',
+      entry: `Survived ${event.id}. ${choice.survival < 0.7 ? 'Close.' : 'The ledger notes the event without comment.'}`
+    });
+    
+    // Show result panel
+    document.getElementById('panel-mortality').style.display = 'none';
+    document.getElementById('panel-result').style.display = 'block';
+    
+    document.getElementById('narrative-block').innerHTML = `
+      <p class="narrative-para">You survived. The fever broke, or the assassin failed, or the rocks spared you. The ledger records the event. The ledger does not say whether this was mercy.</p>
+    `;
+    
+    document.getElementById('ledger-entry').textContent = 'Survived: ' + event.text;
+    document.getElementById('deltas').innerHTML = `
+      <span style="color: ${choice.repCost < 0 ? '#c84030' : choice.repCost > 0 ? '#6a9838' : '#7a6840'}">
+        ${choice.repCost < 0 ? 'Reputation -' + Math.abs(choice.repCost) : choice.repCost > 0 ? 'Reputation +' + choice.repCost : 'No reputation change'}
+      </span>
+      ${choice.cost ? '<span style="color:#c84030"> | -' + choice.cost + ' mk</span>' : ''}
+      ${choice.reward ? '<span style="color:#6a9838"> | +' + choice.reward + ' mk</span>' : ''}
+    `;
+    
+    // Update UI
+    updateStatusBar();
+    renderAlliesDisplay();
+  }
+  
+  // Clear stored event
+  window._currentMortalityEvent = null;
+}
+
+// ══════════════════════════════════════════════════════════
 //  ALLIES SYSTEM — Named NPCs
 // ══════════════════════════════════════════════════════════
 
@@ -210,6 +411,16 @@ function beginPhase() {
   updateStatusBar();
   updateBackground(); // Update background when phase changes
   hideError();
+  
+  // Check for mortality event at start of house phase (5% base chance)
+  if (gs.phase === 'house') {
+    const mortalityEvent = checkMortalityEvent();
+    if (mortalityEvent) {
+      showMortalityEvent(mortalityEvent);
+      return;
+    }
+  }
+  
   if      (gs.phase === 'house')   showHouseEvent();
   else if (gs.phase === 'routes')  checkAndShowRoutes();
   else if (gs.phase === 'trading') showTradingPanel();
