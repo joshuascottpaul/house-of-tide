@@ -112,6 +112,7 @@ CURRENT STATE:
 - Allies: {{allies}}
 - Rivals: {{rivals}}
 - Open Threads: {{threads}}
+- Current Port: {{port}}
 
 YOUR TASK:
 Generate a market event that could affect this house's trading this turn. The event should:
@@ -120,12 +121,23 @@ Generate a market event that could affect this house's trading this turn. The ev
 3. Use the Junior Gothic register: present tense, second person, cold observation
 4. Optionally create or resolve a thread (threads are unfinished business)
 
+PRICE SHOCK GUIDELINES (for extraordinary events):
+- Bumper harvest: 0.4-0.6x modifier (floods market)
+- Locust plague: 1.8-2.5x modifier (destroys crops)
+- Drought: 1.5-2.0x modifier (scarcity)
+- Windfall catch: 0.3-0.5x modifier (too many fish)
+- Mine collapse: 2.0-3.0x modifier (tin/alum scarce)
+- New trade route: 0.5-0.7x modifier (abundant supply)
+- War embargo: 2.0-2.5x modifier (blocked imports)
+- Pirate blockade: 1.8-2.2x modifier (ships can't arrive)
+
 PRICE MODIFIER RULES:
-- Range: 0.5 (cheap) to 2.0 (expensive)
+- Normal range: 0.5 (cheap) to 2.0 (expensive)
+- Shock range: 0.3 (flooded) to 3.0 (scarce)
 - 1.0 = no effect
 - Modifiers should be realistic for the event
-- Example: "Bumper harvest" → wine: 0.5-0.7
-- Example: "Pirate raid" → saltfish: 1.4-1.8
+- Example: "Bumper harvest" → wine: 0.4-0.6
+- Example: "Locust plague" → grain: 2.0-2.5
 
 NARRATIVE RULES:
 - 1-3 sentences
@@ -142,7 +154,7 @@ RESPONSE FORMAT (JSON ONLY — NO MARKDOWN, NO EXPLANATION):
 {
   "event": null | {
     "name": "2-4 word event name",
-    "icon": "One emoji: 🍇☠️📜🎉⛈️⛏️🔥🎁⚓🏛️💀🌾📦🐋",
+    "icon": "One emoji: 🍇☠️📜🎉⛈️⛏️🔥🎁⚓🏛️💀🌾📦🐋🦗🌪️",
     "mods": { "saltfish": 1.0, "wine": 0.6, "alum": 1.0, "tin": 1.0 },
     "narrative": "The harbourmaster's report arrives. Three words: 'Wine. Too much wine.' The southern vineyards have flooded the market.",
     "thread": null | { "label": "Thread label", "expiresYear": 3 }
@@ -236,8 +248,9 @@ function generateMarketEventAI() {
       .replace('{{allies}}', getAllySummary())
       .replace('{{rivals}}', getRivalSummary())
       .replace('{{threads}}', getThreadSummary())
+      .replace('{{port}}', gs.currentPort || 'Verantia')
       .replace('{{turn}}', gs.turn);
-    
+
     // Call AI to generate event
     var result = callLLM(MARKET_EVENT_PROMPT, prompt, { json: true, noThink: true });
     return result;
