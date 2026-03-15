@@ -108,71 +108,60 @@ function startGame() {
 
 
 // ══════════════════════════════════════════════════════════
-//  MORTALITY EVENTS — Death can happen anytime
+//  MORTALITY EVENTS — AI Generated (Oregon Trail tension)
+// ══════════════════════════════════════════════════════════
+// The AI is the Dungeon Master. Mortality events are narrated,
+// not hardcoded. Events build on allies, rivals, and history.
 // ══════════════════════════════════════════════════════════
 
-const MORTALITY_EVENTS = [
-  {
-    id: 'fever',
-    icon: '🏥',
-    weight: 0.35,
-    text: 'The physician arrives. The diagnosis is not optimistic.',
-    narrative: 'The fever came in the night. The physician speaks of humours and balance. You know only that your head burns and the ledger swims before your eyes.',
-    choices: [
-      { text: 'Pay for the best treatment', cost: 200, survival: 0.85, repCost: 0 },
-      { text: 'Rest and pray', cost: 0, survival: 0.55, repCost: -1 },
-      { text: 'Continue working through it', reward: 50, survival: 0.30, repCost: 0 }
-    ]
-  },
-  {
-    id: 'assassination',
-    icon: '🗡️',
-    weight: 0.25,
-    text: 'A crossbow bolt embeds in the door. The note reads: "Next: your heart."',
-    narrative: 'The bolt took the door where your head was moments before. The note is unsigned. You do not need a name to know who sent it.',
-    choices: [
-      { text: 'Hire guards immediately', cost: 150, survival: 0.90, repCost: 0 },
-      { text: 'Flee the city until it passes', cost: 50, survival: 0.75, repCost: -1 },
-      { text: 'Investigate who sent it', cost: 0, survival: 0.50, repCost: 0 }
-    ]
-  },
-  {
-    id: 'shipwreck',
-    icon: '⛈️',
-    weight: 0.20,
-    text: 'Your flagship never arrived. Survivors speak of rocks in fog.',
-    narrative: 'Three ships returned. One did not. The survivors say the fog was thick as wool, the rocks sharp as knives. Casso records the loss without comment.',
-    choices: [
-      { text: 'Mourn and commission replacement', cost: 400, survival: 0.95, repCost: 0 },
-      { text: 'Blame the captain publicly', cost: 0, survival: 0.80, repCost: 1 },
-      { text: 'Investigate sabotage', cost: 100, survival: 0.70, repCost: 0 }
-    ]
-  },
-  {
-    id: 'poison',
-    icon: '🍷',
-    weight: 0.15,
-    text: 'The wine tastes bitter. Pell knocks the cup from your hand.',
-    narrative: 'The wine shattered on the floor. The dog that lapped it died within the hour. Pell says nothing. His silence is accusation enough.',
-    choices: [
-      { text: 'Purge the household staff', cost: 100, survival: 0.85, repCost: -1 },
-      { text: 'Find who poisoned it', cost: 200, survival: 0.75, repCost: 0 },
-      { text: 'Assume it was a warning', cost: 0, survival: 0.60, repCost: 0 }
-    ]
-  },
-  {
-    id: 'accident',
-    icon: '🏗️',
-    weight: 0.05,
-    text: 'The scaffolding collapsed. You were beneath it.',
-    narrative: 'The palazzo wing was under repair. The scaffolding gave way. You were where it fell. The pain is absolute. The ledger waits.',
-    choices: [
-      { text: 'Sue the builders', cost: 50, survival: 0.70, repCost: 0 },
-      { text: 'Accept it as fate', cost: 0, survival: 0.65, repCost: 0 },
-      { text: 'Demand the builders pay', cost: 0, survival: 0.55, repCost: 1 }
+var MORTALITY_EVENT_PROMPT = `CRITICAL: You are the dungeon master of HOUSE OF TIDE. Generate a mortality event OR return null.
+
+CURRENT STATE:
+- Age: {{age}} (dies naturally at 65)
+- Reputation: {{reputation}}/10 ({{tier}})
+- Treasury: {{marks}} mk
+- Ships: {{ships}}
+- Allies: {{allies}}
+- Rivals: {{rivals}}
+- Open Threads: {{threads}}
+- Recent Ledger: {{ledger}}
+
+YOUR TASK:
+Generate a mortality event that could kill the founder this turn. The event should:
+1. Reflect the current state (age, reputation, allies, rivals, threads)
+2. Feel like a natural consequence of the world, not random misfortune
+3. Use the Junior Gothic register: present tense, second person, cold observation
+4. Provide 3 choices with different survival chances, costs, and consequences
+
+MORTALITY TYPE GUIDELINES (suggest, don't mandate):
+- Low reputation → assassination, poisoning, "accidents"
+- Hostile rivals → targeted attacks, sabotage
+- High age → fever, natural causes, "the body fails"
+- Many ships → shipwreck, maritime disaster
+- No allies → vulnerable, alone
+- Strong allies → protection, warning
+
+CHOICE STRUCTURE:
+Each choice should have:
+- text: What the player does (1 sentence, action-oriented)
+- survival: 0.3 to 0.95 (30%-95% survival chance)
+- cost: marks spent (0-400)
+- repCost: reputation change (-2 to +1)
+
+RESPONSE FORMAT (JSON ONLY — NO MARKDOWN, NO EXPLANATION):
+{
+  "event": null | {
+    "type": "fever|assassination|shipwreck|poison|accident|custom",
+    "icon": "🏥🗡️⛈️🍷🏗️💀⚰️🔥",
+    "text": "2-4 word event title",
+    "narrative": "2-4 sentences in Junior Gothic register. Present tense. Second person. End on a fact.",
+    "choices": [
+      { "text": "Choice 1", "survival": 0.85, "cost": 200, "repCost": 0 },
+      { "text": "Choice 2", "survival": 0.55, "cost": 0, "repCost": -1 },
+      { "text": "Choice 3", "survival": 0.30, "cost": 0, "repCost": 0 }
     ]
   }
-];
+}`;
 
 function checkMortalityEvent() {
   // Base 5% chance per turn
@@ -186,25 +175,70 @@ function checkMortalityEvent() {
   const hostileRivals = Object.values(gs.rivals).filter(r => r.relationship < -2).length;
   chance += hostileRivals * 0.03;
   
-  // Decrease for high security (future feature)
-  // if (gs.security && gs.security.guards > 5) chance -= 0.02;
+  // Increase for old age
+  if (gs.age >= 55) chance += 0.05;
+  if (gs.age >= 60) chance += 0.10;
+  
+  // Decrease for strong allies (they protect you)
+  if (gs.allies && gs.allies.length > 0) {
+    const strongAllies = gs.allies.filter(a => a.bond >= 8 && a.status === 'active').length;
+    chance -= strongAllies * 0.02;
+  }
+  
+  // Ensure chance stays in bounds
+  chance = Math.max(0.01, Math.min(0.50, chance));
   
   if (Math.random() > chance) return null;
   
-  // Select event based on weights
-  const roll = Math.random();
-  let cumulative = 0;
-  let selectedEvent = MORTALITY_EVENTS[0];
-  
-  for (const event of MORTALITY_EVENTS) {
-    cumulative += event.weight;
-    if (roll <= cumulative) {
-      selectedEvent = event;
-      break;
-    }
+  // Generate event via AI
+  return generateMortalityEventAI();
+}
+
+function generateMortalityEventAI() {
+  try {
+    // Build prompt with current game state
+    var prompt = MORTALITY_EVENT_PROMPT
+      .replace('{{age}}', gs.age)
+      .replace('{{reputation}}', gs.reputation)
+      .replace('{{tier}}', getRepTier(gs.reputation))
+      .replace('{{marks}}', gs.marks)
+      .replace('{{ships}}', gs.ships)
+      .replace('{{allies}}', getAllySummary())
+      .replace('{{rivals}}', getRivalSummary())
+      .replace('{{threads}}', getThreadSummary())
+      .replace('{{ledger}}', getRecentLedgerSummary());
+    
+    // Call AI to generate event
+    var result = callLLM(MORTALITY_EVENT_PROMPT, prompt, { json: true, noThink: true });
+    return result;
+  } catch(e) {
+    // AI call failed — fallback to simple hardcoded event
+    console.log('Mortality event AI failed, using fallback:', e);
+    return getFallbackMortalityEvent();
   }
-  
-  return selectedEvent;
+}
+
+function getFallbackMortalityEvent() {
+  // Simple fallback if AI fails
+  const fallbacks = [
+    {
+      type: 'fever',
+      icon: '🏥',
+      text: 'The fever came in the night.',
+      narrative: 'Your head burns. The ledger swims before your eyes. The physician speaks of humours. You know only that you are dying.',
+      choices: [
+        { text: 'Pay for the best treatment', survival: 0.85, cost: 200, repCost: 0 },
+        { text: 'Rest and pray', survival: 0.55, cost: 0, repCost: -1 },
+        { text: 'Continue working', survival: 0.30, cost: 0, repCost: 0 }
+      ]
+    }
+  ];
+  return { event: fallbacks[0] };
+}
+
+function getRecentLedgerSummary() {
+  if (!gs.ledger || gs.ledger.length === 0) return 'No recent entries.';
+  return gs.ledger.slice(0, 3).map(function(e) { return e.entry; }).join('; ');
 }
 
 function showMortalityEvent(event) {
