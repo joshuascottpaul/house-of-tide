@@ -577,6 +577,31 @@ footer { text-align:center; padding:1.2rem; border-top:1px solid #2a1e0e;
   line-height: 1.6;
 }
 
+.market-event {
+  display: block;
+  background: rgba(200, 100, 80, 0.12);
+  border: 1px solid rgba(200, 100, 80, 0.3);
+  border-left: 3px solid #c84030;
+  border-radius: 4px;
+  padding: 0.6rem 0.8rem;
+  font-family: 'IM Fell English', serif;
+  font-size: 0.82rem;
+  color: #e8c8a0;
+  line-height: 1.6;
+}
+
+.event-icon {
+  font-size: 1.1rem;
+  margin-right: 0.4rem;
+}
+
+.event-name {
+  font-weight: bold;
+  color: #f0d080;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 .trading-commodity {
   display: grid;
   grid-template-columns: 1fr 1fr auto;

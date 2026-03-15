@@ -28,12 +28,14 @@ var COMMODITY_NAMES = {
 
 // ── Market events ─────────────────────────────────────────
 var MARKET_EVENTS = [
-  { name: 'Bumper Harvest', mods: { wine: 0.6, saltfish: 1.0, alum: 1.0, tin: 1.0 }, desc: 'Abundant harvest floods the wine market' },
-  { name: 'Pirate Activity', mods: { saltfish: 1.5, wine: 1.3, alum: 1.0, tin: 1.0 }, desc: 'Raiders disrupt northern trade routes' },
-  { name: 'Guild Embargo', mods: { alum: 1.8, tin: 0.7, saltfish: 1.0, wine: 1.0 }, desc: 'Factors guild restricts alum exports' },
-  { name: 'Festival Demand', mods: { wine: 1.6, saltfish: 1.2, alum: 1.0, tin: 1.0 }, desc: 'Grand festival increases luxury demand' },
-  { name: 'Shipwreck Series', mods: { saltfish: 1.4, tin: 1.3, wine: 1.0, alum: 1.0 }, desc: 'Storm season claims multiple vessels' },
-  { name: 'Mining Discovery', mods: { tin: 0.6, alum: 0.7, saltfish: 1.0, wine: 1.0 }, desc: 'New mines flood the metal market' },
+  { name: 'Bumper Harvest', icon: '🍇', mods: { wine: 0.5, saltfish: 1.0, alum: 1.0, tin: 1.0 }, desc: 'Abundant harvest floods the wine market', narrative: 'The southern vineyards report record yields. Wine flows like water; prices follow.' },
+  { name: 'Pirate Activity', icon: '☠️', mods: { saltfish: 1.6, wine: 1.4, alum: 1.0, tin: 1.0 }, desc: 'Raiders disrupt northern trade routes', narrative: 'Three merchant vessels seized off the Caldera passage. Insurance rates spike; captains demand hazard pay.' },
+  { name: 'Guild Embargo', icon: '📜', mods: { alum: 2.0, tin: 0.6, saltfish: 1.0, wine: 1.0 }, desc: 'Factors guild restricts alum exports', narrative: 'The Factors Guild voted to restrict alum shipments. Officially: quality concerns. Unofficially: someone is cornering the market.' },
+  { name: 'Festival Demand', icon: '🎉', mods: { wine: 1.7, saltfish: 1.2, alum: 1.0, tin: 1.0 }, desc: 'Grand festival increases luxury demand', narrative: 'The Doge announces a week of celebration. Every house in Verantia will serve wine, regardless of cost.' },
+  { name: 'Shipwreck Series', icon: '⛈️', mods: { saltfish: 1.5, tin: 1.4, wine: 1.0, alum: 1.0 }, desc: 'Storm season claims multiple vessels', narrative: 'The northern gales have taken their toll. Four hulls lost in as many days. Salt fish grows scarce.' },
+  { name: 'Mining Discovery', icon: '⛏️', mods: { tin: 0.5, alum: 0.6, saltfish: 1.0, wine: 1.0 }, desc: 'New mines flood the metal market', narrative: 'A shepherd in the high passes stumbled onto a tin lode. The metal arrives at market faster than it can be counted.' },
+  { name: 'Harbour Fire', icon: '🔥', mods: { saltfish: 1.4, wine: 1.3, alum: 1.2, tin: 1.0 }, desc: 'Warehouse district blaze destroys stock', narrative: 'The eastern warehouses burned through the night. The ledger notes the losses without comment. The smoke smelled of salt fish and despair.' },
+  { name: 'Diplomatic Gift', icon: '🎁', mods: { wine: 0.7, alum: 0.8, saltfish: 1.0, tin: 1.0 }, desc: 'Foreign embassy arrives with tribute', narrative: 'An embassy from the southern kingdoms arrived with casks of spiced wine. The gift is generous. The expectations attached are not quantified.' },
 ];
 
 // ══════════════════════════════════════════════════════════
@@ -44,12 +46,14 @@ function rollMarketPrices() {
   var mods = SEASON_MODIFIERS[season];
   var prices = { season: season };
 
-  // 25% chance of market event
+  // 30% chance of market event (up from 25%)
   var activeEvent = null;
-  if (Math.random() < 0.25) {
+  if (Math.random() < 0.30) {
     activeEvent = MARKET_EVENTS[Math.floor(Math.random() * MARKET_EVENTS.length)];
     prices.event = activeEvent.name;
+    prices.eventIcon = activeEvent.icon;
     prices.eventDesc = activeEvent.desc;
+    prices.eventNarrative = activeEvent.narrative;
   }
 
   var commodities = ['saltfish', 'wine', 'alum', 'tin'];
@@ -275,11 +279,18 @@ function renderTradingPanel() {
     capEl.textContent = 'Cargo hold: ' + cargoUsed + '\u202f/\u202f' + capacity + ' units (' + gs.ships + (gs.ships === 1 ? ' ship' : ' ships') + ')';
   }
 
-  // Season note
+  // Season note with event
   var snEl = document.getElementById('trading-season-note');
   if (snEl && gs.marketPrices) {
-    var eventNote = gs.marketPrices.event ? ' | ⚠ ' + gs.marketPrices.event + ': ' + gs.marketPrices.eventDesc : '';
-    snEl.textContent = 'The market turns in ' + gs.marketPrices.season + '. Buy low; sell when the season favours you.' + eventNote;
+    if (gs.marketPrices.event) {
+      // Show event prominently with narrative
+      snEl.innerHTML = '<span class="market-event">' + 
+        '<span class="event-icon">' + gs.marketPrices.eventIcon + '</span>' +
+        '<span class="event-name">' + gs.marketPrices.event + '</span>: ' + 
+        gs.marketPrices.eventNarrative + '</span>';
+    } else {
+      snEl.textContent = 'The market turns in ' + gs.marketPrices.season + '. Buy low; sell when the season favours you.';
+    }
   }
 
   var body = document.getElementById('trading-market-body');
