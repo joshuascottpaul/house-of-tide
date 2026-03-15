@@ -1,5 +1,8 @@
 // ══════════════════════════════════════════════════════════
-//  TRADING LAYER
+//  TRADING LAYER — AI GENERATED MARKET EVENTS
+// ══════════════════════════════════════════════════════════
+// The AI is the Dungeon Master. Market events are narrated,
+// not hardcoded. Events build on threads, rivals, and history.
 // ══════════════════════════════════════════════════════════
 
 // ── Base commodity prices ──────────────────────────────────
@@ -26,17 +29,53 @@ var COMMODITY_NAMES = {
   tin:      'Tin',
 };
 
-// ── Market events ─────────────────────────────────────────
-var MARKET_EVENTS = [
-  { name: 'Bumper Harvest', icon: '🍇', mods: { wine: 0.5, saltfish: 1.0, alum: 1.0, tin: 1.0 }, desc: 'Abundant harvest floods the wine market', narrative: 'The southern vineyards report record yields. Wine flows like water; prices follow.' },
-  { name: 'Pirate Activity', icon: '☠️', mods: { saltfish: 1.6, wine: 1.4, alum: 1.0, tin: 1.0 }, desc: 'Raiders disrupt northern trade routes', narrative: 'Three merchant vessels seized off the Caldera passage. Insurance rates spike; captains demand hazard pay.' },
-  { name: 'Guild Embargo', icon: '📜', mods: { alum: 2.0, tin: 0.6, saltfish: 1.0, wine: 1.0 }, desc: 'Factors guild restricts alum exports', narrative: 'The Factors Guild voted to restrict alum shipments. Officially: quality concerns. Unofficially: someone is cornering the market.' },
-  { name: 'Festival Demand', icon: '🎉', mods: { wine: 1.7, saltfish: 1.2, alum: 1.0, tin: 1.0 }, desc: 'Grand festival increases luxury demand', narrative: 'The Doge announces a week of celebration. Every house in Verantia will serve wine, regardless of cost.' },
-  { name: 'Shipwreck Series', icon: '⛈️', mods: { saltfish: 1.5, tin: 1.4, wine: 1.0, alum: 1.0 }, desc: 'Storm season claims multiple vessels', narrative: 'The northern gales have taken their toll. Four hulls lost in as many days. Salt fish grows scarce.' },
-  { name: 'Mining Discovery', icon: '⛏️', mods: { tin: 0.5, alum: 0.6, saltfish: 1.0, wine: 1.0 }, desc: 'New mines flood the metal market', narrative: 'A shepherd in the high passes stumbled onto a tin lode. The metal arrives at market faster than it can be counted.' },
-  { name: 'Harbour Fire', icon: '🔥', mods: { saltfish: 1.4, wine: 1.3, alum: 1.2, tin: 1.0 }, desc: 'Warehouse district blaze destroys stock', narrative: 'The eastern warehouses burned through the night. The ledger notes the losses without comment. The smoke smelled of salt fish and despair.' },
-  { name: 'Diplomatic Gift', icon: '🎁', mods: { wine: 0.7, alum: 0.8, saltfish: 1.0, tin: 1.0 }, desc: 'Foreign embassy arrives with tribute', narrative: 'An embassy from the southern kingdoms arrived with casks of spiced wine. The gift is generous. The expectations attached are not quantified.' },
-];
+// ── Market event generation prompt ────────────────────────
+var MARKET_EVENT_PROMPT = `CRITICAL: You are the dungeon master of HOUSE OF TIDE. Generate a market event OR return null.
+
+CURRENT STATE:
+- Season: {{season}}
+- Reputation: {{reputation}}/10 ({{tier}})
+- Treasury: {{marks}} mk
+- Ships: {{ships}}
+- Cargo: {{cargo}}
+- Rivals: {{rivals}}
+- Open Threads: {{threads}}
+
+YOUR TASK:
+Generate a market event that could affect this house's trading this turn. The event should:
+1. Reflect the season, house state, rival relationships, or open threads
+2. Feel like a natural consequence of the world, not a random mechanic
+3. Use the Junior Gothic register: present tense, second person, cold observation
+4. Optionally create or resolve a thread (threads are unfinished business)
+
+PRICE MODIFIER RULES:
+- Range: 0.5 (cheap) to 2.0 (expensive)
+- 1.0 = no effect
+- Modifiers should be realistic for the event
+- Example: "Bumper harvest" → wine: 0.5-0.7
+- Example: "Pirate raid" → saltfish: 1.4-1.8
+
+NARRATIVE RULES:
+- 1-3 sentences
+- Present tense, second person
+- Never use "suddenly" or "you feel"
+- End on a fact, not a rhetorical question
+- Draw from: accounting, weather, architecture, the sea
+
+OPTIONAL THREAD:
+If this event creates unfinished business, include a thread:
+{ "thread": { "label": "Short description", "expiresYear": {{turn}}+2 } }
+
+RESPONSE FORMAT (JSON ONLY — NO MARKDOWN, NO EXPLANATION):
+{
+  "event": null | {
+    "name": "2-4 word event name",
+    "icon": "One emoji: 🍇☠️📜🎉⛈️⛏️🔥🎁⚓🏛️💀🌾📦🐋",
+    "mods": { "saltfish": 1.0, "wine": 0.6, "alum": 1.0, "tin": 1.0 },
+    "narrative": "The harbourmaster's report arrives. Three words: 'Wine. Too much wine.' The southern vineyards have flooded the market.",
+    "thread": null | { "label": "Thread label", "expiresYear": 3 }
+  }
+}`;
 
 // ══════════════════════════════════════════════════════════
 //  rollMarketPrices
@@ -46,48 +85,190 @@ function rollMarketPrices() {
   var mods = SEASON_MODIFIERS[season];
   var prices = { season: season };
 
-  // 30% chance of market event (up from 25%)
-  var activeEvent = null;
-  if (Math.random() < 0.30) {
-    activeEvent = MARKET_EVENTS[Math.floor(Math.random() * MARKET_EVENTS.length)];
-    prices.event = activeEvent.name;
-    prices.eventIcon = activeEvent.icon;
-    prices.eventDesc = activeEvent.desc;
-    prices.eventNarrative = activeEvent.narrative;
+  // Check if we have a prefetched AI event (from prefetch during Routes phase)
+  var activeEvent = gs._prefetchedMarketEvent || null;
+  
+  // If no prefetched event, 30% chance to generate one now
+  if (!activeEvent && Math.random() < 0.30) {
+    activeEvent = generateMarketEventAI();
   }
+  
+  // Clear prefetched event (used or not)
+  gs._prefetchedMarketEvent = null;
 
-  var commodities = ['saltfish', 'wine', 'alum', 'tin'];
-  for (var i = 0; i < commodities.length; i++) {
-    var c = commodities[i];
-    var base = COMMODITY_BASE[c];
-    var mod  = mods[c];
+  if (activeEvent && activeEvent.event) {
+    prices.event = activeEvent.event.name;
+    prices.eventIcon = activeEvent.event.icon;
+    prices.eventNarrative = activeEvent.event.narrative;
     
-    // Apply event modifier if active
-    if (activeEvent && activeEvent.mods[c]) {
-      mod = mod * activeEvent.mods[c];
+    // Apply event modifiers
+    var commodities = ['saltfish', 'wine', 'alum', 'tin'];
+    for (var i = 0; i < commodities.length; i++) {
+      var c = commodities[i];
+      var base = COMMODITY_BASE[c];
+      var mod  = mods[c];
+      
+      // Apply event modifier if present
+      if (activeEvent.event.mods && activeEvent.event.mods[c]) {
+        mod = mod * activeEvent.event.mods[c];
+      }
+      
+      // ±15% random variance
+      var variance = 0.85 + Math.random() * 0.30;
+      var buyRaw  = base.buy  * mod * variance;
+      var sellRaw = base.sell * mod * variance;
+      prices[c] = {
+        buy:  Math.max(1, Math.round(buyRaw)),
+        sell: Math.max(1, Math.round(sellRaw)),
+      };
     }
     
-    // ±15% random variance
-    var variance = 0.85 + Math.random() * 0.30;
-    var buyRaw  = base.buy  * mod * variance;
-    var sellRaw = base.sell * mod * variance;
-    prices[c] = {
-      buy:  Math.max(1, Math.round(buyRaw)),
-      sell: Math.max(1, Math.round(sellRaw)),
-    };
+    // Create thread if event specifies one
+    if (activeEvent.event.thread) {
+      gs.threads.push({
+        label: activeEvent.event.thread.label,
+        expiresYear: gs.turn + 2,
+        urgency: 'normal',
+        _fromEvent: true
+      });
+    }
+  } else {
+    // No event — roll prices normally with just seasonal modifiers
+    var commodities = ['saltfish', 'wine', 'alum', 'tin'];
+    for (var j = 0; j < commodities.length; j++) {
+      var cc = commodities[j];
+      var base = COMMODITY_BASE[cc];
+      var mm = mods[cc];
+      var variance = 0.85 + Math.random() * 0.30;
+      var buyRaw  = base.buy  * mm * variance;
+      var sellRaw = base.sell * mm * variance;
+      prices[cc] = {
+        buy:  Math.max(1, Math.round(buyRaw)),
+        sell: Math.max(1, Math.round(sellRaw)),
+      };
+    }
   }
 
   // Store previous prices for trend calculation
   if (gs.marketPrices && gs.marketPrices._turn === gs.turn - 1) {
     prices._prevTurn = gs.turn;
-    for (var j = 0; j < commodities.length; j++) {
-      var cc = commodities[j];
-      prices[cc]._prevBuy = gs.marketPrices[cc].buy;
-      prices[cc]._prevSell = gs.marketPrices[cc].sell;
+    for (var k = 0; k < commodities.length; k++) {
+      var ccc = commodities[k];
+      prices[ccc]._prevBuy = gs.marketPrices[ccc].buy;
+      prices[ccc]._prevSell = gs.marketPrices[ccc].sell;
     }
   }
 
   gs.marketPrices = prices;
+}
+
+// ══════════════════════════════════════════════════════════
+//  generateMarketEventAI — AI Dungeon Master generates event
+// ══════════════════════════════════════════════════════════
+function generateMarketEventAI() {
+  try {
+    // Build prompt with current game state
+    var prompt = MARKET_EVENT_PROMPT
+      .replace('{{season}}', getSeason(gs.turn))
+      .replace('{{reputation}}', gs.reputation)
+      .replace('{{tier}}', getRepTier(gs.reputation))
+      .replace('{{marks}}', gs.marks)
+      .replace('{{ships}}', gs.ships)
+      .replace('{{cargo}}', getCargoSummary())
+      .replace('{{rivals}}', getRivalSummary())
+      .replace('{{threads}}', getThreadSummary())
+      .replace('{{turn}}', gs.turn);
+    
+    // Call AI to generate event
+    var result = callLLM(MARKET_EVENT_PROMPT, prompt, { json: true, noThink: true });
+    return result;
+  } catch(e) {
+    // AI call failed — no event this turn
+    console.log('Market event AI failed:', e);
+    return null;
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+//  prefetchMarketEvent — generate during Routes phase
+// ══════════════════════════════════════════════════════════
+function prefetchMarketEvent() {
+  // Only prefetch for local backends (saves cloud API costs)
+  if (!CFG || (CFG.backend !== 'ollama' && CFG.backend !== 'mlx')) return;
+  
+  // 30% chance of event
+  if (Math.random() >= 0.30) return;
+  
+  try {
+    var prompt = MARKET_EVENT_PROMPT
+      .replace('{{season}}', getSeason(gs.turn))
+      .replace('{{reputation}}', gs.reputation)
+      .replace('{{tier}}', getRepTier(gs.reputation))
+      .replace('{{marks}}', gs.marks)
+      .replace('{{ships}}', gs.ships)
+      .replace('{{cargo}}', getCargoSummary())
+      .replace('{{rivals}}', getRivalSummary())
+      .replace('{{threads}}', getThreadSummary())
+      .replace('{{turn}}', gs.turn);
+    
+    // Fire and forget — store result when ready
+    callLLM(MARKET_EVENT_PROMPT, prompt, { json: true, noThink: true })
+      .then(function(result) {
+        gs._prefetchedMarketEvent = result;
+      })
+      .catch(function(e) {
+        console.log('Market event prefetch failed:', e);
+      });
+  } catch(e) {
+    // Silent fail — prefetch is optional
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+//  Helper: Get cargo summary for prompt
+// ══════════════════════════════════════════════════════════
+function getCargoSummary() {
+  var total = getCargoTotal();
+  if (total === 0) return 'Empty holds';
+  var parts = [];
+  if (gs.cargo.saltfish > 0) parts.push(gs.cargo.saltfish + ' salt fish');
+  if (gs.cargo.wine > 0) parts.push(gs.cargo.wine + ' wine');
+  if (gs.cargo.alum > 0) parts.push(gs.cargo.alum + ' alum');
+  if (gs.cargo.tin > 0) parts.push(gs.cargo.tin + ' tin');
+  return parts.join(', ');
+}
+
+// ══════════════════════════════════════════════════════════
+//  Helper: Get rival summary for prompt
+// ══════════════════════════════════════════════════════════
+function getRivalSummary() {
+  var parts = [];
+  if (gs.rivals.borracchi.relationship < -2) parts.push('Borracchi hostile');
+  else if (gs.rivals.borracchi.relationship > 2) parts.push('Borracchi friendly');
+  if (gs.rivals.spinetta.relationship < -2) parts.push('Spinetta hostile');
+  if (gs.rivals.calmari.relationship < -2) parts.push('Calmari suspicious');
+  if (gs.rivals.liyuen.relationship > 2) parts.push('Li Yuen cooperative');
+  return parts.length > 0 ? parts.join(', ') : 'No strong rival ties';
+}
+
+// ══════════════════════════════════════════════════════════
+//  Helper: Get thread summary for prompt
+// ══════════════════════════════════════════════════════════
+function getThreadSummary() {
+  if (!gs.threads || gs.threads.length === 0) return 'No open threads';
+  var labels = gs.threads.map(function(t) { return t.label; });
+  return labels.join('; ');
+}
+
+// ══════════════════════════════════════════════════════════
+//  Helper: Get reputation tier name
+// ══════════════════════════════════════════════════════════
+function getRepTier(rep) {
+  if (rep >= 9) return 'Legendary';
+  if (rep >= 7) return 'Renowned';
+  if (rep >= 5) return 'Established';
+  if (rep >= 3) return 'Precarious';
+  return 'Disgraced';
 }
 
 // ══════════════════════════════════════════════════════════
