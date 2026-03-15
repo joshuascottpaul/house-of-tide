@@ -38,6 +38,7 @@ CURRENT STATE:
 - Treasury: {{marks}} mk
 - Ships: {{ships}}
 - Cargo: {{cargo}}
+- Allies: {{allies}}
 - Rivals: {{rivals}}
 - Open Threads: {{threads}}
 
@@ -175,6 +176,7 @@ function generateMarketEventAI() {
       .replace('{{marks}}', gs.marks)
       .replace('{{ships}}', gs.ships)
       .replace('{{cargo}}', getCargoSummary())
+      .replace('{{allies}}', getAllySummary())
       .replace('{{rivals}}', getRivalSummary())
       .replace('{{threads}}', getThreadSummary())
       .replace('{{turn}}', gs.turn);
@@ -207,6 +209,7 @@ function prefetchMarketEvent() {
       .replace('{{marks}}', gs.marks)
       .replace('{{ships}}', gs.ships)
       .replace('{{cargo}}', getCargoSummary())
+      .replace('{{allies}}', getAllySummary())
       .replace('{{rivals}}', getRivalSummary())
       .replace('{{threads}}', getThreadSummary())
       .replace('{{turn}}', gs.turn);
@@ -236,6 +239,16 @@ function getCargoSummary() {
   if (gs.cargo.alum > 0) parts.push(gs.cargo.alum + ' alum');
   if (gs.cargo.tin > 0) parts.push(gs.cargo.tin + ' tin');
   return parts.join(', ');
+}
+
+// ══════════════════════════════════════════════════════════
+//  Helper: Get ally summary for prompt
+// ══════════════════════════════════════════════════════════
+function getAllySummary() {
+  if (!gs.allies || gs.allies.length === 0) return 'No known allies';
+  return gs.allies.map(function(a) { 
+    return a.name + ' (' + a.role + ', bond ' + a.bond + '/10, ' + a.status + ')'; 
+  }).join('; ');
 }
 
 // ══════════════════════════════════════════════════════════
