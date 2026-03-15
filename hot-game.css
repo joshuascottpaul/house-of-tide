@@ -152,6 +152,70 @@ input[type=text]:focus { border-bottom-color:var(--rust); }
 .heir-badge { font-family:'IM Fell English',serif; font-style:italic;
   font-size:.85rem; color:#a89060; }
 .heir-badge .ht { color:#d4b46a; }
+
+/* ── ALLIES DISPLAY ────────────────────────────────────── */
+#allies-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.ally-badge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(42, 30, 14, 0.4);
+  border: 1px solid rgba(90, 72, 40, 0.5);
+  border-radius: 3px;
+  padding: 0.15rem 0.4rem;
+  cursor: help;
+  transition: all 0.2s;
+}
+
+.ally-badge:hover {
+  background: rgba(42, 30, 14, 0.6);
+  border-color: rgba(160, 120, 32, 0.7);
+}
+
+.ally-badge [data-testid="ally-name"] {
+  font-family: 'IM Fell English SC', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  color: #c8a870;
+  text-transform: uppercase;
+}
+
+.ally-badge [data-testid="ally-role"] {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.5rem;
+  color: #7a6840;
+  font-style: italic;
+}
+
+.ally-badge [data-testid="ally-bond"] {
+  font-size: 0.45rem;
+  letter-spacing: 0.1em;
+  color: #a08848;
+}
+
+.ally-badge [data-testid="ally-status"] {
+  font-family: 'IM Fell English SC', serif;
+  font-size: 0.45rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.ally-badge [data-testid="ally-status"].dead {
+  color: #c84030;
+}
+
+.ally-badge [data-testid="ally-status"].missing {
+  color: #c8922a;
+}
+
+.ally-badge [data-testid="ally-status"].betrayed {
+  color: #a04080;
+}
 .thread-tracker-hdr { font-family:'IM Fell English SC',serif; font-size:.58rem;
   letter-spacing:.1em; color:#7a6040; text-transform:uppercase; cursor:pointer;
   border-top:1px solid #2a1e0e; padding-top:.3rem; }

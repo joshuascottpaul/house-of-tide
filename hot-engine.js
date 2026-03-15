@@ -81,6 +81,7 @@ function startGame() {
     threads:[],
     cargo: { saltfish:0, wine:0, alum:0, tin:0 },
     cargoBasis: { saltfish:0, wine:0, alum:0, tin:0 },
+    allies: [],  // Named NPCs generated at game start
     marketPrices: null,
     rivals:{
       borracchi:{ relationship:0, lastInteraction:0, notes:[] },
@@ -94,12 +95,113 @@ function startGame() {
   updateBackground();
   document.getElementById('dynasty-label').textContent = `House ${gs.dynastyName} — ${gs.founderName}`;
   updateRivalTooltip();
+  
+  // Generate named allies (Casso, Pell, +1 random)
+  generateAllies();
+  renderAlliesDisplay();
+  
   // Show onboarding first
   onboardPage = 0;
   renderOnboard();
   showScreen('screen-onboard');
 }
 
+
+// ══════════════════════════════════════════════════════════
+//  ALLIES SYSTEM — Named NPCs
+// ══════════════════════════════════════════════════════════
+
+const ALLY_ROLES = [
+  { name: 'Casso', role: 'Senior Captain', canDie: true, baseBond: 7 },
+  { name: 'Pell', role: 'Archivist', canDie: false, baseBond: 9 },
+  { name: 'Tucci', role: 'Harbourmaster', canDie: true, baseBond: 5 },
+  { name: 'Vanzetti', role: 'Guild Secretary', canDie: true, baseBond: 4 },
+  { name: 'Greve', role: 'Notary', canDie: false, baseBond: 6 },
+  { name: 'Albinosi', role: 'Commissioner', canDie: true, baseBond: 5 },
+  { name: 'Li Yuen', role: 'Network Broker', canDie: true, baseBond: 3 },
+  { name: 'Rinaldo', role: 'Borracchi Factor', canDie: true, baseBond: 4 },
+];
+
+function generateAllies() {
+  // Always include Casso, Pell, and one random third ally
+  const fixedAllies = ALLY_ROLES.filter(a => a.name === 'Casso' || a.name === 'Pell');
+  const randomAllies = ALLY_ROLES.filter(a => a.name !== 'Casso' && a.name !== 'Pell');
+  const thirdAlly = randomAllies[Math.floor(Math.random() * randomAllies.length)];
+  
+  gs.allies = [...fixedAllies, thirdAlly].map(ally => ({
+    name: ally.name,
+    role: ally.role,
+    bond: ally.baseBond + Math.floor(Math.random() * 2), // ±1 variance
+    status: 'active', // active, dead, missing, betrayed
+    canDie: ally.canDie,
+    metYear: gs.turn,
+    lastInteraction: null
+  }));
+}
+
+function renderAlliesDisplay() {
+  const display = document.getElementById('allies-display');
+  if (!display) return;
+  
+  if (!gs.allies || gs.allies.length === 0) {
+    display.style.display = 'none';
+    return;
+  }
+  
+  display.style.display = 'block';
+  display.innerHTML = gs.allies.map(ally => `
+    <span class="ally-badge" data-testid="ally-badge" title="${ally.role} (Bond: ${ally.bond}/10)">
+      <span data-testid="ally-name">${ally.name}</span>
+      <span data-testid="ally-role" class="ally-role">${ally.role}</span>
+      <span data-testid="ally-bond" class="ally-bond">${'■'.repeat(Math.floor(ally.bond/2))}${'□'.repeat(5 - Math.floor(ally.bond/2))}</span>
+      ${ally.status !== 'active' ? `<span data-testid="ally-status" class="ally-status ${ally.status}">${ally.status}</span>` : ''}
+    </span>
+  `).join('');
+}
+
+function updateAllyBond(name, delta) {
+  const ally = gs.allies.find(a => a.name === name);
+  if (!ally) return;
+  
+  ally.bond = Math.max(0, Math.min(10, ally.bond + delta));
+  ally.lastInteraction = gs.turn;
+  
+  // Record in ledger
+  if (delta > 0) {
+    gs.ledger.unshift({
+      year: gs.turn,
+      phase: 'Allies',
+      entry: `${name}'s bond strengthens. ${ally.role}: ${ally.bond}/10.`
+    });
+  } else if (delta < 0) {
+    gs.ledger.unshift({
+      year: gs.turn,
+      phase: 'Allies',
+      entry: `${name}'s bond weakens. ${ally.role}: ${ally.bond}/10.`
+    });
+  }
+  
+  renderAlliesDisplay();
+}
+
+function killAlly(name, cause) {
+  const ally = gs.allies.find(a => a.name === name);
+  if (!ally || !ally.canDie) return false;
+  
+  ally.status = 'dead';
+  ally.deathYear = gs.turn;
+  ally.deathCause = cause;
+  
+  // Record in ledger
+  gs.ledger.unshift({
+    year: gs.turn,
+    phase: 'Death',
+    entry: `${name} is dead. ${ally.role}. ${cause}. The ledger notes: ${ally.bond}/10 bond.`
+  });
+  
+  renderAlliesDisplay();
+  return true;
+}
 
 // ══════════════════════════════════════════════════════════
 //  PHASE ENGINE
