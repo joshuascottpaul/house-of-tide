@@ -1,9 +1,10 @@
 # 🎯 House of Tide — Remaining Tasks & Strategic Roadmap
 
 **Last Updated:** March 14, 2026
-**Total Tasks:** 52 (8 new strategic additions)
-**Project Completion:** 58% (73/126 tasks)
-**Next Milestone:** v1.1 — Port System (2-3 weeks)
+**Total Tasks:** 60 (16 new test-related additions)
+**Project Completion:** 54% (73/134 tasks)
+**Next Milestone:** v1.1 — Port System + Named NPCs + Mortality + Buildings (3-4 weeks)
+**Test Coverage:** 100% core loops, 0% v1.1 features
 
 ---
 
@@ -14,71 +15,99 @@
 
 **Every task below must serve this principle.** If a feature doesn't give the AI better "campaign notes" to work with, it doesn't belong in this game.
 
+**Every test below must verify player experience**, not just code paths. Tests should answer: "Does this feel like House of Tide?"
+
 ---
 
-## 🔴 CRITICAL (Must Do Before v1.1 Launch) — 22-26 hours
+## 🔴 CRITICAL (Must Do Before v1.1 Launch) — 38-50 hours
 
-| # | Task | Time | Rationale | Goal | Dependencies |
-|---|------|------|-----------|------|--------------|
-| 1 | **Manual Testing Documentation** | 2 hrs | Quality assurance before players see the game | Complete testing checklist, verify all core loops work | None |
-| 2 | **Port System Implementation** | 12-16 hrs | **Taipan! core mechanic** — without ports, trading is shopping, not strategy | Player chooses destination each turn; different prices, events, risks per port | AI event generation ✅ |
-| 3 | **Mortality Events System** | 6-8 hrs | **Oregon Trail core tension** — death at 65 is scripted, not tense | Founder can die from events (fever, assassination, shipwreck); creates urgency | Death screen ✅, Generational handoff ✅ |
-| 4 | **Building/Purchase System** | 4-6 hrs | **Paravia core legacy** — buildings make dynasty tangible, not abstract | Buy warehouses, guild halls, shipyards at year-end; persist across generations | Ship market ✅ |
+| # | Task | Time | Rationale | Goal | Test Requirements | Dependencies |
+|---|------|------|-----------|------|-------------------|--------------|
+| 1 | **Manual Testing Documentation** | 2 hrs | Quality assurance before players see the game | Complete testing checklist, verify all core loops work | N/A — manual only | None |
+| 2 | **Port System Implementation** | 12-16 hrs | **Taipan! core mechanic** — without ports, trading is shopping, not strategy | Player chooses destination each turn; different prices, events, risks per port | 8 Playwright tests (see test spec) | AI event generation ✅ |
+| 3 | **Port System Tests** | 4-6 hrs | Verify ports work correctly | Tests for: price modifiers, travel, port events, UI updates | `tests/port-system.spec.js` | Port System ✅ |
+| 4 | **Named NPCs Implementation** | 6-8 hrs | **Oregon Trail core emotion** — player must love before losing | 3 named allies (Casso, Pell, Tucci) with bond system, death events | 6 Playwright tests (see test spec) | AI event generation ✅ |
+| 5 | **Named NPCs Tests** | 3-4 hrs | Verify NPCs feel real | Tests for: names visible, bond changes, death affects player | `tests/named-npcs.spec.js` | Named NPCs ✅ |
+| 6 | **Mortality Events Implementation** | 6-8 hrs | **Oregon Trail core tension** — death at 65 is scripted, not tense | Founder can die from events (fever, assassination, shipwreck); creates urgency | 5 Playwright tests (see test spec) | Death screen ✅, Generational handoff ✅ |
+| 7 | **Mortality Events Tests** | 3-4 hrs | Verify mortality creates tension | Tests for: event triggers, survival choices, death handoff | `tests/mortality-events.spec.js` | Mortality Events ✅ |
+| 8 | **Building System Implementation** | 4-6 hrs | **Paravia core legacy** — buildings make dynasty tangible, not abstract | Buy warehouses, guild halls, shipyards at year-end; persist across generations | 5 Playwright tests (see test spec) | Ship market ✅ |
+| 9 | **Building System Tests** | 3-4 hrs | Verify buildings persist | Tests for: purchase, effect applied, generational persistence | `tests/building-system.spec.js` | Building System ✅ |
 
-**Total: 24-32 hours**
+**Total: 43-58 hours**
 
 **Why These Are Critical:**
 - **Port System** = Makes trading a **game of strategy**, not a spreadsheet
-- **Mortality Events** = Makes death **tense**, not a countdown timer
-- **Buildings** = Makes legacy **visible**, not just a number
+- **Named NPCs** = Makes death **personal**, not abstract
+- **Mortality Events** = Makes death **possible**, not scripted
+- **Buildings** = Makes legacy **tangible**, not just a number
+- **Tests** = Ensures features **work and stay working**
 
-**Action:** Complete manual testing first, then implement Port System as v1.1 flagship feature.
+**Action:** Implement each feature WITH tests, not after. Test-driven development.
 
 ---
 
-## 🟡 HIGH (Should Do Post-Launch v1.1) — 10-14 hours
+## 🟡 HIGH (Should Do Post-Launch v1.1) — 18-26 hours
 
-| # | Task | Time | Rationale | Goal | Dependencies |
-|---|------|------|-----------|------|--------------|
-| 5 | **CSS Naming Standardization** | 1 hr | Code maintainability — `.leg` → `.legendary`, `.hi` → `.high` | Easier onboarding, cleaner codebase | None |
-| 6 | **Streaming Responses for Claude** | 4 hrs | UX improvement — players see text as it generates (currently OpenAI only) | Better perceived performance for slow AI responses | OpenAI streaming ✅ |
-| 7 | **Ollama Setup Wizard** | 1 hr | Reduce friction — Ollama users struggle with setup | In-app setup guide with copy/paste commands | MLX setup UI ✅ |
-| 8 | **Victory Conditions System** | 4-6 hrs | Replayability — multiple paths to "win" (political, economic, dynastic) | Different epilogues per victory type; leaderboards by category | Buildings ✅, Generational play ✅ |
-| 9 | **Port-Specific AI Events** | 2-3 hrs | Integration — ports need unique event pools, not reskins | AI receives port context; generates location-specific narratives | Port System ✅, AI events ✅ |
+| # | Task | Time | Rationale | Goal | Test Requirements | Dependencies |
+|---|------|------|-----------|------|-------------------|--------------|
+| 10 | **CSS Naming Standardization** | 1 hr | Code maintainability — `.leg` → `.legendary`, `.hi` → `.high` | Easier onboarding, cleaner codebase | Regression tests pass | None |
+| 11 | **Streaming Responses for Claude** | 4 hrs | UX improvement — players see text as it generates (currently OpenAI only) | Better perceived performance for slow AI responses | Streaming test: text appears in chunks | OpenAI streaming ✅ |
+| 12 | **Ollama Setup Wizard** | 1 hr | Reduce friction — Ollama users struggle with setup | In-app setup guide with copy/paste commands | Wizard completes, backend switches | MLX setup UI ✅ |
+| 13 | **Victory Conditions System** | 4-6 hrs | Replayability — multiple paths to "win" (political, economic, dynastic) | Different epilogues per victory type; leaderboards by category | 4 tests: one per victory type | Buildings ✅, Generational play ✅ |
+| 14 | **Victory Conditions Tests** | 2-3 hrs | Verify victory detection works | Tests for: each victory type triggers, correct epilogue | `tests/victory-conditions.spec.js` | Victory Conditions ✅ |
+| 15 | **Port-Specific AI Events** | 2-3 hrs | Integration — ports need unique event pools, not reskins | AI receives port context; generates location-specific narratives | 3 tests: event mentions port, uses port context | Port System ✅, AI events ✅ |
+| 16 | **Port Events Tests** | 2-3 hrs | Verify port events feel unique | Tests for: narrative differs by port, modifiers applied | `tests/port-events.spec.js` | Port AI Events ✅ |
 
-**Total: 12-15 hours**
+**Total: 16-21 hours**
 
 **Why These Are High Priority:**
 - **Streaming** = Quality of life for cloud API users
 - **Victory Conditions** = Gives players long-term goals beyond "more marks"
 - **Port Events** = Makes ports feel **alive**, not just price modifiers
+- **Tests** = Prevents regressions in complex systems
 
 **Action:** Implement after v1.1 launch based on player feedback.
 
 ---
 
-## 🟢 MEDIUM (Nice to Have v1.2) — 12-16 hours
+## 🟢 MEDIUM (Nice to Have v1.2) — 20-28 hours
 
-| # | Task | Time | Rationale | Goal | Dependencies |
-|---|------|------|-----------|------|--------------|
-| 10 | **Achievement System** | 3 hrs | Player retention — milestones encourage continued play | 20-30 achievements; visible progress tracking | Statistics Dashboard ✅ |
-| 11 | **Custom Sound Files** | 2 hrs | Polish — current SFX system uses silent placeholders | Ambient harbour sounds, click feedback, event stingers | SFX system ✅ |
-| 12 | **Skill System** | 6-8 hrs | RPG progression — founder develops unique strengths over time | Skills: Negotiation, Seamanship, Politics, Intrigue; affect events | AI event generation ✅ |
-| 13 | **Heir Marriage/Alliance System** | 3-4 hrs | Paravia inspiration — marriages create political bonds | Heir can marry into rival families; changes relationships | Heir traits ✅, Rival system ✅ |
-| 14 | **Regional Commodity Specialization** | 2-3 hrs | Economic depth — some ports produce/consume specific goods | Verantia: alum market; Northern: salt fish; Caldera: wine | Port System ✅ |
+| # | Task | Time | Rationale | Goal | Test Requirements | Dependencies |
+|---|------|------|-----------|------|-------------------|--------------|
+| 17 | **Achievement System** | 3 hrs | Player retention — milestones encourage continued play | 20-30 achievements; visible progress tracking | 5 tests: unlock, display, persist | Statistics Dashboard ✅ |
+| 18 | **Achievement Tests** | 2 hrs | Verify achievements unlock correctly | Tests for: trigger conditions, UI display | `tests/achievements.spec.js` | Achievement System ✅ |
+| 19 | **Custom Sound Files** | 2 hrs | Polish — current SFX system uses silent placeholders | Ambient harbour sounds, click feedback, event stingers | Audio plays, volume control | SFX system ✅ |
+| 20 | **Skill System** | 6-8 hrs | RPG progression — founder develops unique strengths over time | Skills: Negotiation, Seamanship, Politics, Intrigue; affect events | 6 tests: skill gain, effect on events | AI event generation ✅ |
+| 21 | **Skill System Tests** | 3-4 hrs | Verify skills affect gameplay | Tests for: skill increases, event modifications | `tests/skill-system.spec.js` | Skill System ✅ |
+| 22 | **Heir Marriage/Alliance System** | 3-4 hrs | Paravia inspiration — marriages create political bonds | Heir can marry into rival families; changes relationships | 4 tests: marriage options, relationship changes | Heir traits ✅, Rival system ✅ |
+| 23 | **Marriage Tests** | 2-3 hrs | Verify marriage affects rivals | Tests for: relationship changes, alliance benefits | `tests/marriage-system.spec.js` | Marriage System ✅ |
+| 24 | **Regional Commodity Specialization** | 2-3 hrs | Economic depth — some ports produce/consume specific goods | Verantia: alum market; Northern: salt fish; Caldera: wine | 3 tests: specialization affects prices | Port System ✅ |
 
-**Total: 16-20 hours**
+**Total: 23-31 hours**
 
 **Why These Are Medium Priority:**
 - **Skills** = Adds RPG depth, but may overcomplicate current design
 - **Marriage** = Strong Paravia mechanic, but requires heir UI overhaul
 - **Specialization** = Makes ports more distinct, but needs balance testing
+- **Tests** = Nice to have for optional features
 
 **Action:** Implement if v1.1 receives positive player feedback.
 
 ---
 
-## ⚪ LOW (Optional / Future Consideration) — 8-10 hours
+## 📋 TEST INFRASTRUCTURE TASKS (Always Needed)
+
+| # | Task | Time | Rationale | Goal | Deliverable |
+|---|------|------|-----------|------|-------------|
+| T1 | **Add data-testid Attributes** | 2 hrs | Reliable selectors for dynamic content | All interactive elements have test IDs | Updated HTML components |
+| T2 | **Create Test Fixtures** | 3 hrs | Reusable test setup | `fixtures/newGame.js`, `fixtures/tradingGame.js` | Fixture files |
+| T3 | **Add Visual Regression Tests** | 4 hrs | Catch UI changes | Percy/Playwright screenshots | Visual test suite |
+| T4 | **Performance Tests** | 3 hrs | Ensure game loads fast | Page load < 3s, AI response < 10s | Performance benchmarks |
+| T5 | **Accessibility Tests** | 2 hrs | Ensure game is playable by all | ARIA labels, keyboard navigation | a11y report |
+
+**Total: 14 hours**
+
+---
 
 ### Code Quality Improvements
 

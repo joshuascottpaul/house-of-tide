@@ -126,3 +126,287 @@ The campaign is now correctly framed — the AI is briefed as a DM, the generati
 - **Atmospheric year-end notes tied to state** — the fourteen rotating notes are currently blind to whether the house is thriving or failing. Two or three conditional notes (marks < 300, reputation ≤ 2, generation > 2) would make the year-end feel reactive rather than wallpaper.
 
 These are the next sessions. The ledger is still open.
+
+---
+
+## 🧪 Playwright Testing Requirements
+
+### Test Philosophy
+
+Tests verify **player experience**, not just code paths. Every test should answer: "Does this feel like House of Tide?"
+
+### Core Loop Tests (ALWAYS TEST)
+
+```javascript
+// 1. Game Start → First Turn → Death → Heir → Continue
+// Verifies: Generational handoff works, ledger persists
+
+// 2. Buy Cargo → Sell Cargo → Profit/Loss Displayed
+// Verifies: Trading system, cost basis tracking
+
+// 3. House Event → Routes Event → Trading → Year-End
+// Verifies: Phase progression, UI updates
+
+// 4. Take Loan → Repay Loan → Credit Score Changes
+// Verifies: Loan system, UI feedback
+
+// 5. Commission Ship → Fleet Grows → Passive Income Increases
+// Verifies: Ship market, fleet income calculation
+```
+
+### v1.1 Feature Tests (NEW FOR v1.1)
+
+```javascript
+// PORT SYSTEM TESTS:
+// - Choose port → prices differ from base
+// - Travel to 4 ports → each has unique modifier
+// - Port event triggers → narrative mentions port name
+
+// NAMED NPC TESTS:
+// - Game start → 3 NPCs named in status bar
+// - NPC death event → ledger entry includes name
+// - Bond system → high bond unlocks special choices
+
+// MORTALITY TESTS:
+// - Mortality event → player can die before 65
+// - Death screen → shows cause (fever, assassination, shipwreck)
+// - Heir inherits → marks, ships, rep, buildings, debts
+
+// BUILDING TESTS:
+// - Year-end → building purchase option appears
+// - Buy warehouse → cargo capacity increases
+// - Next generation → building persists, ledger notes founder
+```
+
+### UI Selector Standards (FOR TEST RELIABILITY)
+
+```javascript
+// Use data-testid for dynamic content:
+// <div data-testid="stat-marks">800 mk</div>
+// <button data-testid="choice-0">Choice text</button>
+// <span data-testid="cargo-saltfish">45</span>
+
+// Use semantic IDs for static content:
+// #stat-marks, #stat-reputation, #stat-ships
+// #event-text, #choices-container
+// #panel-trading, #panel-yearend
+
+// Use ARIA labels for accessibility:
+// aria-label="Buy Salt Fish"
+// aria-label="Continue to next phase"
+```
+
+### Test Data Requirements
+
+```javascript
+// Each test must verify:
+// 1. UI state (what player sees)
+// 2. Game state (what gs contains)
+// 3. Ledger state (what was recorded)
+// 4. AI prompt (what context was sent)
+
+// Example assertion structure:
+expect(await page.locator('#stat-marks').textContent()).toBe('850 mk');
+expect(gs.marks).toBe(850);
+expect(gs.ledger[0].entry).toContain('Sold cargo');
+```
+
+### Test Coverage Goals
+
+| Feature | Target Coverage | Priority |
+|---------|----------------|----------|
+| Core game loop | 100% | CRITICAL |
+| Trading system | 100% | CRITICAL |
+| Generational handoff | 100% | CRITICAL |
+| Port System (v1.1) | 90% | HIGH |
+| Named NPCs (v1.1) | 90% | HIGH |
+| Mortality (v1.1) | 90% | HIGH |
+| Buildings (v1.1) | 90% | HIGH |
+| AI event generation | 80% | MEDIUM |
+| Achievement system | 70% | LOW |
+
+---
+
+## 📋 Feature Specification Template (FOR v1.1 IMPLEMENTATION)
+
+### Port System Specification
+
+```javascript
+// STATE STRUCTURE:
+gs.currentPort = 'Verantia'; // Current location
+gs.availablePorts = ['Verantia', 'Masso', 'Caldera', 'Northern'];
+
+// PORT DATA:
+const PORTS = {
+  Verantia: {
+    name: 'Verantia',
+    description: 'The old city. Built on reclaimed marsh.',
+    modifiers: { saltfish: 1.0, wine: 1.1, alum: 0.95, tin: 1.0 },
+    riskLevel: 'low',
+    events: ['guild_politics', 'harbour_fees']
+  },
+  // ... 3 more ports
+};
+
+// UI REQUIREMENTS:
+// - Port selector in Routes phase
+// - Current port shown in status bar
+// - Port description in event text
+
+// AI PROMPT ADDITIONS:
+// "Player is currently in {port}. {description}. 
+//  Local prices: {modifiers}. Rivals present: {rivals}."
+
+// TEST CASES:
+// 1. Player chooses Masso → prices reflect Masso modifiers
+// 2. Player travels 4 times → visits all ports
+// 3. Port event triggers → narrative mentions port
+```
+
+### Named NPCs Specification
+
+```javascript
+// STATE STRUCTURE:
+gs.allies = [
+  { 
+    name: 'Casso', 
+    role: 'Senior Captain', 
+    bond: 7, // 0-10
+    status: 'active', // active, dead, missing, betrayed
+    canDie: true 
+  },
+  { 
+    name: 'Pell', 
+    role: 'Archivist', 
+    bond: 9, 
+    status: 'active',
+    canDie: false // Essential NPC
+  },
+  { 
+    name: 'Tucci', 
+    role: 'Harbourmaster', 
+    bond: 5, 
+    status: 'active',
+    canDie: true 
+  }
+];
+
+// UI REQUIREMENTS:
+// - Allies shown in status bar (top 3)
+// - Bond level visible (■■■□□□□□□□ 3/10)
+// - Death screen lists deceased allies by name
+
+// AI PROMPT ADDITIONS:
+// "Allies: Casso (bond {bond}, {status}), Pell ({status}), Tucci ({status}).
+//  Recent interactions: {ledger entries involving allies}."
+
+// TEST CASES:
+// 1. Game start → 3 allies generated with names
+// 2. Ally death event → ledger includes name, bond level
+// 3. High bond ally → unlocks special dialogue choices
+```
+
+### Mortality Events Specification
+
+```javascript
+// MORTALITY POOL:
+const MORTALITY_EVENTS = [
+  {
+    id: 'fever',
+    weight: 0.4, // 40% chance of mortality event
+    text: 'The physician arrives. The diagnosis is not optimistic.',
+    choices: [
+      { text: 'Pay for treatment', cost: 200, survival: 0.7 },
+      { text: 'Rest and pray', cost: 0, survival: 0.5 },
+      { text: 'Continue working', reward: 100, survival: 0.3 }
+    ]
+  },
+  // ... more events
+];
+
+// TRIGGER CONDITIONS:
+// - 5% base chance per turn
+// - Increases if: low rep, hostile rivals, dangerous cargo
+// - Decreases if: high security, trusted allies
+
+// UI REQUIREMENTS:
+// - Mortality event modal (like venture events)
+// - Survival chance shown as percentage
+// - Death screen shows cause
+
+// TEST CASES:
+// 1. Mortality event triggers → player makes choice
+// 2. Player dies → generational handoff triggers
+// 3. Death screen → shows cause, epitaph, ledger summary
+```
+
+### Building System Specification
+
+```javascript
+// STATE STRUCTURE:
+gs.improvements = {
+  warehouse: false,
+  guild_seat: false,
+  shipyard: false,
+  palazzo_wing: false
+};
+
+// BUILDING DATA:
+const IMPROVEMENTS = {
+  warehouse: {
+    cost: 400,
+    effect: 'cargo_capacity += 20%',
+    description: 'Eastern wing storage — your founder built this',
+    persists: true
+  },
+  // ... more buildings
+};
+
+// UI REQUIREMENTS:
+// - Buildings shown in year-end panel
+// - Owned buildings listed in status bar (abbreviated)
+// - Building description in ledger when purchased
+
+// AI PROMPT ADDITIONS:
+// "House improvements: {list of buildings}.
+//  Legacy notes: {who built each building, when}."
+
+// TEST CASES:
+// 1. Year-end → building purchase option appears
+// 2. Buy warehouse → cargo capacity increases immediately
+// 3. Generational handoff → building persists, ledger notes founder
+```
+
+---
+
+## ✅ Implementation Checklist (FOR v1.1)
+
+### Pre-Implementation
+- [ ] Read this design doc
+- [ ] Review INSPIRATION_ANALYSIS_COMPLETE.md
+- [ ] Review REMAINING_TASKS_PRIORITIZED.md
+- [ ] Set up test environment
+
+### Implementation
+- [ ] Implement Port System (12-16 hrs)
+- [ ] Implement Named NPCs (6-8 hrs)
+- [ ] Implement Mortality Events (6-8 hrs)
+- [ ] Implement Building System (4-6 hrs)
+
+### Testing
+- [ ] Write Playwright tests for each feature
+- [ ] Run full test suite
+- [ ] Fix any regressions
+- [ ] Manual playthrough (2 hrs)
+
+### Documentation
+- [ ] Update CHANGELOG.md
+- [ ] Update README.md with new features
+- [ ] Add feature screenshots
+- [ ] Deploy to GitHub Pages
+
+---
+
+**The ledger is open. The sea is waiting. The tests are written.**
+
+**Turn the page.** ⚓
