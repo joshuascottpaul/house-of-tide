@@ -105,6 +105,7 @@ var MARKET_EVENT_PROMPT = `CRITICAL: You are the dungeon master of HOUSE OF TIDE
 
 CURRENT STATE:
 - Season: {{season}}
+- Current Port: {{port}} ({{portDesc}})
 - Reputation: {{reputation}}/10 ({{tier}})
 - Treasury: {{marks}} mk
 - Ships: {{ships}}
@@ -112,14 +113,19 @@ CURRENT STATE:
 - Allies: {{allies}}
 - Rivals: {{rivals}}
 - Open Threads: {{threads}}
-- Current Port: {{port}}
 
 YOUR TASK:
 Generate a market event that could affect this house's trading this turn. The event should:
-1. Reflect the season, house state, rival relationships, or open threads
-2. Feel like a natural consequence of the world, not a random mechanic
+1. Be SPECIFIC to the current port ({{port}})
+2. Reflect the season, house state, rival relationships, or open threads
 3. Use the Junior Gothic register: present tense, second person, cold observation
-4. Optionally create or resolve a thread (threads are unfinished business)
+4. Optionally create or resolve a thread
+
+PORT-SPECIFIC GUIDELINES:
+- Verantia: Guild politics, harbour fees, council decisions, Borracchi maneuvers
+- Masso: Shadow loans, ship black market, smugglers, "the Arrangement"
+- Caldera: Li Yuen's tolls, strait blockades, pirate negotiations
+- Northern: Weather delays, frozen harbours, salt fish surplus/shortage
 
 PRICE SHOCK GUIDELINES (for extraordinary events):
 - Bumper harvest: 0.4-0.6x modifier (floods market)
@@ -136,8 +142,6 @@ PRICE MODIFIER RULES:
 - Shock range: 0.3 (flooded) to 3.0 (scarce)
 - 1.0 = no effect
 - Modifiers should be realistic for the event
-- Example: "Bumper harvest" → wine: 0.4-0.6
-- Example: "Locust plague" → grain: 2.0-2.5
 
 NARRATIVE RULES:
 - 1-3 sentences
@@ -145,6 +149,7 @@ NARRATIVE RULES:
 - Never use "suddenly" or "you feel"
 - End on a fact, not a rhetorical question
 - Draw from: accounting, weather, architecture, the sea
+- REFERENCE THE PORT by name or detail
 
 OPTIONAL THREAD:
 If this event creates unfinished business, include a thread:
@@ -237,9 +242,15 @@ function rollMarketPrices() {
 // ══════════════════════════════════════════════════════════
 function generateMarketEventAI() {
   try {
+    // Get port description for AI context
+    var currentPort = gs.currentPort || 'Verantia';
+    var portDesc = PORTS[currentPort] ? PORTS[currentPort].description : 'The old city';
+    
     // Build prompt with current game state
     var prompt = MARKET_EVENT_PROMPT
       .replace('{{season}}', getSeason(gs.turn))
+      .replace('{{port}}', currentPort)
+      .replace('{{portDesc}}', portDesc)
       .replace('{{reputation}}', gs.reputation)
       .replace('{{tier}}', getRepTier(gs.reputation))
       .replace('{{marks}}', gs.marks)
@@ -248,7 +259,6 @@ function generateMarketEventAI() {
       .replace('{{allies}}', getAllySummary())
       .replace('{{rivals}}', getRivalSummary())
       .replace('{{threads}}', getThreadSummary())
-      .replace('{{port}}', gs.currentPort || 'Verantia')
       .replace('{{turn}}', gs.turn);
 
     // Call AI to generate event
