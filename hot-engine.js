@@ -120,6 +120,10 @@ function advancePhase() {
     gs.phase = 'routes';
     beginPhase();
   } else if (gs.phase === 'routes') {
+    // Prefetch market event during routes phase (AI has time to generate)
+    if (typeof prefetchMarketEvent === 'function') {
+      prefetchMarketEvent();
+    }
     gs.phase = 'trading';
     gs.marketPrices = null; // force fresh roll
     showTradingPanel();

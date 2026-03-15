@@ -171,3 +171,26 @@ git push origin gh-pages --force
 2. **View workflow logs**: `gh run view [RUN_ID] --log`
 3. **Check GitHub Pages config**: Ensure it's set to deploy from `gh-pages` branch
 4. **Wait for deployment**: GitHub Pages can take 2-10 minutes to update after push
+
+### Common Deployment Issues
+
+**Issue**: Changes deployed but site shows old version
+**Diagnosis Steps**:
+```bash
+# 1. Verify gh-pages has latest content
+git checkout gh-pages
+grep "your-new-feature" your-main-file.html
+
+# 2. Check if GitHub Pages built from correct commit
+gh api repos/joshuascottpaul/house-of-tide/pages/builds --jq '.[0] | {status, commit, created_at}'
+git log --oneline -1  # Compare with latest commit
+
+# 3. Test specific files vs root URL
+curl -s "https://joshuascottpaul.github.io/house-of-tide/house-of-tide.html" | grep "your-feature"
+curl -s "https://joshuascottpaul.github.io/house-of-tide/" | grep "your-feature"
+```
+
+**Root Cause**: `index.html` vs main game file mismatch
+- GitHub Pages serves `index.html` by default
+- If main content is in `house-of-tide.html`, users see outdated `index.html`
+- **Solution**: `index.html` redirects to `house-of-tide.html` (see current implementation)
