@@ -288,7 +288,9 @@ function getRepTier(rep) {
 //  Cargo helpers
 // ══════════════════════════════════════════════════════════
 function getCargoCapacity() {
-  return gs.ships * 100;
+  var baseCapacity = gs.ships * 100;
+  var warehouseBonus = getTotalBuildingEffect('cargo_capacity_bonus');
+  return Math.round(baseCapacity * (1 + warehouseBonus));
 }
 
 function getCargoTotal() {

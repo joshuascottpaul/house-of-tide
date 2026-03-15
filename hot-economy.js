@@ -298,4 +298,46 @@ function showYearEndFinance() {
 
   finEl.innerHTML = html;
   finEl.style.display = 'block';
+  
+  // Show building purchase options
+  showBuildingPurchase();
+}
+
+// ── Building purchase at year-end ────────────────────────
+function showBuildingPurchase() {
+  const container = document.getElementById('ye-buildings');
+  const list = document.getElementById('building-purchase-list');
+  if (!container || !list) return;
+  
+  // Check if any buildings can be afforded
+  const affordableBuildings = Object.values(BUILDINGS).filter(b => 
+    !gs.buildings[b.id] && gs.marks >= b.cost
+  );
+  
+  if (affordableBuildings.length === 0) {
+    container.style.display = 'none';
+    return;
+  }
+  
+  container.style.display = 'block';
+  
+  let html = '';
+  affordableBuildings.forEach(building => {
+    html += `
+      <div class="building-purchase-option" style="display:flex;align-items:center;justify-content:space-between;padding:.6rem .8rem;margin-bottom:.5rem;border:1px solid #3a2c18;border-radius:3px;background:rgba(26,20,8,.4);">
+        <div style="flex:1;">
+          <span style="font-size:1.2rem;margin-right:.5rem;">${building.icon}</span>
+          <span style="font-family:'IM Fell English SC',serif;font-size:.7rem;letter-spacing:.1em;color:#a08848;text-transform:uppercase;">${building.name}</span>
+          <span style="display:block;font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-top:.2rem;">${building.description}</span>
+        </div>
+        <div>
+          <button class="finance-btn" onclick="purchaseBuilding('${building.id}')" ${gs.marks < building.cost ? 'disabled' : ''}>
+            Commission — ${building.cost} mk
+          </button>
+        </div>
+      </div>
+    `;
+  });
+  
+  list.innerHTML = html;
 }

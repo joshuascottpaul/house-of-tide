@@ -82,6 +82,7 @@ function startGame() {
     cargo: { saltfish:0, wine:0, alum:0, tin:0 },
     cargoBasis: { saltfish:0, wine:0, alum:0, tin:0 },
     allies: [],  // Named NPCs generated at game start
+    buildings: {},  // Owned buildings
     marketPrices: null,
     rivals:{
       borracchi:{ relationship:0, lastInteraction:0, notes:[] },
@@ -106,6 +107,159 @@ function startGame() {
   showScreen('screen-onboard');
 }
 
+
+// ══════════════════════════════════════════════════════════
+//  BUILDING SYSTEM — Tangible Legacy (Paravia inspiration)
+// ══════════════════════════════════════════════════════════
+// Buildings make dynasty tangible, not abstract.
+// "The warehouse your founder built still stands."
+// ══════════════════════════════════════════════════════════
+
+const BUILDINGS = {
+  warehouse: {
+    id: 'warehouse',
+    name: 'Warehouse',
+    cost: 400,
+    description: 'Eastern wing storage — +20% cargo capacity',
+    effect: 'cargo_capacity_bonus',
+    value: 0.20,
+    icon: '🏛️'
+  },
+  guild_seat: {
+    id: 'guild_seat',
+    name: 'Guild Seat',
+    cost: 800,
+    description: 'Factors Guild — +1 rep/year, bank rates -2%',
+    effect: 'reputation_bonus',
+    value: 1,
+    icon: '🏛️'
+  },
+  shipyard: {
+    id: 'shipyard',
+    name: 'Shipyard',
+    cost: 1200,
+    description: 'Masso berth — ships cost -10%',
+    effect: 'ship_cost_bonus',
+    value: 0.10,
+    icon: '⚓'
+  },
+  palazzo_wing: {
+    id: 'palazzo_wing',
+    name: 'Palazzo Wing',
+    cost: 600,
+    description: 'West wing — heir education +2 years',
+    effect: 'heir_education_bonus',
+    value: 2,
+    icon: '🏰'
+  },
+  counting_house: {
+    id: 'counting_house',
+    name: 'Counting House',
+    cost: 500,
+    description: 'Ledger offices — passive income +10%',
+    effect: 'income_bonus',
+    value: 0.10,
+    icon: '📊'
+  },
+  safehouse: {
+    id: 'safehouse',
+    name: 'Safehouse',
+    cost: 350,
+    description: 'Secret refuge — mortality risk -20%',
+    effect: 'mortality_reduction',
+    value: 0.20,
+    icon: '🏠'
+  }
+};
+
+function purchaseBuilding(buildingId) {
+  const building = BUILDINGS[buildingId];
+  if (!building) return false;
+  
+  // Check if already owned
+  if (gs.buildings && gs.buildings[buildingId]) {
+    return false;
+  }
+  
+  // Check affordability
+  if (gs.marks < building.cost) {
+    return false;
+  }
+  
+  // Purchase
+  gs.marks -= building.cost;
+  
+  if (!gs.buildings) gs.buildings = {};
+  gs.buildings[buildingId] = {
+    purchased: gs.turn,
+    founder: gs.founderName,
+    generation: gs.generation
+  };
+  
+  // Record in ledger
+  gs.ledger.unshift({
+    year: gs.turn,
+    phase: 'Building',
+    entry: `${building.name} commissioned — ${building.cost} marks. ${building.description}. Built by ${gs.founderName}.`
+  });
+  
+  updateStatusBar();
+  renderBuildingsDisplay();
+  autoSave();
+  
+  return true;
+}
+
+function getBuildingEffect(buildingId) {
+  if (!gs.buildings || !gs.buildings[buildingId]) return 0;
+  const building = BUILDINGS[buildingId];
+  return building ? building.value : 0;
+}
+
+function getTotalBuildingEffect(effectType) {
+  if (!gs.buildings) return 0;
+  
+  let total = 0;
+  for (const buildingId in gs.buildings) {
+    const building = BUILDINGS[buildingId];
+    if (building && building.effect === effectType) {
+      total += building.value;
+    }
+  }
+  return total;
+}
+
+function renderBuildingsDisplay() {
+  const display = document.getElementById('buildings-display');
+  if (!display) return;
+  
+  if (!gs.buildings || Object.keys(gs.buildings).length === 0) {
+    display.style.display = 'none';
+    return;
+  }
+  
+  display.style.display = 'flex';
+  display.innerHTML = Object.keys(gs.buildings).map(id => {
+    const building = BUILDINGS[id];
+    const purchaseInfo = gs.buildings[id];
+    return `
+      <span class="building-badge" data-testid="building-badge-${id}" title="${building.name} (Gen ${purchaseInfo.generation})">
+        <span class="building-icon">${building.icon}</span>
+        <span class="building-name">${building.name}</span>
+        <span class="building-founder">by ${purchaseInfo.founder}</span>
+      </span>
+    `;
+  }).join('');
+}
+
+function getBuildingsSummary() {
+  if (!gs.buildings || Object.keys(gs.buildings).length === 0) return 'No buildings';
+  return Object.keys(gs.buildings).map(id => {
+    const building = BUILDINGS[id];
+    const info = gs.buildings[id];
+    return `${building.name} (Gen ${info.generation}, by ${info.founder})`;
+  }).join('; ');
+}
 
 // ══════════════════════════════════════════════════════════
 //  MORTALITY EVENTS — AI Generated (Oregon Trail tension)

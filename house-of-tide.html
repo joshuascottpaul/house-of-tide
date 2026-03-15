@@ -186,6 +186,7 @@
       <div id="dynasty-label" style="position:relative;cursor:help;" title="Rival relationships will appear here">—</div>
       <div id="heir-badge" class="heir-badge"></div>
       <div id="allies-display" style="display:none;margin-top:.25rem;flex-wrap:wrap;gap:.3rem;"></div>
+      <div id="buildings-display" style="display:none;margin-top:.25rem;"></div>
       <div id="thread-tracker" style="display:none;margin-top:.25rem;">
         <div id="thread-tracker-header" onclick="toggleThreads()" class="thread-tracker-hdr">
           ⟳ Open Threads (<span id="thread-count">0</span>)
@@ -288,6 +289,13 @@
       <div id="ye-settlement" style="margin-top:1.2rem;padding:.7rem .9rem;border-left:2px solid #2a1e0e;font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.1em;color:#7a6840;text-transform:uppercase;display:none;"></div>
       <div id="ye-threads" style="display:none;margin-top:1.4rem;padding:.9rem 1rem;border:1px solid #2a1e0e;border-left:3px solid #4a3810;"></div>
       <div id="ye-finance" class="finance-section" style="display:none;"></div>
+      
+      <!-- Building purchase section -->
+      <div id="ye-buildings" class="buildings-section" style="display:none;margin-top:1.5rem;">
+        <div style="font-family:'IM Fell English SC',serif;font-size:.7rem;letter-spacing:.15em;color:#a08848;text-transform:uppercase;margin-bottom:.8rem;">Commission Improvements</div>
+        <div id="building-purchase-list"></div>
+      </div>
+      
       <div class="ye-ornament" style="margin-top:1.5rem;"><span class="glyph glyph-star" style="font-size:1.4rem;letter-spacing:.4em;">✦ ✦ ✦</span></div>
       <button class="btn" id="yearend-btn" onclick="beginYear()">Turn the Page →</button>
     </div>
