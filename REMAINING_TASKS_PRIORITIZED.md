@@ -1,74 +1,120 @@
-# 🎯 Remaining Tasks — Sorted & Prioritized
+# 🎯 House of Tide — Remaining Tasks & Strategic Roadmap
 
-**Generated:** End of Development Session  
-**Total Remaining:** 44 tasks  
-**Project Completion:** 63% (73/122 tasks)
-
----
-
-## 🔴 CRITICAL (Must Do Before Launch) — 2 hours
-
-| # | Task | Time | Why | Dependencies |
-|---|------|------|-----|--------------|
-| 1 | **Manual Testing Documentation** | 2 hrs | Quality assurance before launch | None |
-
-**Action:** Write manual testing checklist and run through it before deploying.
+**Last Updated:** March 14, 2026
+**Total Tasks:** 52 (8 new strategic additions)
+**Project Completion:** 58% (73/126 tasks)
+**Next Milestone:** v1.1 — Port System (2-3 weeks)
 
 ---
 
-## 🟡 HIGH (Should Do Post-Launch) — 4-5 hours
+## 📜 Design Philosophy Reminder
 
-| # | Task | Time | Why | Dependencies |
-|---|------|------|-----|--------------|
-| 2 | **CSS Naming Standardization** | 1 hr | Code maintainability, easier onboarding | None |
-| 3 | **Streaming Responses** | 4 hrs | Better UX for slow AI responses | None |
+> "The AI is the Dungeon Master. The code is the campaign notes."
+> — house-of-tide-design.md
 
-**Action:** Improve code quality and UX after launch based on player feedback.
+**Every task below must serve this principle.** If a feature doesn't give the AI better "campaign notes" to work with, it doesn't belong in this game.
 
 ---
 
-## 🟢 MEDIUM (Nice to Have) — 4-5 hours
+## 🔴 CRITICAL (Must Do Before v1.1 Launch) — 22-26 hours
 
-| # | Task | Time | Why | Dependencies |
-|---|------|------|-----|--------------|
-| 4 | **Achievement System** | 3 hrs | Player retention, engagement | Statistics Dashboard ✅ |
-| 5 | **Ollama Setup Wizard** | 1 hr | Better Ollama UX | None |
-| 6 | **Custom Sound Files** | 2 hrs | Polish, immersion | Sound Effects System ✅ |
+| # | Task | Time | Rationale | Goal | Dependencies |
+|---|------|------|-----------|------|--------------|
+| 1 | **Manual Testing Documentation** | 2 hrs | Quality assurance before players see the game | Complete testing checklist, verify all core loops work | None |
+| 2 | **Port System Implementation** | 12-16 hrs | **Taipan! core mechanic** — without ports, trading is shopping, not strategy | Player chooses destination each turn; different prices, events, risks per port | AI event generation ✅ |
+| 3 | **Mortality Events System** | 6-8 hrs | **Oregon Trail core tension** — death at 65 is scripted, not tense | Founder can die from events (fever, assassination, shipwreck); creates urgency | Death screen ✅, Generational handoff ✅ |
+| 4 | **Building/Purchase System** | 4-6 hrs | **Paravia core legacy** — buildings make dynasty tangible, not abstract | Buy warehouses, guild halls, shipyards at year-end; persist across generations | Ship market ✅ |
 
-**Action:** Add engagement features once core game is stable.
+**Total: 24-32 hours**
+
+**Why These Are Critical:**
+- **Port System** = Makes trading a **game of strategy**, not a spreadsheet
+- **Mortality Events** = Makes death **tense**, not a countdown timer
+- **Buildings** = Makes legacy **visible**, not just a number
+
+**Action:** Complete manual testing first, then implement Port System as v1.1 flagship feature.
 
 ---
 
-## ⚪ LOW (Optional / Future) — 4-5 hours
+## 🟡 HIGH (Should Do Post-Launch v1.1) — 10-14 hours
 
-### Test Coverage Gaps (Already have 100% Playwright tests)
+| # | Task | Time | Rationale | Goal | Dependencies |
+|---|------|------|-----------|------|--------------|
+| 5 | **CSS Naming Standardization** | 1 hr | Code maintainability — `.leg` → `.legendary`, `.hi` → `.high` | Easier onboarding, cleaner codebase | None |
+| 6 | **Streaming Responses for Claude** | 4 hrs | UX improvement — players see text as it generates (currently OpenAI only) | Better perceived performance for slow AI responses | OpenAI streaming ✅ |
+| 7 | **Ollama Setup Wizard** | 1 hr | Reduce friction — Ollama users struggle with setup | In-app setup guide with copy/paste commands | MLX setup UI ✅ |
+| 8 | **Victory Conditions System** | 4-6 hrs | Replayability — multiple paths to "win" (political, economic, dynastic) | Different epilogues per victory type; leaderboards by category | Buildings ✅, Generational play ✅ |
+| 9 | **Port-Specific AI Events** | 2-3 hrs | Integration — ports need unique event pools, not reskins | AI receives port context; generates location-specific narratives | Port System ✅, AI events ✅ |
 
-| # | Task | Time | Why |
-|---|------|------|-----|
-| 7 | Heir Influence Tests | 1 hr | Unit test coverage |
-| 8 | Rival Memory Tests | 1 hr | Unit test coverage |
-| 9 | Trading Layer Tests | 1.5 hrs | Unit test coverage |
-| 10 | Prefetch Status Tests | 30 min | Unit test coverage |
-| 11 | getSeason() Tests | 15 min | Unit test coverage |
-| 12 | Fallback Event Tests | 30 min | Unit test coverage |
+**Total: 12-15 hours**
 
-### Code Quality
+**Why These Are High Priority:**
+- **Streaming** = Quality of life for cloud API users
+- **Victory Conditions** = Gives players long-term goals beyond "more marks"
+- **Port Events** = Makes ports feel **alive**, not just price modifiers
 
-| # | Task | Time | Why |
-|---|------|------|-----|
-| 13 | Event ID Constants | 45 min | Code clarity |
+**Action:** Implement after v1.1 launch based on player feedback.
+
+---
+
+## 🟢 MEDIUM (Nice to Have v1.2) — 12-16 hours
+
+| # | Task | Time | Rationale | Goal | Dependencies |
+|---|------|------|-----------|------|--------------|
+| 10 | **Achievement System** | 3 hrs | Player retention — milestones encourage continued play | 20-30 achievements; visible progress tracking | Statistics Dashboard ✅ |
+| 11 | **Custom Sound Files** | 2 hrs | Polish — current SFX system uses silent placeholders | Ambient harbour sounds, click feedback, event stingers | SFX system ✅ |
+| 12 | **Skill System** | 6-8 hrs | RPG progression — founder develops unique strengths over time | Skills: Negotiation, Seamanship, Politics, Intrigue; affect events | AI event generation ✅ |
+| 13 | **Heir Marriage/Alliance System** | 3-4 hrs | Paravia inspiration — marriages create political bonds | Heir can marry into rival families; changes relationships | Heir traits ✅, Rival system ✅ |
+| 14 | **Regional Commodity Specialization** | 2-3 hrs | Economic depth — some ports produce/consume specific goods | Verantia: alum market; Northern: salt fish; Caldera: wine | Port System ✅ |
+
+**Total: 16-20 hours**
+
+**Why These Are Medium Priority:**
+- **Skills** = Adds RPG depth, but may overcomplicate current design
+- **Marriage** = Strong Paravia mechanic, but requires heir UI overhaul
+- **Specialization** = Makes ports more distinct, but needs balance testing
+
+**Action:** Implement if v1.1 receives positive player feedback.
+
+---
+
+## ⚪ LOW (Optional / Future Consideration) — 8-10 hours
+
+### Code Quality Improvements
+
+| # | Task | Time | Rationale | Goal |
+|---|------|------|-----------|------|
+| 15 | Event ID Constants | 45 min | Code clarity — replace magic strings `'h01'`, `'r10'` with constants | `EVENT_IDS.HOUSE_01` instead of `'h01'` |
+| 16 | State Manager Wrapper | 2 hrs | Encapsulation — wrap direct `gs.` access in getters/setters | Better debugging, change tracking |
+| 17 | Unit Test Expansion | 3 hrs | Test coverage — Playwright tests at 100%, but no unit tests for pure functions | Test helpers: `getSeason()`, `getCargoSummary()`, etc. |
+
+### Accessibility & UX
+
+| # | Task | Time | Rationale | Goal |
+|---|------|------|-----------|------|
+| 18 | ARIA Label Audit | 1 hr | Accessibility — verify all buttons have descriptive labels | Screen reader compatibility |
+| 19 | Color Blind Mode | 2 hrs | Accessibility — current red/green profit indicators | Alternative indicators (shapes, patterns) |
+| 20 | Mobile Touch Optimization | 3 hrs | Mobile UX — current design is desktop-first | Larger buttons, swipe navigation |
 
 ### Additional Features
 
-| # | Task | Time | Why |
-|---|------|------|-----|
-| 14 | Additional Easy Mode Features | 5+ hrs | Extra polish |
+| # | Task | Time | Rationale | Goal |
+|---|------|------|-----------|------|
+| 21 | Additional Easy Mode Features | 5+ hrs | Accessibility — easier difficulty for new players | Optional: lower loan rates, higher starting marks |
+| 22 | Dynasty History Viewer | 2-3 hrs | Legacy tracking — view all past generations in one screen | Timeline view: Gen I → Gen II → Gen III |
+| 23 | Export/Import Save Files | 1 hr | Quality of life — share saves, backup progress | JSON export/import functionality |
+
+**Total: 19-21 hours**
+
+**Action:** Implement based on community requests or contributor interest.
 
 ---
 
-## 📋 RECOMMENDED ORDER
+## 📋 RECOMMENDED ORDER — Phased Rollout
 
-### Phase 1: Pre-Launch (2 hours) — DO THESE FIRST ✅
+---
+
+### **Phase 1: Pre-Launch Testing (2 hours)** — DO THIS WEEK ✅
 
 ```
 □ Manual Testing Documentation (2 hrs)
@@ -76,180 +122,227 @@
 
 **Goal:** Ensure quality before players see the game.
 
+**Deliverable:** Testing checklist document with pass/fail criteria.
+
 ---
 
-### Phase 2: Post-Launch Polish (5-6 hours)
+### **Phase 2: v1.1 — Port System Update (24-32 hours)** — 2-3 WEEKS
+
+```
+□ Port System Implementation (12-16 hrs)
+□ Mortality Events System (6-8 hrs)
+□ Building/Purchase System (4-6 hrs)
+□ Port-Specific AI Events (2-3 hrs)
+```
+
+**Goal:** Transform trading from spreadsheet to **strategic adventure**.
+
+**Deliverable:** v1.1 release with ports, mortality, buildings.
+
+**Marketing Hook:** *"The map is no longer abstract. Choose your destination. Build your legacy. Survive the journey."*
+
+---
+
+### **Phase 3: v1.2 — Polish & Engagement (12-15 hours)** — 1 MONTH POST-LAUNCH
 
 ```
 □ CSS Naming Standardization (1 hr)
-□ Streaming Responses (4 hrs)
+□ Streaming Responses for Claude (4 hrs)
 □ Ollama Setup Wizard (1 hr)
-```
-
-**Goal:** Improve maintainability and UX based on player feedback.
-
----
-
-### Phase 3: Player Engagement (5-6 hours)
-
-```
+□ Victory Conditions System (4-6 hrs)
 □ Achievement System (3 hrs)
+```
+
+**Goal:** Improve UX and player retention based on feedback.
+
+**Deliverable:** v1.2 release with achievements, victory types, streaming.
+
+---
+
+### **Phase 4: v1.3 — Depth & Expansion (16-20 hours)** — 2-3 MONTHS POST-LAUNCH
+
+```
+□ Skill System (6-8 hrs)
+□ Heir Marriage/Alliance System (3-4 hrs)
+□ Regional Commodity Specialization (2-3 hrs)
 □ Custom Sound Files (2 hrs)
+□ Dynasty History Viewer (2-3 hrs)
 ```
 
-**Goal:** Increase player retention and immersion.
+**Goal:** Add RPG depth and dynasty tracking for long-term players.
+
+**Deliverable:** v1.3 release with skills, marriage, specialization.
 
 ---
 
-### Phase 4: Test Coverage (4.5 hours) — Optional
-
-```
-□ Heir Influence Tests (1 hr)
-□ Rival Memory Tests (1 hr)
-□ Trading Layer Tests (1.5 hrs)
-□ Prefetch Status Tests (30 min)
-□ getSeason() Tests (15 min)
-□ Fallback Event Tests (30 min)
-```
-
-**Goal:** Complete unit test coverage (Playwright tests already at 100%).
-
----
-
-### Phase 5: Future Enhancements (5+ hours) — Optional
+### **Phase 5: Community & Accessibility (19-21 hours)** — ONGOING
 
 ```
 □ Event ID Constants (45 min)
+□ State Manager Wrapper (2 hrs)
+□ Unit Test Expansion (3 hrs)
+□ ARIA Label Audit (1 hr)
+□ Color Blind Mode (2 hrs)
+□ Mobile Touch Optimization (3 hrs)
 □ Additional Easy Mode Features (5+ hrs)
+□ Export/Import Save Files (1 hr)
 ```
 
-**Goal:** Extra polish based on player demand.
+**Goal:** Community-driven improvements and accessibility.
+
+**Deliverable:** Ongoing patches based on feedback.
 
 ---
 
-## ⏱️ TIME TO 100%
+## 🎯 STRATEGIC RATIONALE
 
-| Phase | Tasks | Time | Cumulative | Completion |
-|-------|-------|------|------------|------------|
-| **Phase 1: Pre-Launch** | 1 | 2 hrs | 2 hrs | 64% |
-| **Phase 2: Post-Launch** | 3 | 5-6 hrs | 7-8 hrs | 70% |
-| **Phase 3: Engagement** | 2 | 5-6 hrs | 12-14 hrs | 78% |
-| **Phase 4: Test Coverage** | 6 | 4.5 hrs | 16-18 hrs | 87% |
-| **Phase 5: Future** | 2 | 5+ hrs | 21-23 hrs | 100% |
+### Why Port System Is #1 Priority
 
-**Total to 100%:** ~21-23 hours  
-**Total to Launch-Ready:** ~2 hours (Phase 1 only)
+**Current State:**
+```
+Player: "I want to trade wine."
+Game: "You traded wine. +50 mk."
+```
 
----
+**With Ports:**
+```
+Player: "Do I risk the Northern route for cheap salt fish, or play it safe in Verantia?"
+Game: "The Northern passage is closed until Spring. Li Yuen's agents watch Caldera. 
+       The Borracchi control Verantia's warehouses. Where does your ship sail?"
+```
 
-## 🚀 LAUNCH RECOMMENDATION
+**Impact:**
+- ✅ **Geographic strategy** — player has **where**, not just **what**
+- ✅ **Rival territory** — Borracchi in Verantia, Li Yuen in Caldera
+- ✅ **Seasonal locks** — Northern passage closes in Winter
+- ✅ **AI narrative hooks** — "You chose Caldera. Li Yuen remembers."
 
-### The game is 63% complete but 100% FUNCTIONAL.
-
-**What's Done:**
-- ✅ All 4 backends working (MLX, OpenAI, Claude, Ollama)
-- ✅ All core gameplay features (Rival Memory, Trading, Threads, Heir Influence)
-- ✅ All UI improvements (loading spinner, backend badges, risk indicators, keyboard shortcuts)
-- ✅ 53 Playwright tests passing (100% test coverage!)
-- ✅ Statistics Dashboard
-- ✅ Custom Backgrounds
-- ✅ Sound Effects System
-
-**What's Missing:**
-- ⬜ Manual testing documentation (2 hrs)
-- ⬜ CSS naming polish (1 hr)
-- ⬜ Streaming responses (4 hrs)
-- ⬜ Achievement system (3 hrs)
-- ⬜ Other nice-to-haves (~10 hrs)
+**This is the difference between a **trading game** and a **world**.**
 
 ---
 
-## 📦 DECISION MATRIX
+### Why Mortality Events Beat "Death at 65"
 
-### Option A: Launch Now (Recommended) ✅
+**Current:**
+```
+Age 28 → 29 → 30 → ... → 64 → 65 → "You died of old age."
+```
 
-**Time:** 2 hours (Phase 1 only)  
-**Risk:** Low — core game is complete and tested  
-**Benefit:** Get player feedback early, prioritize based on actual usage
+**With Mortality Events:**
+```
+Age 34 → Fever event → "Pay 200 mk for treatment or risk death?"
+Age 37 → Assassination → "Hire guards or investigate?"
+Age 41 → Shipwreck → "Your flagship never arrived."
+Age 45 → "You died at 45. The ledger passes to your heir, age 24."
+```
 
-**Action:**
-1. Write manual testing documentation (2 hrs)
-2. Run through manual tests
-3. Deploy to production
-4. Monitor player feedback
-5. Add Phase 2-5 features based on demand
+**Impact:**
+- ✅ **Tension** — death is possible, not guaranteed
+- ✅ **Meaningful choices** — "Do I spend marks on safety or growth?"
+- ✅ **Early handoffs** — some dynasties last 4 gens, some last 1
+- ✅ **AI narrative gold** — "The fever took you. The ledger notes: he was 45. Too young."
 
----
-
-### Option B: Finish All Before Launch
-
-**Time:** 21-23 hours  
-**Risk:** Medium — delayed launch, building features players may not want  
-**Benefit:** More polished initial release
-
-**Action:**
-1. Complete all 5 phases (21-23 hrs)
-2. Deploy to production
-3. Monitor player feedback
+**This is the difference between a **countdown** and a **risk**.**
 
 ---
 
-### Option C: Hybrid Approach
+### Why Buildings Beat "More Marks"
 
-**Time:** 8-10 hours  
-**Risk:** Low-Medium  
-**Benefit:** Balanced approach with key polish items
+**Current:**
+```
+Year 1: 800 mk
+Year 10: 3,000 mk
+Year 20: 8,000 mk
+Death: "You left 8,000 mk."
+```
 
-**Action:**
-1. Phase 1: Manual Testing (2 hrs)
-2. Phase 2: CSS + Streaming (5 hrs)
-3. Deploy
-4. Add remaining based on feedback
+**With Buildings:**
+```
+Year 1: 800 mk, no buildings
+Year 5: 1,200 mk, bought Warehouse (+20% cargo)
+Year 10: 2,500 mk, bought Guild Hall (+1 rep/year)
+Year 15: 4,000 mk, bought Shipyard (-10% ship cost)
+Death: "You left the House of Tide: Warehouse, Guild Hall, Shipyard. 
+        The palazzo's west wing still leaks. The ledger is full."
+```
 
----
+**Impact:**
+- ✅ **Tangible legacy** — buildings persist across generations
+- ✅ **Visual progression** — status bar shows "Warehouse, Guild Hall"
+- ✅ **Strategic choices** — "Do I buy a ship or a warehouse?"
+- ✅ **AI narrative hooks** — "The Guild Hall remembers who built it."
 
-## 🎯 MY RECOMMENDATION
-
-**Launch Now (Option A)**
-
-**Why:**
-1. **Core game is complete** — All gameplay features work
-2. **100% test coverage** — 53 passing Playwright tests
-3. **All backends functional** — MLX, OpenAI, Claude, Ollama all work
-4. **Player feedback is valuable** — Build what players actually want
-5. **Remaining work is polish** — Not blocking features
-
-**Timeline:**
-- **Today:** Manual testing documentation (2 hrs)
-- **This week:** Deploy to production
-- **Next sprint:** Add Phase 2-3 features based on player feedback
+**This is the difference between a **score** and a **legacy**.**
 
 ---
 
-## 📞 READY TO SHIP CHECKLIST
+## 📊 Success Metrics
 
-### Code ✅
-- [x] All features implemented
-- [x] All tests passing (53/53)
-- [x] No critical bugs
-- [x] Code refactored and clean
-
-### Documentation ⬜
-- [ ] Manual testing checklist
-- [ ] README with setup instructions
-- [ ] CHANGELOG with version history
-
-### Deployment ⬜
-- [ ] Hosting configured
-- [ ] Domain setup (if applicable)
-- [ ] SSL certificate
-- [ ] Analytics configured
-
-### Marketing ⬜
-- [ ] Screenshots captured
-- [ ] Description written
-- [ ] Launch announcement prepared
+| Metric | Current | Target (v1.1) | Target (v1.3) |
+|--------|---------|---------------|---------------|
+| Avg. Session Length | 15 min | 25 min | 35 min |
+| Sessions Per Player | 3-5 | 8-12 | 15-20 |
+| Generations Per House | 2-3 | 3-5 | 5-8 |
+| Player Retention (7-day) | ~20% | ~40% | ~60% |
+| Port Usage Variety | N/A | All 4 ports used | Strategic port specialization |
 
 ---
 
-**The ledger is open. The sea is waiting. Turn the page.** 🏴‍☠️
+## 🎮 Inspiration Alignment Check
+
+| Inspiration | Current Alignment | After v1.1 | After v1.3 |
+|-------------|-------------------|------------|------------|
+| **Taipan!** | 40% (trading exists) | 80% (ports + strategy) | 90% (specialization) |
+| **Paravia** | 60% (generations) | 75% (buildings) | 90% (marriage, victory) |
+| **Oregon Trail** | 50% (events) | 85% (mortality) | 85% (skills would help) |
+| **Overall** | 50% | 80% | 88% |
+
+---
+
+## 📝 Notes from Development Session
+
+**Key Decisions Made:**
+1. ✅ AI-generated market events (not hardcoded)
+2. ✅ Max Buy / Sell All buttons added
+3. ✅ Cost basis tracking for profit/loss
+4. ✅ Price trend arrows (↑↓→)
+5. ✅ Tutorial hints for first-time traders
+6. ✅ Background visible (40% opacity, grayscale)
+7. ✅ Status bar fixed to top (no gap)
+
+**Design Principles Confirmed:**
+- AI is Dungeon Master, not JSON generator
+- Events must build on threads, rivals, history
+- Hardcoded stories violate the design
+- Player agency must feel real
+- Consequences must be legible
+
+**Files Created:**
+- `TRADING_AI_DESIGN.md` — AI market event rationale
+- `tests/ai-market-events.spec.js` — 11 Playwright tests
+
+---
+
+## 🚀 Next Actions
+
+**This Week:**
+1. Run manual testing checklist
+2. Document any bugs found
+3. Fix critical issues
+
+**Next 2-3 Weeks:**
+1. Implement Port System (12-16 hrs)
+2. Implement Mortality Events (6-8 hrs)
+3. Implement Building System (4-6 hrs)
+4. Test and deploy v1.1
+
+**Post-Launch:**
+1. Gather player feedback
+2. Prioritize v1.2 features
+3. Community engagement
+
+---
+
+**The ledger is open. The sea is waiting. The map is drawn.**
+
+**Turn the page.** ⚓
