@@ -870,6 +870,33 @@ footer { text-align:center; padding:1.2rem; border-top:1px solid #2a1e0e;
   text-align: right;
 }
 
+/* ── PORT SELECTOR ────────────────────────────────────── */
+.port-btn {
+  font-family: 'IM Fell English SC', serif;
+  font-size: .6rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  background: rgba(42, 30, 14, 0.4);
+  border: 1px solid rgba(90, 72, 40, 0.5);
+  color: #a08848;
+  padding: .3rem .7rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 3px;
+}
+
+.port-btn:hover {
+  background: rgba(42, 30, 14, 0.7);
+  border-color: rgba(160, 120, 32, 0.7);
+  color: #c8a870;
+}
+
+.port-btn.active {
+  background: rgba(160, 120, 32, 0.3);
+  border-color: #a07820;
+  color: #f0dfa8;
+}
+
 /* ── Dynamic Background Image ─────────────────────────── */
 /* NOTE: Background MUST remain visible - it's a key visual feature. Grayscale only, subtle but present. */
 #bg-image {

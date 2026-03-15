@@ -5,6 +5,77 @@
 // not hardcoded. Events build on threads, rivals, and history.
 // ══════════════════════════════════════════════════════════
 
+// ══════════════════════════════════════════════════════════
+//  PORT SYSTEM — Geographic Trading (Taipan! core mechanic)
+// ══════════════════════════════════════════════════════════
+// Without ports, trading is shopping. With ports, it's strategy.
+// ══════════════════════════════════════════════════════════
+
+const PORTS = {
+  Verantia: {
+    name: 'Verantia',
+    description: 'The old city. Built on reclaimed marsh.',
+    modifiers: { saltfish: 1.0, wine: 1.1, alum: 0.95, tin: 1.0 },
+    riskLevel: 'low',
+    rivals: ['Borracchi', 'Spinetta']
+  },
+  Masso: {
+    name: 'Masso',
+    description: 'Port town two days south. Never respectable.',
+    modifiers: { saltfish: 1.2, wine: 0.8, alum: 1.1, tin: 0.9 },
+    riskLevel: 'medium',
+    rivals: ['Shadow lenders']
+  },
+  Caldera: {
+    name: 'Caldera Strait',
+    description: 'Passage between island chains. Li Yuen collects tolls.',
+    modifiers: { saltfish: 0.8, wine: 1.3, alum: 1.2, tin: 0.7 },
+    riskLevel: 'medium',
+    rivals: ['Li Yuen']
+  },
+  Northern: {
+    name: 'Northern Isles',
+    description: 'Cold waters. Salt fish capital. Winter passage closed.',
+    modifiers: { saltfish: 0.6, wine: 1.5, alum: 1.4, tin: 1.3 },
+    riskLevel: 'high',
+    rivals: ['Pirates', 'Weather']
+  }
+};
+
+function selectPort(portName) {
+  gs.currentPort = portName;
+  gs.ledger.unshift({
+    year: gs.turn,
+    phase: 'Travel',
+    entry: `Sailed for ${portName}. ${PORTS[portName].description}`
+  });
+}
+
+function getPortModifiers(portName) {
+  if (!portName || !PORTS[portName]) return { saltfish: 1.0, wine: 1.0, alum: 1.0, tin: 1.0 };
+  return PORTS[portName].modifiers;
+}
+
+function renderPortSelector() {
+  const container = document.getElementById('port-selector');
+  if (!container) return;
+  
+  container.innerHTML = `
+    <div style="font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.1em;color:#a08848;text-transform:uppercase;margin-bottom:.5rem;">Choose Your Destination</div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+      ${Object.keys(PORTS).map(port => `
+        <button 
+          class="port-btn ${gs.currentPort === port ? 'active' : ''}" 
+          onclick="selectPort('${port}')"
+          data-testid="port-${port.toLowerCase()}"
+        >
+          ${port}
+        </button>
+      `).join('')}
+    </div>
+  `;
+}
+
 // ── Base commodity prices ──────────────────────────────────
 var COMMODITY_BASE = {
   saltfish: { buy: 4, sell: 2 },
@@ -83,8 +154,13 @@ RESPONSE FORMAT (JSON ONLY — NO MARKDOWN, NO EXPLANATION):
 // ══════════════════════════════════════════════════════════
 function rollMarketPrices() {
   var season = getSeason(gs.turn);
-  var mods = SEASON_MODIFIERS[season];
+  var seasonMods = SEASON_MODIFIERS[season];
   var prices = { season: season };
+  
+  // Get current port (default to Verantia if not set)
+  var currentPort = gs.currentPort || 'Verantia';
+  var portMods = getPortModifiers(currentPort);
+  prices.port = currentPort;
 
   // Check if we have a prefetched AI event (from prefetch during Routes phase)
   var activeEvent = gs._prefetchedMarketEvent || null;
@@ -101,62 +177,43 @@ function rollMarketPrices() {
     prices.event = activeEvent.event.name;
     prices.eventIcon = activeEvent.event.icon;
     prices.eventNarrative = activeEvent.event.narrative;
+  }
+
+  var commodities = ['saltfish', 'wine', 'alum', 'tin'];
+  for (var i = 0; i < commodities.length; i++) {
+    var c = commodities[i];
+    var base = COMMODITY_BASE[c];
     
-    // Apply event modifiers
-    var commodities = ['saltfish', 'wine', 'alum', 'tin'];
-    for (var i = 0; i < commodities.length; i++) {
-      var c = commodities[i];
-      var base = COMMODITY_BASE[c];
-      var mod  = mods[c];
-      
-      // Apply event modifier if present
-      if (activeEvent.event.mods && activeEvent.event.mods[c]) {
-        mod = mod * activeEvent.event.mods[c];
-      }
-      
-      // ±15% random variance
-      var variance = 0.85 + Math.random() * 0.30;
-      var buyRaw  = base.buy  * mod * variance;
-      var sellRaw = base.sell * mod * variance;
-      prices[c] = {
-        buy:  Math.max(1, Math.round(buyRaw)),
-        sell: Math.max(1, Math.round(sellRaw)),
-      };
+    // Apply seasonal modifier
+    var mod = seasonMods[c];
+    
+    // Apply PORT modifier (geographic arbitrage!)
+    if (portMods[c]) {
+      mod = mod * portMods[c];
     }
     
-    // Create thread if event specifies one
-    if (activeEvent.event.thread) {
-      gs.threads.push({
-        label: activeEvent.event.thread.label,
-        expiresYear: gs.turn + 2,
-        urgency: 'normal',
-        _fromEvent: true
-      });
+    // Apply event modifier if active
+    if (activeEvent && activeEvent.event && activeEvent.event.mods && activeEvent.event.mods[c]) {
+      mod = mod * activeEvent.event.mods[c];
     }
-  } else {
-    // No event — roll prices normally with just seasonal modifiers
-    var commodities = ['saltfish', 'wine', 'alum', 'tin'];
-    for (var j = 0; j < commodities.length; j++) {
-      var cc = commodities[j];
-      var base = COMMODITY_BASE[cc];
-      var mm = mods[cc];
-      var variance = 0.85 + Math.random() * 0.30;
-      var buyRaw  = base.buy  * mm * variance;
-      var sellRaw = base.sell * mm * variance;
-      prices[cc] = {
-        buy:  Math.max(1, Math.round(buyRaw)),
-        sell: Math.max(1, Math.round(sellRaw)),
-      };
-    }
+    
+    // ±15% random variance
+    var variance = 0.85 + Math.random() * 0.30;
+    var buyRaw  = base.buy  * mod * variance;
+    var sellRaw = base.sell * mod * variance;
+    prices[c] = {
+      buy:  Math.max(1, Math.round(buyRaw)),
+      sell: Math.max(1, Math.round(sellRaw)),
+    };
   }
 
   // Store previous prices for trend calculation
   if (gs.marketPrices && gs.marketPrices._turn === gs.turn - 1) {
     prices._prevTurn = gs.turn;
-    for (var k = 0; k < commodities.length; k++) {
-      var ccc = commodities[k];
-      prices[ccc]._prevBuy = gs.marketPrices[ccc].buy;
-      prices[ccc]._prevSell = gs.marketPrices[ccc].sell;
+    for (var j = 0; j < commodities.length; j++) {
+      var cc = commodities[j];
+      prices[cc]._prevBuy = gs.marketPrices[cc].buy;
+      prices[cc]._prevSell = gs.marketPrices[cc].sell;
     }
   }
 
@@ -570,6 +627,9 @@ function showTradingPanel() {
     rollMarketPrices();
     gs.marketPrices._turn = gs.turn;
   }
+
+  // Render port selector
+  renderPortSelector();
 
   renderTradingPanel();
 
