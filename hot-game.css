@@ -617,6 +617,7 @@ footer { text-align:center; padding:1.2rem; border-top:1px solid #2a1e0e;
   font-size: .76rem; color: #7a4020; margin-top: .4rem; }
 
 /* ── Dynamic Background Image ─────────────────────────── */
+/* NOTE: Background MUST remain visible - it's a key visual feature. Grayscale only, subtle but present. */
 #bg-image {
   position: fixed;
   inset: 0;
@@ -624,7 +625,7 @@ footer { text-align:center; padding:1.2rem; border-top:1px solid #2a1e0e;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  filter: grayscale(100%) opacity(0.12);  /* Always grayscale, subtle opacity */
+  filter: grayscale(100%) opacity(0.40);  /* Visible but subtle - 40% opacity, full grayscale */
   pointer-events: none;
   transition: background-image 2s ease, filter 0.3s ease;
 }
@@ -632,7 +633,7 @@ body > *:not(#bg-image):not(#settings-overlay):not(#debug-panel) { position: rel
 
 /* ── Content Overlay for Readability ──────────────────── */
 #screen-game, #screen-title, #screen-name, #screen-onboard, #screen-death {
-  background: rgba(5, 4, 3, 0.94);  /* Increased from 0.88 to 0.94 for better readability */
+  background: rgba(5, 4, 3, 0.85);  /* Dark enough for readability, light enough to see bg */
 }
 
 /* ── Background Tint Overlay ──────────────────────────── */
