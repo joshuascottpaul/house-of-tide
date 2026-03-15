@@ -624,7 +624,7 @@ footer { text-align:center; padding:1.2rem; border-top:1px solid #2a1e0e;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  filter: grayscale(var(--bg-grayscale, 100%)) opacity(var(--bg-opacity, 0.15));
+  filter: grayscale(100%) opacity(0.12);  /* Always grayscale, subtle opacity */
   pointer-events: none;
   transition: background-image 2s ease, filter 0.3s ease;
 }
@@ -632,7 +632,7 @@ body > *:not(#bg-image):not(#settings-overlay):not(#debug-panel) { position: rel
 
 /* ── Content Overlay for Readability ──────────────────── */
 #screen-game, #screen-title, #screen-name, #screen-onboard, #screen-death {
-  background: transparent;  /* Background image shows through; tint overlay provides darkness */
+  background: rgba(5, 4, 3, 0.94);  /* Increased from 0.88 to 0.94 for better readability */
 }
 
 /* ── Background Tint Overlay ──────────────────────────── */
