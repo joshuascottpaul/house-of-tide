@@ -12,14 +12,15 @@
   --green:   #6a9838;
 }
 html, body { min-height:100vh; background:#090705; color:var(--page);
-  font-family:'IM Fell English','Palatino Linotype',Palatino,Georgia,serif; }
+  font-family:'IM Fell English','Palatino Linotype',Palatino,Georgia,serif;
+  margin: 0; padding: 0; overflow-x: hidden; overscroll-behavior-y: none; }
 
 ::-webkit-scrollbar { width:4px; }
 ::-webkit-scrollbar-track { background:#090705; }
 ::-webkit-scrollbar-thumb { background:var(--rust-dk); border-radius:2px; }
 
 /* ── SCREENS ── */
-.screen { display:none; min-height:100vh; flex-direction:column; }
+.screen { display:none; min-height:100vh; flex-direction:column; margin-top:0; }
 .screen.active { display:flex; }
 .screen-center { flex:1; display:flex; flex-direction:column; align-items:center;
   justify-content:center; padding:2.5rem 2rem; text-align:center; }
@@ -133,9 +134,9 @@ input[type=text]:focus { border-bottom-color:var(--rust); }
 
 /* ── STATUS BAR ── */
 #status-bar { background:#060402; border-bottom:1px solid #140e06;
-  padding:.55rem 1.2rem; display:flex; justify-content:space-between;
+  padding:.55rem 1.2rem 0.5rem 1.2rem; display:flex; justify-content:space-between;
   align-items:center; flex-wrap:wrap; gap:.4rem;
-  position:sticky; top:0; z-index:20; }
+  position:fixed; top:0; left:0; right:0; z-index:100; }
 #dynasty-label { font-family:'IM Fell English SC',serif; font-size:.88rem;
   color:var(--gold); letter-spacing:.08em; cursor:help; }
 #dynasty-label:hover { color:var(--gold-hi); }
@@ -634,7 +635,11 @@ body > *:not(#bg-image):not(#settings-overlay):not(#debug-panel) { position: rel
 /* ── Content Overlay for Readability ──────────────────── */
 #screen-game, #screen-title, #screen-name, #screen-onboard, #screen-death {
   background: rgba(5, 4, 3, 0.85);  /* Dark enough for readability, light enough to see bg */
+  margin-top: 0;  /* No gap at top */
 }
+
+/* Screen game needs padding for fixed status bar */
+#screen-game { padding-top: 4.2rem; }
 
 /* ── Background Tint Overlay ──────────────────────────── */
 #bg-tint {
