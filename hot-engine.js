@@ -80,6 +80,7 @@ function startGame() {
     bankLoan:null, shadowLoan:null, creditScore:0, shipMarket:null,
     threads:[],
     cargo: { saltfish:0, wine:0, alum:0, tin:0 },
+    cargoBasis: { saltfish:0, wine:0, alum:0, tin:0 },
     marketPrices: null,
     rivals:{
       borracchi:{ relationship:0, lastInteraction:0, notes:[] },
