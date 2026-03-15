@@ -338,9 +338,9 @@ function updateMlxLaunchCmd() {
 // ══════════════════════════════════════════════════════════
 const APPEARANCE_KEY = 'hot_appearance';
 const APPEARANCE_DEFAULTS = {
-  bgOpacity: 12,         // 0-40% - reduced for subtler background
-  bgGrayscale: 100,      // 0-100% - full grayscale for less distraction
-  overlayOpacity: 94,    // 70-100% - increased for better text readability
+  bgOpacity: 40,         // 0-40% - visible but not distracting
+  bgGrayscale: 100,      // 0-100% - full grayscale
+  overlayOpacity: 85,    // 70-100% - balanced readability + background visibility
   tintColor: '#090705',  // hex color
   tintOpacity: 0,        // 0-100%
   textBrightness: 100    // 50-100%
