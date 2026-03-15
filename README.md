@@ -4,6 +4,8 @@
 
 You are the founder of a merchant house. You will trade, govern, and scheme. You will age. When you die, your heir continues. The sea does not care either way.
 
+**v1.1 Features:** Named NPCs, Mortality Events, Building System, Port Trading, AI-Generated Market Shocks
+
 ---
 
 ## 🎮 How to Play
@@ -28,6 +30,50 @@ open house-of-tide.html
 python3 -m http.server 8000
 # Visit http://localhost:8000
 ```
+
+---
+
+## 🎯 v1.1 Features
+
+### Named NPCs (Oregon Trail Emotional Investment)
+- **Casso** (Senior Captain) - Records your losses without comment
+- **Pell** (Archivist) - Watches documents that require a second witness
+- **Tucci** (Harbourmaster) - Remembers every unpaid gratuity
+- Bond system (0-10) - High bond unlocks special dialogue
+- NPCs can die - you'll feel it because you knew the name
+
+### Mortality Events (Oregon Trail Tension)
+- Death can happen anytime, not just at 65
+- 5% base chance per turn, modified by reputation, rivals, age
+- AI-generated events: fever, assassination, shipwreck, poison, accident
+- 3 choices per event with different survival chances (30%-95%)
+- Strong allies protect you (high bond = lower mortality risk)
+
+### Building System (Paravia Tangible Legacy)
+- **Warehouse** (400 mk) — +20% cargo capacity
+- **Guild Seat** (800 mk) — +1 rep/year, bank rates -2%
+- **Shipyard** (1200 mk) — ships cost -10%
+- **Palazzo Wing** (600 mk) — heir education +2 years
+- **Counting House** (500 mk) — passive income +10%
+- **Safehouse** (350 mk) — mortality risk -20%
+- Buildings persist across generations
+- "The warehouse your founder built still stands."
+
+### Port System (Taipan! Geographic Strategy)
+- **Verantia** — The old city (balanced prices)
+- **Masso** — Port town south (wine cheap, saltfish expensive)
+- **Caldera Strait** — Li Yuen's tolls (wine expensive, tin cheap)
+- **Northern Isles** — Salt fish capital (saltfish cheap, wine expensive)
+- Choose destination each turn
+- Different prices per port = geographic arbitrage
+- **Profit loop:** Buy low in Northern Isles, sell high in Caldera
+
+### AI-Generated Market Shocks
+- Bumper harvest (0.4-0.6x prices - flooded market)
+- Locust plague (1.8-2.5x prices - destroyed crops)
+- Mine collapse (2.0-3.0x prices - scarce metals)
+- Pirate blockade (1.8-2.2x prices - ships can't arrive)
+- AI knows your port, allies, rivals, and generates location-specific events
 
 ---
 
