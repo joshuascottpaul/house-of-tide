@@ -388,7 +388,7 @@ input[type=text]:focus { border-bottom-color:var(--rust); }
 .rep-tier.disgraced   { color:#a03030; }
 
 /* ── GAME CONTENT ── */
-#game-content { max-width:680px; margin:0 auto; padding:2rem 1.5rem 5rem; width:100%; }
+#game-content { max-width:680px; margin:0 auto; padding:5rem 1.5rem 5rem; width:100%; }
 .phase-hdr { display:flex; align-items:center; gap:.8rem; margin-bottom:1.4rem; }
 .phase-hdr-line { flex:1; height:1px; background:linear-gradient(to right,#7a6840,transparent); }
 .phase-hdr-line.r { background:linear-gradient(to left,#7a6840,transparent); }
@@ -1306,4 +1306,64 @@ body > *:not(#bg-image):not(#settings-overlay):not(#debug-panel) { position: rel
     min-height: 52px;
     font-size: 0.6rem;
   }
+}
+
+/* ── LOADING ANIMATIONS ────────────────────────────────────── */
+.loading-msg {
+  font-style: italic;
+  color: #7a6840;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Sailing ship animation */
+.loading-ships {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.ship {
+  font-size: 2rem;
+  animation: rock 2s ease-in-out infinite;
+  display: inline-block;
+}
+
+.ship:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.ship:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes rock {
+  0%, 100% { transform: rotate(-5deg) translateY(0); }
+  50% { transform: rotate(5deg) translateY(-5px); }
+}
+
+/* Simple spinner */
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(122, 104, 64, 0.3);
+  border-top-color: #7a6840;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 2rem auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Pulsing text */
+.loading-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
 }

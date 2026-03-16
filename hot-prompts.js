@@ -210,6 +210,8 @@ thread_hint: If this situation naturally creates an open thread, return a 1-3 wo
 
 const SYSTEM_PROMPT = `CRITICAL: You must respond with valid JSON only. No text before or after. No markdown fences. No explanation. Begin your response with { and end with }.
 
+IMPORTANT: Your response must be a SINGLE valid JSON object. Do NOT add extra closing braces. Do NOT use markdown code blocks like \`\`\`json. Do NOT add <think>or any other tags.
+
 The required JSON schema:
 {"narrative":"string","marks_delta":integer,"reputation_delta":integer,"ships_delta":integer,"ledger_entry":"string"}
 

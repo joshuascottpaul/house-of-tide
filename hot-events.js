@@ -146,39 +146,18 @@ Generate the situation and 3 choices. Present tense. Second person. Junior gothi
 }
 
 // ══════════════════════════════════════════════════════════
-//  FALLBACK EVENT GENERATION
+//  FALLBACK EVENT GENERATION (REMOVED - Violates "AI is DM")
 // ══════════════════════════════════════════════════════════
-function createFallbackEvent(phase) {
-  if (phase === 'house') {
-    return {
-      id: 'fallback_house',
-      text: 'The house awaits your direction. Pell is at his desk.',
-      choices: ['Attend to correspondence.', 'Review the ledger.', 'Walk the dock.'],
-      repChoice: null
-    };
-  } else if (phase === 'routes') {
-    return {
-      id: 'fallback_routes',
-      text: 'The fleet awaits orders. Casso has sent no word yet.',
-      choices: ['Hold the current route.', 'Dispatch a fast messenger.', 'Review the manifest.'],
-      repChoice: null
-    };
-  } else if (phase === 'venture') {
-    return {
-      id: 'fallback_venture',
-      text: 'The horizon offers something. The ledger is not yet sure what to call it.',
-      choices: ['Press on.', 'Consolidate.', 'Turn back.'],
-      repChoice: null
-    };
-  }
-  // Default fallback
-  return {
-    id: 'fallback_generic',
-    text: 'The ledger waits. The sea does not.',
-    choices: ['Consider your options.', 'Consult the archive.', 'Wait for clearer signs.'],
-    repChoice: null
-  };
-}
+// NOTE: Hardcoded fallback text violates the core design principle:
+// "The AI is the Dungeon Master. The code is the campaign notes."
+// 
+// When AI fails:
+// 1. Field-rescue extracts what it can from broken JSON
+// 2. If that fails, error banner shows with "Try Again" button
+// 3. User clicks retry → AI regenerates fresh response
+// 
+// NO hardcoded text. EVER. The AI generates all narrative.
+// ══════════════════════════════════════════════════════════
 
 // ══════════════════════════════════════════════════════════
 //  HEIR INFLUENCE — heir personality affects choices
@@ -280,12 +259,9 @@ async function showHouseEvent() {
     showPanel('panel-event');
     window.scrollTo({ top:0, behavior:'smooth' });
   } catch(err) {
+    // NO fallback - that violates "AI is Dungeon Master"
+    // Show error with retry button, let user regenerate
     showError(err);
-    // Fallback: generate minimal placeholder event
-    gs.currentEvent = createFallbackEvent('house');
-    document.getElementById('event-text').textContent = gs.currentEvent.text;
-    renderChoices('choices-container', gs.currentEvent.choices, false);
-    showPanel('panel-event');
   }
 }
 
@@ -332,11 +308,9 @@ async function showRoutesEvent() {
     showPanel('panel-event');
     window.scrollTo({ top:0, behavior:'smooth' });
   } catch(err) {
+    // NO fallback - that violates "AI is Dungeon Master"
+    // Show error with retry button, let user regenerate
     showError(err);
-    gs.currentEvent = createFallbackEvent('routes');
-    document.getElementById('event-text').textContent = gs.currentEvent.text;
-    renderChoices('choices-container', gs.currentEvent.choices, false);
-    showPanel('panel-event');
   }
 }
 
@@ -408,11 +382,9 @@ SPECIAL INSTRUCTIONS FOR VENTURES:
     showPanel('panel-venture');
     window.scrollTo({ top:0, behavior:'smooth' });
   } catch(err) {
+    // NO fallback - that violates "AI is Dungeon Master"
+    // Show error with retry button, let user regenerate
     showError(err);
-    gs.currentEvent = createFallbackEvent('venture');
-    document.getElementById('venture-text').textContent = gs.currentEvent.text;
-    renderChoices('venture-choices', gs.currentEvent.choices, true);
-    showPanel('panel-venture');
   }
 }
 

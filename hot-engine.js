@@ -94,6 +94,7 @@ function startGame() {
     skills: { negotiation: 0, seamanship: 0, politics: 0, intrigue: 0 },  // Founder skills
     heirSpouse: null,  // Heir's spouse (Paravia)
     achievements: [],  // Unlocked achievements
+    tutorialsShown: { buildings: false, skills: false, marriage: false, venture: false, combat: false },  // Tutorial tracking
     marketPrices: null,
     rivals:{
       borracchi:{ relationship:0, lastInteraction:0, notes:[] },
@@ -397,22 +398,27 @@ function getPirateNarrative() {
 function showPirateCombat(encounter) {
   window._currentPirateEncounter = encounter;
   
+  // Show combat tutorial on first encounter
+  if (gs.tutorialsShown && !gs.tutorialsShown.combat) {
+    setTimeout(() => showTutorial('combat'), 500);
+  }
+  
   // Show combat panel
   document.getElementById('panel-event').style.display = 'none';
   document.getElementById('panel-venture').style.display = 'none';
   document.getElementById('panel-trading').style.display = 'none';
   document.getElementById('panel-result').style.display = 'none';
-  
+
   const combatPanel = document.getElementById('panel-combat');
   if (!combatPanel) return;
-  
+
   combatPanel.style.display = 'block';
   combatPanel.className = 'panel fade-in';
-  
+
   document.getElementById('combat-narrative').textContent = encounter.narrative;
   document.getElementById('combat-enemy').textContent = `Pirate Strength: ${encounter.strength}`;
   document.getElementById('combat-player').textContent = `Your Cannons: ${gs.cannons} | Seamanship: ${gs.skills.seamanship}`;
-  
+
   // Render tactical choices
   const tacticsContainer = document.getElementById('combat-tactics');
   tacticsContainer.innerHTML = Object.keys(COMBAT_TACTICS).map(tactic => `
@@ -424,7 +430,7 @@ function showPirateCombat(encounter) {
       <div class="tactic-risk">${COMBAT_TACTICS[tactic].risk}</div>
     </button>
   `).join('');
-  
+
   // Show current selection
   document.getElementById('combat-selection').textContent = 'Select your tactic...';
 }
@@ -1112,6 +1118,28 @@ function beginYear() {
     // Victory achieved! Show special year-end with epilogue
     showVictoryScreen(victory);
     return;
+  }
+  // ─────────────────────────────────────────────────────
+
+  // ── Progressive tutorials (Junior Gothic discovery) ──
+  // Show tutorials at appropriate years, only once per game
+  if (gs.tutorialsShown) {
+    // Year 2: Buildings (player has seen year-end, now can buy)
+    if (gs.turn >= 2 && !gs.tutorialsShown.buildings) {
+      setTimeout(() => showTutorial('buildings'), 500);
+    }
+    // Year 3: Skills (player has enough marks to train)
+    if (gs.turn >= 3 && !gs.tutorialsShown.skills) {
+      setTimeout(() => showTutorial('skills'), 500);
+    }
+    // Year 4: Marriage (heir is age 10+, marriageable soon)
+    if (gs.turn >= 4 && !gs.tutorialsShown.marriage) {
+      setTimeout(() => showTutorial('marriage'), 500);
+    }
+    // Year 5: Ventures unlock
+    if (gs.turn >= 5 && !gs.tutorialsShown.venture) {
+      setTimeout(() => showTutorial('venture'), 500);
+    }
   }
   // ─────────────────────────────────────────────────────
 

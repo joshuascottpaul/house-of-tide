@@ -198,10 +198,19 @@ async function callLLM(systemPrompt, userMsg, opts = {}) {
   clean = clean.replace(/<think>[\s\S]*?/gi, '').trim();  // Fallback: strip unclosed think
   clean = clean.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();  // Alternative format
   clean = clean.replace(/<think>[\s\S]*?/gi, '').trim();  // Unclosed alternative
-
+  
   // Strip markdown code fences (common with Qwen)
   clean = clean.replace(/^```(?:json)?\s*/i, '').replace(/```$/i, '').trim();
   clean = clean.replace(/^```\s*/i, '').replace(/```$/i, '').trim();
+  
+  // Fix common 7B JSON errors: extra closing braces
+  clean = clean.replace(/\}\}+\s*$/g, '}');  // Remove extra closing braces at end
+  
+  // Strip any leading/trailing non-JSON text (keep only the JSON object)
+  const jsonMatch = clean.match(/\{[\s\S]*\}/);
+  if (jsonMatch) {
+    clean = jsonMatch[0];
+  }
 
   if (!isJson) {
     debugLog(metaStr, raw, 'plain text — no parse needed', false);
@@ -244,17 +253,19 @@ async function callLLM(systemPrompt, userMsg, opts = {}) {
       const sh   = clean.match(/"ships_delta"\s*:\s*(-?\d+)/);
       const led  = clean.match(/"ledger_entry"\s*:\s*"((?:[^"\\]|\\.)*)"/);
       const choices = clean.match(/"choices"\s*:\s*\[([\s\S]*?)\]/);
-      
+
       if (!nar) {
-        debugLog(metaStr, raw, '✗ Field rescue also failed — no narrative key', true);
-        throw new Error('No JSON in response');
+        debugLog(metaStr, raw, '✗ Field rescue failed — no narrative key found. User should retry.', true);
+        // DO NOT create hardcoded fallback - that violates "AI is Dungeon Master"
+        // Throw error to trigger retry button
+        throw new Error('AI response was not valid JSON and could not be parsed. Please click "Try Again" to regenerate.');
       }
       parsed = {
         narrative:        nar[1].replace(/\\n/g,'\n'),
         marks_delta:      mk  ? parseInt(mk[1])  : 0,
         reputation_delta: rep ? parseInt(rep[1]) : 0,
         ships_delta:      sh  ? parseInt(sh[1])  : 0,
-        ledger_entry:     led ? led[1] : 'The ledger notes the event without comment.',
+        ledger_entry:     led ? led[1] : 'The ledger records the event. The sea does not comment.',
         choices:          choices ? JSON.parse('[' + choices[1] + ']') : [],
         open_thread:      null,
         resolve_thread:   null

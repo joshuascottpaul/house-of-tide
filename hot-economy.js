@@ -340,11 +340,13 @@ function showBuildingPurchase() {
   });
 
   list.innerHTML = html;
+
+  // Build cannon and skill sections as HTML (not appendChild to avoid duplicates)
+  let extraSections = '';
   
-  // Add cannon purchase section (Taipan!)
-  const cannonContainer = document.createElement('div');
-  cannonContainer.style.cssText = 'margin-top:1.5rem;padding:1rem;border:1px solid #5a3030;border-radius:3px;background:rgba(42,10,10,.3);';
-  cannonContainer.innerHTML = `
+  // Cannon purchase section (Taipan!)
+  extraSections += `
+  <div style="margin-top:1.5rem;padding:1rem;border:1px solid #5a3030;border-radius:3px;background:rgba(42,10,10,.3);">
     <div style="font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.15em;color:#a04040;text-transform:uppercase;margin-bottom:.5rem;">🔫 Harbor Defense</div>
     <p style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:.5rem;">Cannons protect your fleet from pirates. Current: ${gs.cannons || 0} cannons.</p>
     <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
@@ -352,13 +354,12 @@ function showBuildingPurchase() {
       <button class="finance-btn" onclick="buyCannons(3)" ${gs.marks < 150 ? 'disabled' : ''}>Buy 3 Cannons — 150 mk</button>
       <button class="finance-btn" onclick="buyCannons(5)" ${gs.marks < 250 ? 'disabled' : ''}>Buy 5 Cannons — 250 mk</button>
     </div>
+  </div>
   `;
-  container.appendChild(cannonContainer);
   
-  // Add skill training section (Oregon Trail)
-  const skillContainer = document.createElement('div');
-  skillContainer.style.cssText = 'margin-top:1.5rem;padding:1rem;border:1px solid #30505a;border-radius:3px;background:rgba(10,30,42,.3);';
-  skillContainer.innerHTML = `
+  // Skill training section (Oregon Trail)
+  extraSections += `
+  <div style="margin-top:1.5rem;padding:1rem;border:1px solid #30505a;border-radius:3px;background:rgba(10,30,42,.3);">
     <div style="font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.15em;color:#4080a0;text-transform:uppercase;margin-bottom:.5rem;">📚 Skill Development</div>
     <p style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:.5rem;">Train your founder's skills. Each level costs 200 mk.</p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;">
@@ -375,18 +376,17 @@ function showBuildingPurchase() {
         🗡️ Intrigue ${gs.skills.intrigue || 0}/5
       </button>
     </div>
+  </div>
   `;
-  container.appendChild(skillContainer);
   
   // Add marriage section (Paravia) - only if heir is of age and unmarried
   if (gs.heirAge >= 14 && !gs.heirSpouse) {
-    const marriageContainer = document.createElement('div');
-    marriageContainer.style.cssText = 'margin-top:1.5rem;padding:1rem;border:1px solid #5a3050;border-radius:3px;background:rgba(42,10,32,.3);';
-    marriageContainer.innerHTML = `
+    extraSections += `
+    <div style="margin-top:1.5rem;padding:1rem;border:1px solid #5a3050;border-radius:3px;background:rgba(42,10,32,.3);">
       <div style="font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.15em;color:#a04080;text-transform:uppercase;margin-bottom:.5rem;">💍 Political Marriage</div>
       <p style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:.5rem;">${gs.heirName} (age ${gs.heirAge}) is of marriageable age. Alliances bring dowries and reputation.</p>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;">
-        <button class="finance-btn" onclick="proposeMarriage('borracchi')" ${gs.rivals.borracchi.relationship < 0 || gs.marks < 0 ? 'disabled' : ''} title="Dowry: 500 mk, +2 rep">
+        <button class="finance-btn" onclick="proposeMarriage('borracchi')" ${gs.rivals.borracchi.relationship < 0 ? 'disabled' : ''} title="Dowry: 500 mk, +2 rep">
           💍 Borracchi Alliance
         </button>
         <button class="finance-btn" onclick="proposeMarriage('spinetta')" ${gs.rivals.spinetta.relationship < -1 ? 'disabled' : ''} title="Dowry: 300 mk, +1 rep">
@@ -399,17 +399,19 @@ function showBuildingPurchase() {
           💍 Merchant Marriage
         </button>
       </div>
+    </div>
     `;
-    container.appendChild(marriageContainer);
   } else if (gs.heirSpouse) {
-    const marriedContainer = document.createElement('div');
-    marriedContainer.style.cssText = 'margin-top:1.5rem;padding:1rem;border:1px solid #305a40;border-radius:3px;background:rgba(10,42,20,.3);';
-    marriedContainer.innerHTML = `
+    extraSections += `
+    <div style="margin-top:1.5rem;padding:1rem;border:1px solid #305a40;border-radius:3px;background:rgba(10,42,20,.3);">
       <div style="font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.15em;color:#40a060;text-transform:uppercase;margin-bottom:.5rem;">💍 Married</div>
       <p style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;">${gs.heirName} is married to ${gs.heirSpouse.name} (${gs.heirSpouse.family}). Alliance: ${gs.heirSpouse.family}.</p>
+    </div>
     `;
-    container.appendChild(marriedContainer);
   }
+  
+  // Append all extra sections at once
+  list.innerHTML += extraSections;
 }
 
 // ══════════════════════════════════════════════════════════
