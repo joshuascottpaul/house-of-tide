@@ -338,6 +338,74 @@ function showBuildingPurchase() {
       </div>
     `;
   });
-  
+
   list.innerHTML = html;
+  
+  // Add cannon purchase section (Taipan!)
+  const cannonContainer = document.createElement('div');
+  cannonContainer.style.cssText = 'margin-top:1.5rem;padding:1rem;border:1px solid #5a3030;border-radius:3px;background:rgba(42,10,10,.3);';
+  cannonContainer.innerHTML = `
+    <div style="font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.15em;color:#a04040;text-transform:uppercase;margin-bottom:.5rem;">🔫 Harbor Defense</div>
+    <p style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:.5rem;">Cannons protect your fleet from pirates. Current: ${gs.cannons || 0} cannons.</p>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+      <button class="finance-btn" onclick="buyCannons(1)" ${gs.marks < 50 ? 'disabled' : ''}>Buy 1 Cannon — 50 mk</button>
+      <button class="finance-btn" onclick="buyCannons(3)" ${gs.marks < 150 ? 'disabled' : ''}>Buy 3 Cannons — 150 mk</button>
+      <button class="finance-btn" onclick="buyCannons(5)" ${gs.marks < 250 ? 'disabled' : ''}>Buy 5 Cannons — 250 mk</button>
+    </div>
+  `;
+  container.appendChild(cannonContainer);
+  
+  // Add skill training section (Oregon Trail)
+  const skillContainer = document.createElement('div');
+  skillContainer.style.cssText = 'margin-top:1.5rem;padding:1rem;border:1px solid #30505a;border-radius:3px;background:rgba(10,30,42,.3);';
+  skillContainer.innerHTML = `
+    <div style="font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.15em;color:#4080a0;text-transform:uppercase;margin-bottom:.5rem;">📚 Skill Development</div>
+    <p style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:.5rem;">Train your founder's skills. Each level costs 200 mk.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;">
+      <button class="finance-btn" onclick="trainSkill('negotiation')" ${gs.marks < 200 || gs.skills.negotiation >= 5 ? 'disabled' : ''}>
+        🤝 Negotiation ${gs.skills.negotiation || 0}/5
+      </button>
+      <button class="finance-btn" onclick="trainSkill('seamanship')" ${gs.marks < 200 || gs.skills.seamanship >= 5 ? 'disabled' : ''}>
+        ⚓ Seamanship ${gs.skills.seamanship || 0}/5
+      </button>
+      <button class="finance-btn" onclick="trainSkill('politics')" ${gs.marks < 200 || gs.skills.politics >= 5 ? 'disabled' : ''}>
+        🏛️ Politics ${gs.skills.politics || 0}/5
+      </button>
+      <button class="finance-btn" onclick="trainSkill('intrigue')" ${gs.marks < 200 || gs.skills.intrigue >= 5 ? 'disabled' : ''}>
+        🗡️ Intrigue ${gs.skills.intrigue || 0}/5
+      </button>
+    </div>
+  `;
+  container.appendChild(skillContainer);
+}
+
+// ══════════════════════════════════════════════════════════
+//  SKILL TRAINING
+// ══════════════════════════════════════════════════════════
+
+function trainSkill(skillName) {
+  const cost = 200;
+  if (gs.marks < cost) return false;
+  if (gs.skills[skillName] >= 5) return false; // Max level
+  
+  gs.marks -= cost;
+  gs.skills[skillName]++;
+  
+  const skillLabels = {
+    negotiation: 'Better trade prices',
+    seamanship: 'Escape pirates more easily',
+    politics: 'Faster reputation gains',
+    intrigue: 'Manipulate rivals'
+  };
+  
+  gs.ledger.unshift({
+    year: gs.turn,
+    phase: 'Training',
+    entry: `Trained ${skillName} to level ${gs.skills[skillName]}. ${skillLabels[skillName]}.`
+  });
+  
+  updateStatusBar();
+  showYearEndFinance();
+  autoSave();
+  return true;
 }

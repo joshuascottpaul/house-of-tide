@@ -254,6 +254,36 @@ function updateStatusBar() {
   if (gs.heirTrait) {
     hb.innerHTML = `Heir: ${gs.heirName}, ${gs.heirAge}&thinsp;—&thinsp;<span class="ht">${gs.heirTrait.label}</span>`;
   }
+  
+  // ── Cannons display (Taipan!) ────────────────────────────
+  const cannonsDisplay = document.getElementById('cannons-display');
+  const cannonsCount = document.getElementById('cannons-count');
+  if (cannonsDisplay && cannonsCount) {
+    if (gs.cannons > 0) {
+      cannonsDisplay.style.display = 'block';
+      cannonsCount.textContent = gs.cannons;
+    } else {
+      cannonsDisplay.style.display = 'none';
+    }
+  }
+  
+  // ── Skills display (Oregon Trail) ────────────────────────
+  const skillsDisplay = document.getElementById('skills-display');
+  if (skillsDisplay && gs.skills) {
+    const skills = gs.skills;
+    const total = skills.negotiation + skills.seamanship + skills.politics + skills.intrigue;
+    if (total > 0) {
+      skillsDisplay.style.display = 'block';
+      skillsDisplay.innerHTML = `
+        <span title="Negotiation (better prices)">🤝 NEG:${skills.negotiation}</span> &nbsp;
+        <span title="Seamanship (escape pirates)">⚓ SEA:${skills.seamanship}</span> &nbsp;
+        <span title="Politics (reputation gains)">🏛️ POL:${skills.politics}</span> &nbsp;
+        <span title="Intrigue (rival manipulation)">🗡️ INT:${skills.intrigue}</span>
+      `;
+    } else {
+      skillsDisplay.style.display = 'none';
+    }
+  }
 
   // ── Player character epithet ──────────────────────────────
   const ptEl = document.getElementById('player-trait');

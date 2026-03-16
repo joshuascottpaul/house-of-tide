@@ -90,6 +90,8 @@ function startGame() {
     allies: [],  // Named NPCs generated at game start
     buildings: {},  // Owned buildings
     victoryType: null,  // Victory condition achieved
+    cannons: 0,  // Defense rating (Taipan!)
+    skills: { negotiation: 0, seamanship: 0, politics: 0, intrigue: 0 },  // Founder skills
     marketPrices: null,
     rivals:{
       borracchi:{ relationship:0, lastInteraction:0, notes:[] },
@@ -320,6 +322,135 @@ function getVictoryEpilogue() {
     default:
       return `House ${gs.dynastyName} continues. The ledger records your deeds. The sea waits.`;
   }
+}
+
+// ══════════════════════════════════════════════════════════
+//  COMBAT/PIRATE SYSTEM (Taipan! — Direct Conflict)
+// ══════════════════════════════════════════════════════════
+
+function buyCannons(qty) {
+  const costPerCannon = 50;
+  const totalCost = costPerCannon * qty;
+  
+  if (gs.marks < totalCost) return false;
+  
+  gs.marks -= totalCost;
+  gs.cannons += qty;
+  
+  gs.ledger.unshift({
+    year: gs.turn,
+    phase: 'Defense',
+    entry: `Commissioned ${qty} cannons — ${totalCost} marks. The harbourmaster notes the decision without comment.`
+  });
+  
+  updateStatusBar();
+  autoSave();
+  return true;
+}
+
+function checkPirateEncounter() {
+  // Base 10% chance during Routes phase
+  let chance = 0.10;
+  
+  // Northern route is more dangerous
+  if (gs.currentPort === 'Northern') chance += 0.15;
+  if (gs.currentPort === 'Caldera') chance += 0.05;
+  
+  // Cannons reduce chance
+  chance -= gs.cannons * 0.02;
+  
+  // Seamanship skill reduces chance
+  chance -= gs.skills.seamanship * 0.01;
+  
+  chance = Math.max(0.02, Math.min(0.50, chance));
+  
+  if (Math.random() > chance) return null;
+  
+  // Generate pirate encounter
+  return {
+    type: 'pirate',
+    strength: Math.floor(Math.random() * 10) + 5 + (gs.cannons > 0 ? 2 : 0),
+    demand: Math.min(gs.marks * 0.30, 500 + gs.ships * 100),
+    narrative: getPirateNarrative()
+  };
+}
+
+function getPirateNarrative() {
+  const narratives = [
+    'Three hulls on the horizon. Black flags. They have been waiting.',
+    'The fog parts. The first shot is a warning. The second will not be.',
+    'Li Yuen\'s toll collectors. They do not ask permission.',
+    'The Caldera strait has a new master. He wears a captain\'s hat and a smile that does not reach his eyes.'
+  ];
+  return narratives[Math.floor(Math.random() * narratives.length)];
+}
+
+function resolvePirateEncounter(choice) {
+  const encounter = window._currentPirateEncounter;
+  if (!encounter) return;
+  
+  let survival = 0;
+  let marksLost = 0;
+  let shipLost = false;
+  
+  if (choice === 'fight') {
+    // Fight: roll dice based on cannons vs pirate strength
+    const defenseRoll = Math.floor(Math.random() * 10) + gs.cannons + gs.skills.seamanship;
+    const attackRoll = Math.floor(Math.random() * 10) + encounter.strength;
+    
+    if (defenseRoll >= attackRoll) {
+      // Won - pirates flee
+      survival = 1;
+      gs.ledger.unshift({
+        year: gs.turn,
+        phase: 'Combat',
+        entry: `Pirates engaged. ${gs.cannons} cannons fired. The black hulls retreat. The ledger notes: no cargo lost.`
+      });
+    } else {
+      // Lost - lose cargo/marks
+      marksLost = Math.min(gs.marks, encounter.demand * 1.5);
+      gs.marks -= marksLost;
+      survival = 0.7;
+      gs.ledger.unshift({
+        year: gs.turn,
+        phase: 'Combat',
+        entry: `Pirates boarded. ${marksLost} marks taken. The ledger records the loss without comment.`
+      });
+    }
+  } else if (choice === 'pay') {
+    // Pay tribute
+    marksLost = encounter.demand;
+    gs.marks -= marksLost;
+    survival = 1;
+    gs.ledger.unshift({
+      year: gs.turn,
+      phase: 'Tribute',
+      entry: `Tribute paid: ${marksLost} marks. The pirates depart. The ledger notes: the arrangement may not hold.`
+    });
+  } else if (choice === 'flee') {
+    // Flee: seamanship check
+    const fleeRoll = Math.floor(Math.random() * 10) + gs.skills.seamanship * 2;
+    if (fleeRoll >= 12) {
+      survival = 1;
+      gs.ledger.unshift({
+        year: gs.turn,
+        phase: 'Evasion',
+        entry: 'The ship outran the pirates. The ledger notes: seamanship over firepower.'
+      });
+    } else {
+      marksLost = Math.min(gs.marks, encounter.demand);
+      gs.marks -= marksLost;
+      survival = 0.8;
+      gs.ledger.unshift({
+        year: gs.turn,
+        phase: 'Evasion Failed',
+        entry: `The pirates caught you. ${marksLost} marks taken. The ledger records: speed was not enough.`
+      });
+    }
+  }
+  
+  window._currentPirateEncounter = null;
+  return { survival, marksLost, shipLost };
 }
 
 // ══════════════════════════════════════════════════════════
