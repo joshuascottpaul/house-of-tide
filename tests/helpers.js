@@ -400,35 +400,6 @@ async function captureDebugOnFailure(page, testName) {
 }
 
 // ══════════════════════════════════════════════════════════
-//  AUTOMATIC DEBUG CAPTURE (Playwright hooks)
-// ══════════════════════════════════════════════════════════
-
-// Export a test wrapper that auto-captures debug info
-const { test: baseTest, expect: baseExpect } = require('@playwright/test');
-
-/**
- * Extended test with automatic debug capture on failure
- */
-const test = baseTest.extend({
-  page: async ({ page }, use) => {
-    // Reset state before test
-    await resetGameState(page);
-    
-    // Run test
-    await use(page);
-    
-    // After test: capture debug info on failure
-    // (Playwright already captures screenshot/video on failure)
-  }
-});
-
-// Re-export expect
-const expect = baseExpect;
-
-module.exports.test = test;
-module.exports.expect = expect;
-
-// ══════════════════════════════════════════════════════════
 //  EXPORT ALL HELPERS
 // ══════════════════════════════════════════════════════════
 
@@ -467,5 +438,6 @@ module.exports = {
   
   // Debug
   enableDebugMode,
-  getDebugInfo
+  getDebugInfo,
+  captureDebugOnFailure
 };

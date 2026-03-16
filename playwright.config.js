@@ -35,19 +35,4 @@ module.exports = defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  
-  // Global test hooks
-  async globalSetup() {
-    // Ensure test-results directory exists
-    const fs = require('fs');
-    const path = require('path');
-    const resultsDir = path.join(__dirname, 'test-results');
-    if (!fs.existsSync(resultsDir)) {
-      fs.mkdirSync(resultsDir, { recursive: true });
-    }
-  },
-  
-  async globalTeardown(config) {
-    // Cleanup after all tests
-  }
 });
