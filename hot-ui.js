@@ -390,7 +390,7 @@ function showResult(parsed, isVenture) {
   addDelta('Ships',      parsed.ships_delta,      '');
 
   const btn = document.getElementById('continue-btn');
-  btn.textContent = gs.phase === 'house' ? 'To the Routes →' : 'To Year\'s End →';
+  btn.textContent = gs.phase === 'house' ? 'To the Routes →' : 'Begin Trading →';
   btn.className   = isVenture ? 'btn btn-venture' : 'btn';
 
   showPanel('panel-result');

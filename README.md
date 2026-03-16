@@ -17,6 +17,31 @@ You are the founder of a merchant house. You will trade, govern, and scheme. You
 4. Make choices that shape your house's legacy
 5. Survive, thrive, and pass your legacy to your heir
 
+### Game Flow
+
+**House Phase** — Political situations, rival maneuvers, Pell's observations
+- Make 3 choices per event
+- Build relationships with named NPCs (Casso, Pell, Tucci)
+- Reputation changes based on decisions
+
+**Routes Phase** — Choose your destination, sail, encounter events
+- Select port: Verantia, Masso, Caldera, or Northern Isles
+- Travel events (pirates, weather, opportunities)
+- Geographic arbitrage: different ports have different prices
+
+**Trading Phase** — Buy low, sell high at CURRENT port
+- 4 commodities: Salt Fish, Wine, Alum, Tin
+- Max Buy / Sell All for quick trading
+- Cargo carries over between years (speculate on future prices)
+- "Close the Books" advances to Year-End
+
+**Year-End Phase** — Settlement, investments, tutorials
+- Passive fleet income (ships × reputation modifier)
+- Buy buildings (persist across generations)
+- Train skills (Negotiation, Seamanship, Politics, Intrigue)
+- Arrange heir marriages (political alliances)
+- Tutorials unlock: Buildings (Y2), Skills (Y3), Marriage (Y4), Ventures (Y5+)
+
 ### Local Development
 ```bash
 # Clone the repository

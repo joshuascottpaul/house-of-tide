@@ -59,20 +59,16 @@ function getPortModifiers(portName) {
 function renderPortSelector() {
   const container = document.getElementById('port-selector');
   if (!container) return;
-  
+
+  // Show CURRENT port (not destination selection - that happens in Routes phase)
+  const currentPort = gs.currentPort || 'Verantia';
   container.innerHTML = `
-    <div style="font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.1em;color:#a08848;text-transform:uppercase;margin-bottom:.5rem;">Choose Your Destination</div>
-    <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-      ${Object.keys(PORTS).map(port => `
-        <button 
-          class="port-btn ${gs.currentPort === port ? 'active' : ''}" 
-          onclick="selectPort('${port}')"
-          data-testid="port-${port.toLowerCase()}"
-        >
-          ${port}
-        </button>
-      `).join('')}
+    <div style="font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.1em;color:#a08848;text-transform:uppercase;margin-bottom:.5rem;">
+      Current Port: <span style="color:var(--gold-hi);">${currentPort.toUpperCase()}</span>
     </div>
+    <p style="font-family:'IM Fell English',serif;font-size:.75rem;color:#7a6840;font-style:italic;margin-bottom:1rem;">
+      ${PORTS[currentPort].description}
+    </p>
   `;
 }
 
