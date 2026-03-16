@@ -26,6 +26,7 @@ let gs = {
   skills: { negotiation: 0, seamanship: 0, politics: 0, intrigue: 0 },  // Founder skills (Oregon Trail)
   heirSpouse: null,  // Heir's spouse (Paravia marriage system)
   achievements: [],  // Unlocked achievements
+  tutorialsShown: { buildings: false, skills: false, marriage: false, venture: false, combat: false },  // Tutorial tracking
   rivals:{
     borracchi:{ relationship:0, lastInteraction:0, notes:[] },
     spinetta: { relationship:0, lastInteraction:0, notes:[] },

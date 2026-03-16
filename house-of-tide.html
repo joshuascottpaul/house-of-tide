@@ -62,6 +62,18 @@
     <button class="save-close" onclick="closeSaveOverlay()">Return to the House</button>
   </div>
 </div>
+
+<!-- ══ TUTORIAL MODAL ════════════════════════════════════════ -->
+<div id="tutorial-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:600;overflow-y:auto;">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;">
+    <div style="max-width:600px;background:rgba(9,7,5,.95);border:2px solid #5a4828;border-radius:4px;padding:2rem;position:relative;">
+      <div id="tutorial-icon" style="font-size:3rem;text-align:center;margin-bottom:1rem;"></div>
+      <h2 id="tutorial-title" style="font-family:'IM Fell English SC',serif;font-size:1.4rem;color:var(--gold-hi);letter-spacing:.1em;text-align:center;margin-bottom:1.5rem;"></h2>
+      <div id="tutorial-content" style="font-family:'IM Fell English',serif;font-size:1rem;color:#c8a870;line-height:1.85;margin-bottom:2rem;"></div>
+      <button onclick="closeTutorial()" style="display:block;margin:0 auto;background:none;border:1px solid #5a4020;color:var(--gold);font-family:'IM Fell English SC',serif;font-size:.75rem;padding:.65rem 1.8rem;cursor:pointer;text-transform:uppercase;transition:all .2s;" onmouseover="this.style.background='rgba(139,105,20,.04)';this.style.borderColor='var(--rust)'" onmouseout="this.style.background='none';this.style.borderColor='#5a4020'">I Understand</button>
+    </div>
+  </div>
+</div>
 <div id="screen-name" class="screen">
   <div class="screen-center">
     <div class="eyebrow">Before the Ledger Is Opened</div>
@@ -130,6 +142,7 @@
         <p><strong style="color:var(--gold-hi)">Name.</strong> In Verantia, reputation is not vanity — it is the rate of exchange between what you are and what people will permit you to do. A name in standing means contracts arrive before you ask, tariffs are quietly lower, and rivals return your correspondence. A name in decay means the reverse of each of these, progressively, until something worse that is not on any list.</p>
         <p><strong style="color:var(--gold-hi)">Ships.</strong> You begin with one. A fleet of one is technically still a fleet. Lose it and you have nothing moving on the water, which in an archipelago is the same as having nothing moving at all.</p>
         <p><strong style="color:var(--gold-hi)">Time.</strong> You are twenty-eight. The body keeps its own ledger and has never once accepted a renegotiation.</p>
+        <p style="margin-top:1.2rem;"><strong style="color:var(--gold-hi)">Allies.</strong> You are not alone. Casso commands your ships. Pell keeps the accounts. Tucci controls the harbour — or believes he does. They will speak when they have something to say. Listen when they do.</p>
       </div>
     </div>
 
@@ -145,13 +158,14 @@
       </div>
     </div>
 
-    <!-- PAGE 4: Pell -->
+    <!-- PAGE 4: Your Allies -->
     <div class="onboard-page" id="op4">
-      <div class="onboard-chapter"><span class="glyph glyph-star">✦</span> &nbsp; V. The Archivist &nbsp; <span class="glyph glyph-star">✦</span></div>
-      <div class="onboard-title">A Man Named Pell</div>
+      <div class="onboard-chapter"><span class="glyph glyph-star">✦</span> &nbsp; V. Your Allies &nbsp; <span class="glyph glyph-star">✦</span></div>
+      <div class="onboard-title">Three Who Will Speak Truth</div>
       <div class="onboard-body">
         <p>There is a man named Pell who keeps the warehouse accounts. He has been with the house since the founding — which is to say, since this morning — and he arrived with the inventory list and the expression of someone who has already identified three problems and is deciding in what order to mention them.</p>
         <p>He has honest eyes. In Verantia, this is simultaneously a character virtue and a professional liability. He has arranged, somehow, for it to be both.</p>
+        <p>Casso is elsewhere — probably on a ship, probably arguing with a captain about something that matters. Tucci is at the harbour, controlling it or believing he does. The sea keeps its own counsel; the harbour keeps other people's.</p>
         <p>In the corner of the screen, a small door: <strong style="color:var(--gold-hi)">Consult the Archivist.</strong> Open it at any moment and Pell will read the current state of things — the treasury, the name, the year, what the sea has most recently done — and offer a single observation. Not counsel, exactly. An observation with an implication attached, the way a letter arrives already opened.</p>
         <p>He is not always correct. He is always honest. In the context of Verantia, the distinction matters less than you might hope.</p>
         <p style="color:var(--gold-lo); font-size:1.05rem; font-style:italic; margin-top:1.2rem;">The ledger is open. The sea is waiting. The Borracchi are already smiling.</p>
