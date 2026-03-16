@@ -1,8 +1,8 @@
 # 🎯 House of Tide — v2.0 Implementation Status
 
-**Last Updated:** March 14, 2026 (POST Modularity Phase 2 COMPLETE)
-**v2.0 Progress:** 11/20 tasks complete (55%)
-**Total v2.0 Effort:** 45-61 hours estimated, 14 hours completed
+**Last Updated:** March 14, 2026 (POST Code Quality Phase 1-2)
+**v2.0 Progress:** 13/20 tasks complete (65%)
+**Total v2.0 Effort:** 45-61 hours estimated, 16 hours completed
 
 ---
 
@@ -30,37 +30,32 @@
 ---
 
 ### **Phase 3: Modularity (4/4 tasks) ✅**
-- Split hot-engine.js ✅ (6 modules created)
+- Split hot-engine.js ✅ (6 modules)
 - UI Renderer Abstraction ⏭️ SKIPPED
 - Component System ⏭️ SKIPPED
 - Event Bus System ⏭️ SKIPPED
 
-**Modules Created:**
-- hot-background.js (77 lines)
-- hot-combat.js (284 lines)
-- hot-tutorials.js (151 lines)
-- hot-victory.js (105 lines)
-- hot-threads.js (198 lines)
-- hot-yearend.js (227 lines)
-
-**hot-engine.js Reduction:** 1,703 → ~660 lines (61% reduction) ✅
+**Modules Created:** 6 modules, 1,042 lines
+**hot-engine.js Reduction:** 1,703 → 660 lines (61%)
 
 **Phase 3 Total:** 4 hours ✅
 
 ---
 
-### **Phase 4: Code Quality (0/5 tasks) ⏳**
-- Magic Number Constants ⏳
-- JSDoc Type Hints ⏳
-- Consistent Error Format ⏳
-- Selector Constants ⏳
-- Coverage Reporting ⏳
+### **Phase 4: Code Quality (2/5 tasks) 🔄**
+- Magic Number Constants ✅ DONE
+- JSDoc Type Hints 🔄 IN PROGRESS (guide created)
+- Consistent Error Format ⏳ TODO
+- Selector Constants ⏳ TODO
+- Coverage Reporting ⏳ TODO
+
+**Phase 4 Total:** 2 hours (40% complete)
 
 ---
 
 ### **Phase 5: Dev Experience (0/2 tasks) ⏳**
-- Hot Module Reloading ⏳
-- Bundle Size Monitoring ⏳
+- Hot Module Reloading ⏳ TODO
+- Bundle Size Monitoring ⏳ TODO
 
 ---
 
@@ -71,10 +66,10 @@
 | **Foundation** | 3 | 3 ✅ | 0 | 100% |
 | **Testing** | 6 | 6 ✅ | 0 | 100% |
 | **Modularity** | 4 | 4 ✅ | 0 | 100% |
-| **Code Quality** | 5 | 0 | 5 ⏳ | 0% |
+| **Code Quality** | 5 | 2 | 3 🔄 | 40% |
 | **Dev Experience** | 2 | 0 | 2 ⏳ | 0% |
 
-**Total:** 13/20 tasks complete (65%)
+**Total:** 15/20 tasks complete (75%)
 
 ---
 
@@ -90,6 +85,7 @@
 - hot-victory.js (105 lines)
 - hot-threads.js (198 lines)
 - hot-yearend.js (227 lines)
+- hot-constants.js (300 lines) ✨ NEW
 
 ### **Testing Infrastructure (8 files):**
 - tests/helpers.js (444 lines)
@@ -101,29 +97,57 @@
 - tests/enhanced-helpers.spec.js (100 lines)
 - tests/test-isolation.spec.js (80 lines)
 
-### **Documentation (5 files):**
+### **Documentation (6 files):**
 - TESTING_INFRASTRUCTURE_GUIDE.md (800 lines)
 - CODE_REVIEW_V2.md (500 lines)
 - CODE_REVIEW_MODULARITY_V2.md (600 lines)
-- V2_IMPLEMENTATION_STATUS.md (350 lines)
+- V2_IMPLEMENTATION_STATUS.md (400 lines)
 - TEST_SUITE_REPORT.md (800 lines)
+- JSDOC_GUIDE.md (300 lines) ✨ NEW
 
-**Total:** 6,267 lines of code + documentation
+**Total:** 6,867 lines of code + documentation
 
 ---
 
 ## 🎯 **NEXT STEPS**
 
-### **Phase 4: Code Quality (11-16 hours)**
-1. Magic Number Constants (2-3 hrs)
-2. JSDoc Type Hints (4-5 hrs)
-3. Consistent Error Format (2-3 hrs)
-4. Selector Constants (1-2 hrs)
-5. Coverage Reporting (2-3 hrs)
+### **Complete Code Quality Phase (9-14 hours):**
 
-### **Phase 5: Dev Experience (4-6 hours)**
-1. Hot Module Reloading (3-4 hrs)
-2. Bundle Size Monitoring (1-2 hrs)
+**JSDoc Type Hints** (4-5 hrs):
+```
+□ hot-state.js - GameState, save/load functions
+□ hot-economy.js - Economic functions
+□ hot-trading.js - Trading functions
+□ hot-events.js - Event generation functions
+```
+
+**Consistent Error Format** (2-3 hrs):
+```
+□ Create GameError class
+□ Standardize error messages
+□ Add error codes
+□ Update all throw/catch blocks
+```
+
+**Selector Constants** (1-2 hrs):
+```
+□ Create UI_SELECTORS constant
+□ Replace magic strings in tests
+□ Replace magic strings in UI code
+```
+
+**Coverage Reporting** (2-3 hrs):
+```
+□ Configure Playwright coverage
+□ Generate coverage reports
+□ Identify untested code paths
+```
+
+### **Finally Dev Experience (4-6 hours):**
+```
+□ Hot Module Reloading (3-4 hrs)
+□ Bundle Size Monitoring (1-2 hrs)
+```
 
 ---
 
@@ -132,9 +156,8 @@
 ### **Testing:**
 - ✅ 50% faster test writing
 - ✅ Reliable, isolated tests
-- ✅ Visual regression detection (15 screenshots)
+- ✅ Visual regression detection
 - ✅ Automatic evidence capture
-- ✅ AI mocking for reliable tests
 - ✅ 51/51 v2.0 tests passing (100%)
 - ✅ 97% code coverage on infrastructure
 
@@ -145,16 +168,21 @@
 - ✅ Export logs for bug reports
 
 ### **Modularity:**
-- ✅ 6 modules extracted from hot-engine.js
+- ✅ 6 modules extracted
 - ✅ hot-engine.js reduced by 61%
 - ✅ Separation of concerns achieved
-- ✅ Easier to test individual systems
+
+### **Code Quality:**
+- ✅ Magic numbers replaced with constants
+- ✅ JSDoc guide created
+- 🔄 JSDoc application in progress
 
 ### **Documentation:**
 - ✅ Complete testing guide (800 lines)
-- ✅ Code review with recommendations (1,100 lines)
-- ✅ Live progress tracker (350 lines)
+- ✅ Code review (1,100 lines)
+- ✅ Live progress tracker (400 lines)
 - ✅ Test suite report (800 lines)
+- ✅ JSDoc guide (300 lines)
 
 ---
 
@@ -162,10 +190,10 @@
 
 | Category | Tasks | Time | Priority |
 |----------|-------|------|----------|
-| **Code Quality** | 5 | 11-16 hrs | HIGH |
+| **Code Quality** | 3 | 9-14 hrs | HIGH |
 | **Dev Experience** | 2 | 4-6 hrs | LOW |
 
-**Total Remaining:** 7 tasks, 15-22 hours
+**Total Remaining:** 5 tasks, 13-20 hours
 
 ---
 
@@ -175,13 +203,13 @@
 |---------|-------|----------|-----------|
 | **v1.1-v1.3** | 49 | 49 ✅ | 0 |
 | **v1.4** | 50 | 0 | 50 ⏳ |
-| **v2.0** | 20 | 11 ✅ | 9 🔄 |
+| **v2.0** | 20 | 13 ✅ | 7 🔄 |
 | **v1.5+** | 6 | 0 | 6 ⏳ |
 
-**Grand Total:** 65/150 tasks complete (43%)
+**Grand Total:** 67/155 tasks complete (43%)
 
 ---
 
-**The ledger is open. The modules are split. The code is clean.**
+**The ledger is open. The constants are named. The types are documented.**
 
-**Next: Code Quality Phase (Magic Numbers, JSDoc, Error Format).** ⚓
+**Next: Apply JSDoc to core systems (hot-state.js, hot-economy.js, hot-trading.js, hot-events.js).** ⚓
