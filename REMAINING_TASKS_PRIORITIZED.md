@@ -193,6 +193,152 @@
 
 ---
 
+## 🔧 v2.0 — CODE QUALITY & TESTING INFRASTRUCTURE — 49-66 hours
+
+**Context:** Transform from "launch-ready" to "production-grade" with better modularity, debugging, and testing.
+
+### **CRITICAL (25-30 hours) — Foundation**
+
+| # | Task | Time | Why It Matters | Benefit |
+|---|------|------|----------------|---------|
+| CQ1 | **Split hot-engine.js** | 6-8 hrs | 1,703 lines is unmaintainable | 10x easier to maintain |
+| CQ2 | **State Manager Wrapper** | 8-10 hrs | 410+ direct gs. references | Full state visibility, validation |
+| CQ3 | **Centralized Logging** | 2-3 hrs | Ad-hoc console.log everywhere | Production debugging, telemetry |
+| CQ4 | **Error Boundary System** | 4-5 hrs | One error = game over | Graceful degradation |
+| CQ5 | **Performance Monitoring** | 2-3 hrs | No visibility into bottlenecks | Optimization targets |
+| CQ6 | **State Snapshots** | 3-4 hrs | Can't reproduce bugs | Reproducible debugging |
+
+**Total CRITICAL:** 25-30 hours → **Maintainable codebase**
+
+---
+
+### **HIGH (13-17 hours) — Testing Infrastructure**
+
+| # | Task | Time | Why It Matters | Benefit |
+|---|------|------|----------------|---------|
+| T1 | **Robust Playwright Tests** | 4-6 hrs | Fragile text-based tests | Stable CI/CD |
+| T2 | **Screenshot Integration** | 3-4 hrs | Live screenshots unused | Visual regression, bug evidence |
+| T3 | **Reusable Test Fixtures** | 3-4 hrs | Duplicated test setup | DRY tests, faster writing |
+| T4 | **Visual Regression Tests** | 2-3 hrs | UI changes break silently | Catch regressions automatically |
+
+**Total HIGH:** 13-17 hours → **Reliable test suite**
+
+---
+
+### **MEDIUM (6-8 hours) — Code Quality**
+
+| # | Task | Time | Why It Matters | Benefit |
+|---|------|------|----------------|---------|
+| MQ1 | **Magic Number Constants** | 2-3 hrs | `if (rep >= 9)` is unclear | Self-documenting code |
+| MQ2 | **JSDoc Type Hints** | 4-5 hrs | No IDE autocomplete | Fewer bugs, better DX |
+| MQ3 | **Consistent Error Format** | 2-3 hrs | Confusing error messages | Clearer UX |
+
+**Total MEDIUM:** 6-8 hours → **Professional code quality**
+
+---
+
+### **LOW (4-6 hours) — Developer Experience**
+
+| # | Task | Time | Why It Matters | Benefit |
+|---|------|------|----------------|---------|
+| DX1 | **Hot Module Reloading** | 3-4 hrs | Full refresh on every change | Faster development |
+| DX2 | **Bundle Size Monitoring** | 1-2 hrs | No bloat visibility | Catch performance issues early |
+
+**Total LOW:** 4-6 hours → **Faster iteration**
+
+---
+
+**Total v2.0:** 49-66 hours to production-grade
+
+---
+
+## 📊 v2.0 TASK BREAKDOWN BY FILE
+
+| File | Current Lines | Target Lines | Action |
+|------|---------------|--------------|--------|
+| hot-engine.js | 1,703 | 400 | Split into 6 modules |
+| hot-state.js | 396 | 500 | Add state manager |
+| hot-config.js | 481 | 550 | Add logger integration |
+| NEW: hot-logger.js | 0 | 200 | Create logging system |
+| NEW: hot-debug.js | 0 | 250 | Create debug tools |
+| NEW: hot-performance.js | 0 | 150 | Create performance monitoring |
+| tests/helpers.js | 50 | 200 | Add reusable fixtures |
+
+---
+
+## 🎯 v2.0 IMPLEMENTATION ORDER
+
+### **Phase 1: Critical Foundation (25-30 hours)**
+```
+□ Split hot-engine.js (6-8 hrs)
+□ State Manager Wrapper (8-10 hrs)
+□ Centralized Logging (2-3 hrs)
+□ Error Boundary System (4-5 hrs)
+□ Performance Monitoring (2-3 hrs)
+□ State Snapshots (3-4 hrs)
+```
+
+### **Phase 2: Testing Infrastructure (13-17 hours)**
+```
+□ Robust Playwright Tests (4-6 hrs)
+□ Screenshot Integration (3-4 hrs)
+□ Reusable Test Fixtures (3-4 hrs)
+□ Visual Regression Tests (2-3 hrs)
+```
+
+### **Phase 3: Code Quality (6-8 hours)**
+```
+□ Magic Number Constants (2-3 hrs)
+□ JSDoc Type Hints (4-5 hrs)
+□ Consistent Error Format (2-3 hrs)
+```
+
+### **Phase 4: Developer Experience (4-6 hours)**
+```
+□ Hot Module Reloading (3-4 hrs)
+□ Bundle Size Monitoring (1-2 hrs)
+```
+
+---
+
+## 🏁 FINAL STATUS
+
+**v1.1:** ✅ Complete (83% alignment)
+**v1.2:** ✅ Complete (87% alignment)
+**v1.3:** ✅ Complete (95% alignment)
+**Steam Fixes:** ✅ 100% Complete (4/4 done)
+**Tutorials:** ✅ Complete (5 tutorials + loading animation)
+**Game Flow:** ✅ Complete (port display, button clarity, scroll fix)
+**Overall:** **97% alignment**
+
+**v1.4:** 50 tasks, 24-32 hours to 100%
+**v2.0:** 15 tasks, 49-66 hours to production-grade
+**v1.5+:** 6 tasks, 20-30 hours for expansion
+
+---
+
+## 📋 COMPLETE TASK INVENTORY
+
+| Version | Tasks | Time | Status |
+|---------|-------|------|--------|
+| **v1.1** | 24 tasks | Complete | ✅ Done |
+| **v1.2** | 9 tasks | Complete | ✅ Done |
+| **v1.3** | 16 tasks | Complete | ✅ Done |
+| **Steam Fixes** | 4 tasks | Complete | ✅ Done |
+| **v1.4** | 50 tasks | 24-32 hrs | ⏳ TODO |
+| **v2.0** | 15 tasks | 49-66 hrs | ⏳ TODO |
+| **v1.5+** | 6 tasks | 20-30 hrs | ⏳ Future |
+
+**Grand Total:** 124 tasks, 93-128 hours remaining
+
+---
+
+**The ledger is open. The sea is waiting. Code quality awaits.**
+
+**Launch at 97%. Polish to 100% in v1.4. Refactor to production-grade in v2.0.** ⚓
+
+---
+
 ## ⚪ LOW (Community-Driven) — 10-14 hours
 
 ### Code Quality
