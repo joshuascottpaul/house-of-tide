@@ -92,6 +92,8 @@ function startGame() {
     victoryType: null,  // Victory condition achieved
     cannons: 0,  // Defense rating (Taipan!)
     skills: { negotiation: 0, seamanship: 0, politics: 0, intrigue: 0 },  // Founder skills
+    heirSpouse: null,  // Heir's spouse (Paravia)
+    achievements: [],  // Unlocked achievements
     marketPrices: null,
     rivals:{
       borracchi:{ relationship:0, lastInteraction:0, notes:[] },
@@ -451,6 +453,133 @@ function resolvePirateEncounter(choice) {
   
   window._currentPirateEncounter = null;
   return { survival, marksLost, shipLost };
+}
+
+// ══════════════════════════════════════════════════════════
+//  HEIR MARRIAGE SYSTEM (Paravia — Political Alliances)
+// ══════════════════════════════════════════════════════════
+
+const MARRIAGE_CANDIDATES = {
+  borracchi: { name: 'Rinaldo Borracchi', family: 'Borracchi', dowry: 500, repBonus: 2 },
+  spinetta: { name: 'Elena Spinetta', family: 'Spinetta', dowry: 300, repBonus: 1 },
+  calmari: { name: 'Marco Calmari', family: 'Calmari', dowry: 800, repBonus: 3 },
+  merchant: { name: 'A Merchant\'s Child', family: 'Common', dowry: 200, repBonus: 0 },
+  noble: { name: 'A Distant Noble', family: 'Foreign', dowry: 1000, repBonus: 2 }
+};
+
+function proposeMarriage(candidate) {
+  if (gs.heirSpouse) return false; // Already married
+  if (gs.heirAge < 14) return false; // Too young
+  
+  const candidateData = MARRIAGE_CANDIDATES[candidate];
+  if (!candidateData) return false;
+  
+  // Check relationship requirements
+  if (candidate === 'borracchi' && gs.rivals.borracchi.relationship < 0) return false;
+  if (candidate === 'spinetta' && gs.rivals.spinetta.relationship < -1) return false;
+  if (candidate === 'calmari' && gs.rivals.calmari.relationship < 1) return false;
+  
+  gs.heirSpouse = {
+    name: candidateData.name,
+    family: candidateData.family,
+    marriedYear: gs.turn
+  };
+  
+  gs.marks += candidateData.dowry;
+  gs.reputation = Math.min(10, gs.reputation + candidateData.repBonus);
+  
+  // Improve relationship with married family
+  if (candidate !== 'merchant' && candidate !== 'noble') {
+    gs.rivals[candidate].relationship = Math.min(5, gs.rivals[candidate].relationship + 3);
+  }
+  
+  gs.ledger.unshift({
+    year: gs.turn,
+    phase: 'Marriage',
+    entry: `${gs.heirName} married ${candidateData.name}. Dowry: ${candidateData.dowry} marks. Alliance: ${candidateData.family}.`
+  });
+  
+  updateStatusBar();
+  autoSave();
+  return true;
+}
+
+// ══════════════════════════════════════════════════════════
+//  ACHIEVEMENT SYSTEM (Retention — Milestones)
+// ══════════════════════════════════════════════════════════
+
+const ACHIEVEMENTS = [
+  { id: 'first_blood', name: 'First Blood', desc: 'Win your first trade dispute', icon: '🩸', unlocked: false },
+  { id: 'wealthy', name: 'Wealthy', desc: 'Accumulate 5,000 marks', icon: '💰', unlocked: false },
+  { id: 'fleet_master', name: 'Fleet Master', desc: 'Own 10 ships', icon: '⚓', unlocked: false },
+  { id: 'legendary', name: 'Legendary', desc: 'Reach reputation 10/10', icon: '👑', unlocked: false },
+  { id: 'builder', name: 'Builder', desc: 'Own 6 buildings', icon: '🏛️', unlocked: false },
+  { id: 'dynasty', name: 'Dynasty', desc: 'Reach generation 5', icon: '🌳', unlocked: false },
+  { id: 'survivor', name: 'Survivor', desc: 'Survive a pirate attack', icon: '🏴‍☠️', unlocked: false },
+  { id: 'matchmaker', name: 'Matchmaker', desc: 'Arrange a political marriage', icon: '💍', unlocked: false },
+  { id: 'master_trader', name: 'Master Trader', desc: 'Make 1,000 mk profit in one trade', icon: '📊', unlocked: false },
+  { id: 'economic_victory', name: 'Master of Trade', desc: 'Achieve Economic Victory', icon: '🏆', unlocked: false },
+  { id: 'political_victory', name: 'Master of Verantia', desc: 'Achieve Political Victory', icon: '🏆', unlocked: false },
+  { id: 'dynastic_victory', name: 'Legacy Endures', desc: 'Achieve Dynastic Victory', icon: '🏆', unlocked: false }
+];
+
+function checkAchievements() {
+  const newAchievements = [];
+  
+  // Wealthy
+  if (gs.marks >= 5000 && !hasAchievement('wealthy')) {
+    unlockAchievement('wealthy', newAchievements);
+  }
+  
+  // Fleet Master
+  if (gs.ships >= 10 && !hasAchievement('fleet_master')) {
+    unlockAchievement('fleet_master', newAchievements);
+  }
+  
+  // Legendary
+  if (gs.reputation >= 10 && !hasAchievement('legendary')) {
+    unlockAchievement('legendary', newAchievements);
+  }
+  
+  // Builder
+  if (Object.keys(gs.buildings).length >= 6 && !hasAchievement('builder')) {
+    unlockAchievement('builder', newAchievements);
+  }
+  
+  // Dynasty
+  if (gs.generation >= 5 && !hasAchievement('dynasty')) {
+    unlockAchievement('dynasty', newAchievements);
+  }
+  
+  // Matchmaker
+  if (gs.heirSpouse && !hasAchievement('matchmaker')) {
+    unlockAchievement('matchmaker', newAchievements);
+  }
+  
+  // Victory achievements
+  if (gs.victoryType === 'economic' && !hasAchievement('economic_victory')) {
+    unlockAchievement('economic_victory', newAchievements);
+  }
+  if (gs.victoryType === 'political' && !hasAchievement('political_victory')) {
+    unlockAchievement('political_victory', newAchievements);
+  }
+  if (gs.victoryType === 'dynastic' && !hasAchievement('dynastic_victory')) {
+    unlockAchievement('dynastic_victory', newAchievements);
+  }
+  
+  return newAchievements;
+}
+
+function hasAchievement(id) {
+  return gs.achievements.includes(id);
+}
+
+function unlockAchievement(id, achievementsArray) {
+  gs.achievements.push(id);
+  const achievement = ACHIEVEMENTS.find(a => a.id === id);
+  if (achievement) {
+    achievementsArray.push(achievement);
+  }
 }
 
 // ══════════════════════════════════════════════════════════
