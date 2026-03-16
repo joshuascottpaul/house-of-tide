@@ -5,7 +5,7 @@ const CFG_KEY = 'hot_config';
 const CFG_DEFAULTS = {
   backend:     'ollama',       // 'ollama' | 'claude' | 'openai' | 'mlx'
   ollamaModel: 'mistral:latest',
-  mlxModel:    'mlx-community/Qwen2.5-7B-Instruct-4bit',  // Fast, quantized - may need JSON retry
+  mlxModel:    'mlx-community/Qwen2.5-3B-Instruct-4bit',  // 3B works reliably for JSON; 7B has JSON parsing issues
   mlxHfToken:  '',
   claudeModel: 'claude-haiku-4-5-20251001',
   claudeApiKey:'',
@@ -15,7 +15,8 @@ const CFG_DEFAULTS = {
 };
 
 // Alternative MLX models (copy/paste into Settings if needed):
-// - mlx-community/Qwen2.5-3B-Instruct-4bit (smaller, faster, less reliable JSON)
+// - mlx-community/Qwen2.5-3B-Instruct-4bit (RECOMMENDED - reliable JSON)
+// - mlx-community/Qwen2.5-7B-Instruct-4bit (⚠️ JSON parsing issues - not recommended)
 // - mlx-community/Llama-3.1-8B-Instruct (better JSON compliance)
 // - mlx-community/Meta-Llama-3-8B-Instruct (excellent JSON)
 // - mlx-community/Qwen2.5-14B-Instruct (larger, better reasoning)
@@ -77,7 +78,12 @@ let debugEntries = [];
 function debugLog(meta, raw, parseResult, isError) {
   if (!CFG.debugMode) return;
   const ts = new Date().toLocaleTimeString();
-  debugEntries.unshift({ ts, meta, raw, parseResult, isError });
+  // Include model info for debugging
+  const modelInfo = CFG.backend === 'mlx' ? CFG.mlxModel : 
+                    CFG.backend === 'ollama' ? CFG.ollamaModel :
+                    CFG.backend === 'claude' ? CFG.claudeModel :
+                    CFG.backend === 'openai' ? CFG.openaiModel : 'unknown';
+  debugEntries.unshift({ ts, meta, model: modelInfo, raw, parseResult, isError });
   if (debugEntries.length > 20) debugEntries.pop();
   renderDebugLog();
 }
@@ -92,7 +98,7 @@ function renderDebugLog() {
   el.innerHTML = debugEntries.map(e => `
     <div class="debug-entry">
       <div class="debug-ts">${e.ts}</div>
-      <div class="debug-meta">${e.meta}</div>
+      <div class="debug-meta">${e.meta} <span style="color:#5a4828;font-size:.75rem;">[${e.model}]</span></div>
       <div class="debug-raw">${escHtml(e.raw || '(empty)')}</div>
       <div class="${e.isError ? 'debug-err' : 'debug-ok'}">${escHtml(e.parseResult)}</div>
     </div>`).join('');
