@@ -11,16 +11,15 @@ module.exports = defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: 1,
-  reporter: 'html',
-  
-  // Test isolation - run before each test
-  async setup(project) {
-    // Global test setup
-  },
+  reporter: [
+    ['html'],
+    ['json', { outputFile: 'test-results/report.json' }],
+    ['junit', { outputFile: 'test-results/junit.xml' }]
+  ],
   
   use: {
     baseURL: 'file://' + __dirname + '/',
-    trace: 'on-first-retry',
+    trace: 'retain-on-failure',
     viewport: { width: 1280, height: 720 },
     
     // Screenshot on failure
