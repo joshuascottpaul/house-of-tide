@@ -1491,10 +1491,13 @@ Respond with JSON only.`;
       gs.history[0].outcome = `${md>0?'+':''}${md||0} mk${rd!==0?' rep'+(rd>0?'+':'')+rd:''}`;
     }
 
+    // Include model info in ledger for debugging
+    const modelInfo = CFG.debugMode ? ` [${CFG.backend === 'mlx' ? CFG.mlxModel : CFG.backend}]` : '';
+    
     gs.ledger.unshift({
       year:  gs.turn,
       phase: gs.phase === 'house' ? 'House' : isVenture ? 'Venture' : 'Routes',
-      entry: parsed.ledger_entry || '—'
+      entry: (parsed.ledger_entry || '—') + modelInfo
     });
 
     // ── Rival relationship tracking ───────────────────────
