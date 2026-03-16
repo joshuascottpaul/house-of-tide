@@ -1000,41 +1000,78 @@ body > *:not(#bg-image):not(#settings-overlay):not(#debug-panel) { position: rel
     gap: 0.5rem;
     padding: 0.5rem 1rem;
   }
-  
+
   .stats {
     flex-wrap: wrap;
     gap: 0.8rem;
   }
-  
+
   .stat-name {
     font-size: 0.6rem;
   }
-  
+
   .stat-val {
     font-size: 0.9rem;
   }
-  
+
   #game-content {
     padding: 1rem;
   }
-  
+
   .choice-btn {
     font-size: 1rem;
     padding: 0.8rem 1rem;
   }
-  
+
   .event-text {
     font-size: 1.05rem;
   }
-  
+
   .settings-box {
     width: 95%;
     padding: 1.5rem 1rem;
   }
-  
+
   .settings-radio-row {
     flex-direction: column;
     gap: 0.5rem;
+  }
+  
+  /* Cannons & Skills display - stack on mobile */
+  #cannons-display, #skills-display {
+    font-size: 0.5rem !important;
+  }
+  
+  /* Building purchase - single column */
+  .building-purchase-option {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.5rem !important;
+  }
+  
+  /* Skill training - single column grid */
+  #ye-buildings .finance-btn,
+  .buildings-section .finance-btn {
+    width: 100%;
+  }
+  
+  /* Marriage section - single column */
+  .buildings-section button[onclick*="proposeMarriage"] {
+    width: 100%;
+  }
+  
+  /* Victory screen - smaller text */
+  #victory-title {
+    font-size: 1rem !important;
+  }
+  
+  #victory-stats {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+  
+  .victory-stat {
+    text-align: left !important;
   }
 }
 
@@ -1042,18 +1079,59 @@ body > *:not(#bg-image):not(#settings-overlay):not(#debug-panel) { position: rel
   h1 {
     font-size: 2rem;
   }
-  
+
   .btn {
     font-size: 0.65rem;
     padding: 0.5rem 1rem;
   }
-  
+
   .choice-btn {
     font-size: 0.95rem;
     padding: 0.7rem 0.9rem;
   }
-  
+
   #dynasty-label {
     font-size: 0.75rem;
+  }
+  
+  /* Touch-friendly buttons on mobile */
+  .btn, .choice-btn, .finance-btn, .port-btn {
+    min-height: 44px; /* iOS recommended touch target */
+  }
+  
+  /* Stack status bar vertically on small screens */
+  .stat {
+    min-width: 80px;
+  }
+  
+  /* Smaller ally/building badges */
+  .ally-badge, .building-badge {
+    padding: 0.1rem 0.3rem;
+  }
+  
+  .ally-badge [data-testid="ally-name"],
+  .building-name {
+    font-size: 0.5rem;
+  }
+}
+
+/* ── TOUCH OPTIMIZATIONS ────────────────────────────────────── */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger touch targets for touch devices */
+  .btn, .choice-btn, .finance-btn, .port-btn, .trading-btn {
+    min-height: 48px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  /* Remove hover effects on touch devices */
+  .btn:hover, .choice-btn:hover, .finance-btn:hover {
+    background: none;
+  }
+  
+  /* Make port buttons larger on touch */
+  .port-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.65rem;
   }
 }
