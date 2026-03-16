@@ -5,7 +5,7 @@ const CFG_KEY = 'hot_config';
 const CFG_DEFAULTS = {
   backend:     'ollama',       // 'ollama' | 'claude' | 'openai' | 'mlx'
   ollamaModel: 'mistral:latest',
-  mlxModel:    'mlx-community/Qwen2.5-3B-Instruct-4bit',  // 3B works reliably for JSON; 7B has JSON parsing issues
+  mlxModel:    'mlx-community/Qwen2.5-7B-Instruct-4bit',  // Fast, quantized
   mlxHfToken:  '',
   claudeModel: 'claude-haiku-4-5-20251001',
   claudeApiKey:'',
@@ -15,8 +15,8 @@ const CFG_DEFAULTS = {
 };
 
 // Alternative MLX models (copy/paste into Settings if needed):
-// - mlx-community/Qwen2.5-3B-Instruct-4bit (RECOMMENDED - reliable JSON)
-// - mlx-community/Qwen2.5-7B-Instruct-4bit (⚠️ JSON parsing issues - not recommended)
+// - mlx-community/Qwen2.5-3B-Instruct-4bit (faster, reliable JSON)
+// - mlx-community/Qwen2.5-7B-Instruct-4bit (default - balanced)
 // - mlx-community/Llama-3.1-8B-Instruct (better JSON compliance)
 // - mlx-community/Meta-Llama-3-8B-Instruct (excellent JSON)
 // - mlx-community/Qwen2.5-14B-Instruct (larger, better reasoning)
