@@ -22,6 +22,8 @@ let gs = {
   allies: [],  // Named NPCs: Casso, Pell, Tucci, etc.
   buildings: {},  // Owned buildings: { warehouse: { purchased, founder, generation } }
   victoryType: null,  // Victory condition achieved: 'economic', 'political', 'dynastic'
+  cannons: 0,  // Defense rating (Taipan! - protects from pirates)
+  skills: { negotiation: 0, seamanship: 0, politics: 0, intrigue: 0 },  // Founder skills (Oregon Trail)
   rivals:{
     borracchi:{ relationship:0, lastInteraction:0, notes:[] },
     spinetta: { relationship:0, lastInteraction:0, notes:[] },
