@@ -330,6 +330,12 @@ function getVictoryEpilogue() {
 //  COMBAT/PIRATE SYSTEM (Taipan! — Direct Conflict)
 // ══════════════════════════════════════════════════════════
 
+const COMBAT_TACTICS = {
+  aggressive: { name: 'Full Broadside', bonus: 3, risk: 'Take more damage if you lose' },
+  defensive: { name: 'Hold Position', bonus: 0, risk: 'Safe but may not win' },
+  evasive: { name: 'Evasive Maneuvers', bonus: -2, risk: 'Harder to hit but less damage' }
+};
+
 function buyCannons(qty) {
   const costPerCannon = 50;
   const totalCost = costPerCannon * qty;
@@ -373,7 +379,8 @@ function checkPirateEncounter() {
     type: 'pirate',
     strength: Math.floor(Math.random() * 10) + 5 + (gs.cannons > 0 ? 2 : 0),
     demand: Math.min(gs.marks * 0.30, 500 + gs.ships * 100),
-    narrative: getPirateNarrative()
+    narrative: getPirateNarrative(),
+    tacticChosen: null
   };
 }
 
@@ -387,6 +394,57 @@ function getPirateNarrative() {
   return narratives[Math.floor(Math.random() * narratives.length)];
 }
 
+function showPirateCombat(encounter) {
+  window._currentPirateEncounter = encounter;
+  
+  // Show combat panel
+  document.getElementById('panel-event').style.display = 'none';
+  document.getElementById('panel-venture').style.display = 'none';
+  document.getElementById('panel-trading').style.display = 'none';
+  document.getElementById('panel-result').style.display = 'none';
+  
+  const combatPanel = document.getElementById('panel-combat');
+  if (!combatPanel) return;
+  
+  combatPanel.style.display = 'block';
+  combatPanel.className = 'panel fade-in';
+  
+  document.getElementById('combat-narrative').textContent = encounter.narrative;
+  document.getElementById('combat-enemy').textContent = `Pirate Strength: ${encounter.strength}`;
+  document.getElementById('combat-player').textContent = `Your Cannons: ${gs.cannons} | Seamanship: ${gs.skills.seamanship}`;
+  
+  // Render tactical choices
+  const tacticsContainer = document.getElementById('combat-tactics');
+  tacticsContainer.innerHTML = Object.keys(COMBAT_TACTICS).map(tactic => `
+    <button class="combat-tactic-btn" onclick="selectCombatTactic('${tactic}')">
+      <div class="tactic-name">${COMBAT_TACTICS[tactic].name}</div>
+      <div class="tactic-bonus ${COMBAT_TACTICS[tactic].bonus > 0 ? 'positive' : COMBAT_TACTICS[tactic].bonus < 0 ? 'negative' : ''}">
+        ${COMBAT_TACTICS[tactic].bonus > 0 ? '+' : ''}${COMBAT_TACTICS[tactic].bonus} combat bonus
+      </div>
+      <div class="tactic-risk">${COMBAT_TACTICS[tactic].risk}</div>
+    </button>
+  `).join('');
+  
+  // Show current selection
+  document.getElementById('combat-selection').textContent = 'Select your tactic...';
+}
+
+function selectCombatTactic(tactic) {
+  const encounter = window._currentPirateEncounter;
+  if (!encounter) return;
+  
+  encounter.tacticChosen = tactic;
+  
+  // Highlight selected tactic
+  document.querySelectorAll('.combat-tactic-btn').forEach(btn => {
+    btn.classList.remove('selected');
+  });
+  event.target.closest('.combat-tactic-btn').classList.add('selected');
+  
+  document.getElementById('combat-selection').textContent = `Tactic: ${COMBAT_TACTICS[tactic].name}`;
+  document.getElementById('combat-resolve-btn').disabled = false;
+}
+
 function resolvePirateEncounter(choice) {
   const encounter = window._currentPirateEncounter;
   if (!encounter) return;
@@ -396,18 +454,24 @@ function resolvePirateEncounter(choice) {
   let shipLost = false;
   
   if (choice === 'fight') {
-    // Fight: roll dice based on cannons vs pirate strength
-    const defenseRoll = Math.floor(Math.random() * 10) + gs.cannons + gs.skills.seamanship;
+    // Tactical combat with chosen tactic
+    const tacticBonus = encounter.tacticChosen ? COMBAT_TACTICS[encounter.tacticChosen].bonus : 0;
+    const defenseRoll = Math.floor(Math.random() * 10) + gs.cannons + gs.skills.seamanship + tacticBonus;
     const attackRoll = Math.floor(Math.random() * 10) + encounter.strength;
     
     if (defenseRoll >= attackRoll) {
       // Won - pirates flee
       survival = 1;
+      const tacticName = encounter.tacticChosen ? COMBAT_TACTICS[encounter.tacticChosen].name : 'standard engagement';
       gs.ledger.unshift({
         year: gs.turn,
         phase: 'Combat',
-        entry: `Pirates engaged. ${gs.cannons} cannons fired. The black hulls retreat. The ledger notes: no cargo lost.`
+        entry: `Pirates engaged using ${tacticName}. ${gs.cannons} cannons fired. The black hulls retreat. The ledger notes: no cargo lost.`
       });
+      // Show skill feedback for seamanship
+      if (gs.skills.seamanship > 0) {
+        showSkillFeedback('seamanship', `+${gs.skills.seamanship} combat bonus`);
+      }
     } else {
       // Lost - lose cargo/marks
       marksLost = Math.min(gs.marks, encounter.demand * 1.5);
@@ -439,6 +503,7 @@ function resolvePirateEncounter(choice) {
         phase: 'Evasion',
         entry: 'The ship outran the pirates. The ledger notes: seamanship over firepower.'
       });
+      showSkillFeedback('seamanship', 'Successful escape!');
     } else {
       marksLost = Math.min(gs.marks, encounter.demand);
       gs.marks -= marksLost;
@@ -452,7 +517,44 @@ function resolvePirateEncounter(choice) {
   }
   
   window._currentPirateEncounter = null;
+  
+  // Return to game flow
+  document.getElementById('panel-combat').style.display = 'none';
+  if (survival > 0) {
+    advancePhase();
+  } else {
+    showDeathScreen();
+  }
+  
   return { survival, marksLost, shipLost };
+}
+
+// ══════════════════════════════════════════════════════════
+//  SKILL FEEDBACK POPUP (Visible skill effects)
+// ══════════════════════════════════════════════════════════
+
+function showSkillFeedback(skillName, effectText) {
+  const skillIcons = {
+    negotiation: '🤝',
+    seamanship: '⚓',
+    politics: '🏛️',
+    intrigue: '🗡️'
+  };
+  
+  const feedback = document.createElement('div');
+  feedback.className = 'skill-feedback';
+  feedback.innerHTML = `
+    <span class="skill-feedback-icon">${skillIcons[skillName]}</span>
+    <div class="skill-feedback-text">${skillName.toUpperCase()}</div>
+    <div class="skill-feedback-value">${effectText}</div>
+  `;
+  
+  document.body.appendChild(feedback);
+  
+  // Remove after animation completes (2 seconds)
+  setTimeout(() => {
+    feedback.remove();
+  }, 2000);
 }
 
 // ══════════════════════════════════════════════════════════
