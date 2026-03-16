@@ -1135,3 +1135,175 @@ body > *:not(#bg-image):not(#settings-overlay):not(#debug-panel) { position: rel
     font-size: 0.65rem;
   }
 }
+
+/* ── COMBAT TACTICS UI ────────────────────────────────────── */
+.combat-tactic-btn {
+  background: rgba(42, 30, 14, 0.4);
+  border: 2px solid #3a2c18;
+  border-radius: 4px;
+  padding: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.combat-tactic-btn:hover {
+  background: rgba(42, 30, 14, 0.7);
+  border-color: #5a4828;
+}
+
+.combat-tactic-btn.selected {
+  background: rgba(160, 120, 32, 0.3);
+  border-color: #a07820;
+  box-shadow: 0 0 10px rgba(160, 120, 32, 0.5);
+}
+
+.tactic-name {
+  font-family: 'IM Fell English SC', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: #c8a870;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.tactic-bonus {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.75rem;
+  font-style: italic;
+  margin-bottom: 0.3rem;
+}
+
+.tactic-bonus.positive {
+  color: #6a9838;
+}
+
+.tactic-bonus.negative {
+  color: #c84030;
+}
+
+.tactic-risk {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.65rem;
+  color: #7a6840;
+  font-style: italic;
+}
+
+/* ── SKILL FEEDBACK POPUPS ─────────────────────────────────── */
+.skill-feedback {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(9, 7, 5, 0.95);
+  border: 2px solid #a07820;
+  border-radius: 4px;
+  padding: 1.5rem 2rem;
+  z-index: 1000;
+  animation: skillFeedbackFadeIn 0.3s ease, skillFeedbackFadeOut 0.3s ease 1.7s;
+  pointer-events: none;
+}
+
+@keyframes skillFeedbackFadeIn {
+  from { opacity: 0; transform: translate(-50%, -40%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+@keyframes skillFeedbackFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.skill-feedback-icon {
+  font-size: 2rem;
+  display: block;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.skill-feedback-text {
+  font-family: 'IM Fell English SC', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: #c8a870;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.skill-feedback-value {
+  font-family: 'IM Fell English', serif;
+  font-size: 1.2rem;
+  color: #f0e8d0;
+  text-align: center;
+  margin-top: 0.3rem;
+}
+
+/* ── MARRIAGE UI IMPROVEMENTS ──────────────────────────────── */
+.marriage-candidate {
+  background: rgba(42, 10, 32, 0.4);
+  border: 1px solid #5a3050;
+  border-radius: 4px;
+  padding: 0.8rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.marriage-candidate:hover {
+  background: rgba(42, 10, 32, 0.7);
+  border-color: #8a5080;
+}
+
+.marriage-candidate.selected {
+  background: rgba(160, 64, 128, 0.3);
+  border-color: #a04080;
+}
+
+.marriage-name {
+  font-family: 'IM Fell English SC', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: #c8a870;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.marriage-details {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.7rem;
+  color: #a08848;
+  display: flex;
+  justify-content: space-between;
+}
+
+.marriage-dowry {
+  color: #6a9838;
+}
+
+.marriage-rep {
+  color: #a07820;
+}
+
+/* ── MOBILE YEAR-END PANEL ────────────────────────────────── */
+@media (max-width: 480px) {
+  .buildings-section,
+  .finance-section {
+    padding: 0.5rem !important;
+  }
+  
+  .building-purchase-option,
+  .marriage-candidate {
+    padding: 0.5rem !important;
+  }
+  
+  /* Stack year-end sections vertically with more spacing */
+  #ye-buildings > div {
+    margin-bottom: 1rem !important;
+  }
+  
+  /* Larger touch targets for year-end buttons */
+  #ye-buildings .finance-btn {
+    min-height: 52px;
+    font-size: 0.6rem;
+  }
+}
