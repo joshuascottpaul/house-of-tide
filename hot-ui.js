@@ -597,7 +597,11 @@ function showError(err) {
       msg = 'Ollama is not responding. Make sure the Ollama app is running. Then try again — the ledger is patient.';
     }
   } else if (err.message && (err.message.includes('JSON') || err.message.includes('No JSON'))) {
-    msg = 'The model returned something the ledger could not parse. Try again — or switch to a larger model in ⊞ Settings (llama3.1:8b or claude-haiku recommended).';
+    msg = 'The model returned something the ledger could not parse.';
+    // Add retry button for JSON errors
+    const retryBtn = ' <button onclick="retryLastChoice()" style="background:#2a1e0e;border:1px solid #5a4828;color:#c8a870;font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.1em;cursor:pointer;text-transform:uppercase;padding:.2rem .6rem;border-radius:3px;margin-left:.5rem;">↻ Try Again</button>';
+    msg += retryBtn;
+    msg += ' <span style="color:#5a4828;">or switch to a larger model in ⊞ Settings (llama3.1:8b or claude-haiku recommended).</span>';
   } else if (err.message && err.message.includes('API key')) {
     msg = err.message;
   } else if (err.message && err.message.includes('Claude API')) {
@@ -610,6 +614,19 @@ function showError(err) {
     : ` <button onclick="CFG.debugMode=true;saveCFG();document.getElementById('debug-toggle').style.display='block';toggleDebug();" style="background:none;border:none;color:#5a4828;font-family:'IM Fell English SC',serif;font-size:.62rem;letter-spacing:.08em;cursor:pointer;text-transform:uppercase;">Show Raw Output</button>`;
   b.innerHTML = msg + debugHint;
   b.style.display = 'block';
+}
+
+// Retry last choice (for JSON errors)
+function retryLastChoice() {
+  hideError();
+  // Re-enable choice buttons
+  document.querySelectorAll('.choice-btn').forEach(b => b.disabled = false);
+  // Re-generate the event
+  if (gs.phase === 'house' || gs.phase === 'routes') {
+    beginPhase();
+  } else if (gs.phase === 'trading') {
+    showTradingPanel();
+  }
 }
 
 function hideError() {

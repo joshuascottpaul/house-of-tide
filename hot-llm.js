@@ -198,10 +198,19 @@ async function callLLM(systemPrompt, userMsg, opts = {}) {
   clean = clean.replace(/<think>[\s\S]*?/gi, '').trim();  // Fallback: strip unclosed think
   clean = clean.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();  // Alternative format
   clean = clean.replace(/<think>[\s\S]*?/gi, '').trim();  // Unclosed alternative
-
+  
   // Strip markdown code fences (common with Qwen)
   clean = clean.replace(/^```(?:json)?\s*/i, '').replace(/```$/i, '').trim();
   clean = clean.replace(/^```\s*/i, '').replace(/```$/i, '').trim();
+  
+  // Fix common 7B JSON errors: extra closing braces
+  clean = clean.replace(/\}\}+\s*$/g, '}');  // Remove extra closing braces at end
+  
+  // Strip any leading/trailing non-JSON text (keep only the JSON object)
+  const jsonMatch = clean.match(/\{[\s\S]*\}/);
+  if (jsonMatch) {
+    clean = jsonMatch[0];
+  }
 
   if (!isJson) {
     debugLog(metaStr, raw, 'plain text — no parse needed', false);
