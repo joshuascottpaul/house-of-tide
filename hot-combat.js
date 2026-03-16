@@ -55,15 +55,33 @@ function checkPirateEncounter() {
 
   // Seamanship skill reduces chance
   chance -= gs.skills.seamanship * 0.01;
+  
+  // Pirate reputation affects encounter chance
+  if (gs.pirateReputation === 'feared') {
+    chance *= 0.50; // -50% encounters
+  } else if (gs.pirateReputation === 'prey') {
+    chance *= 1.50; // +50% encounters
+  }
 
   chance = Math.max(0.02, Math.min(0.50, chance));
 
   if (Math.random() > chance) return null;
 
   // Generate pirate encounter
+  let strength = Math.floor(Math.random() * 10) + 5 + (gs.cannons > 0 ? 2 : 0);
+  
+  // Pirate reputation affects strength
+  if (gs.pirateReputation === 'prey') {
+    strength += 2; // Pirates are bolder
+  } else if (gs.pirateReputation === 'feared') {
+    strength -= 2; // Pirates are cautious
+  }
+  
+  strength = Math.max(1, strength);
+
   return {
     type: 'pirate',
-    strength: Math.floor(Math.random() * 10) + 5 + (gs.cannons > 0 ? 2 : 0),
+    strength: strength,
     demand: Math.min(gs.marks * 0.30, 500 + gs.ships * 100),
     narrative: getPirateNarrative(),
     tacticChosen: null
@@ -109,23 +127,73 @@ function showPirateCombat(encounter) {
   combatPanel.className = 'panel fade-in';
 
   document.getElementById('combat-narrative').textContent = encounter.narrative;
-  document.getElementById('combat-enemy').textContent = `Pirate Strength: ${encounter.strength}`;
-  document.getElementById('combat-player').textContent = `Your Cannons: ${gs.cannons} | Seamanship: ${gs.skills.seamanship}`;
-
-  // Render tactical choices
-  const tacticsContainer = document.getElementById('combat-tactics');
-  tacticsContainer.innerHTML = Object.keys(COMBAT_TACTICS).map(tactic => `
-    <button class="combat-tactic-btn" onclick="selectCombatTactic('${tactic}')">
-      <div class="tactic-name">${COMBAT_TACTICS[tactic].name}</div>
-      <div class="tactic-bonus ${COMBAT_TACTICS[tactic].bonus > 0 ? 'positive' : COMBAT_TACTICS[tactic].bonus < 0 ? 'negative' : ''}">
-        ${COMBAT_TACTICS[tactic].bonus > 0 ? '+' : ''}${COMBAT_TACTICS[tactic].bonus} combat bonus
+  
+  // Show visual combat display with ship icons and health bars
+  const combatDisplay = document.getElementById('combat-display');
+  if (combatDisplay) {
+    const playerHealth = 100;
+    const pirateHealth = 100;
+    
+    combatDisplay.innerHTML = `
+      <div class="combat-visual">
+        <div class="combat-side player">
+          <div class="combat-icon">🚢</div>
+          <div class="combat-label">Your Fleet</div>
+          <div class="combat-health-bar">
+            <div class="combat-health-fill" style="width: ${playerHealth}%;"></div>
+          </div>
+          <div class="combat-stats">
+            <span>🔫 ${gs.cannons}</span>
+            <span>⚓ ${gs.skills.seamanship || 0}</span>
+          </div>
+        </div>
+        
+        <div class="combat-vs">VS</div>
+        
+        <div class="combat-side pirate">
+          <div class="combat-icon">🏴‍☠️</div>
+          <div class="combat-label">Pirates</div>
+          <div class="combat-health-bar">
+            <div class="combat-health-fill" style="width: ${pirateHealth}%;"></div>
+          </div>
+          <div class="combat-stats">
+            <span>💪 ${encounter.strength}</span>
+          </div>
+        </div>
       </div>
-      <div class="tactic-risk">${COMBAT_TACTICS[tactic].risk}</div>
-    </button>
-  `).join('');
+    `;
+  }
+
+  document.getElementById('combat-enemy').textContent = `Pirate Strength: ${encounter.strength}`;
+  document.getElementById('combat-player').textContent = `Your Cannons: ${gs.cannons} | Seamanship: ${gs.skills.seamanship || 0}`;
+
+  // Render tactical choices with preview
+  const tacticsContainer = document.getElementById('combat-tactics');
+  tacticsContainer.innerHTML = Object.keys(COMBAT_TACTICS).map(tactic => {
+    const t = COMBAT_TACTICS[tactic];
+    const bonusClass = t.bonus > 0 ? 'positive' : t.bonus < 0 ? 'negative' : '';
+    const bonusText = t.bonus > 0 ? `+${t.bonus}` : t.bonus;
+    
+    return `
+      <button class="combat-tactic-btn" onclick="selectCombatTactic('${tactic}')" data-testid="tactic-${tactic}">
+        <div class="tactic-name">${t.name}</div>
+        <div class="tactic-bonus ${bonusClass}">${bonusText} combat bonus</div>
+        <div class="tactic-risk">${t.risk}</div>
+      </button>
+    `;
+  }).join('');
 
   // Show current selection
   document.getElementById('combat-selection').textContent = 'Select your tactic...';
+  
+  // Log combat encounter
+  if (window.Logger) {
+    Logger.info(Logger.CATEGORIES.COMBAT, 'Pirate combat started', {
+      pirateStrength: encounter.strength,
+      cannons: gs.cannons,
+      seamanship: gs.skills.seamanship
+    });
+  }
 }
 
 /**
@@ -185,10 +253,27 @@ function resolvePirateEncounter(choice) {
       marksLost = Math.min(gs.marks, encounter.demand * 1.5);
       gs.marks -= marksLost;
       survival = 0.7;
+      
+      // Cargo damage (20-50% of cargo lost)
+      let cargoLost = 0;
+      if (gs.cargo && Object.values(gs.cargo).some(v => v > 0)) {
+        const cargoLossPercent = 0.20 + Math.random() * 0.30; // 20-50%
+        const cargoTypes = Object.keys(gs.cargo);
+        
+        cargoTypes.forEach(type => {
+          if (gs.cargo[type] > 0) {
+            const lost = Math.floor(gs.cargo[type] * cargoLossPercent);
+            gs.cargo[type] -= lost;
+            cargoLost += lost;
+          }
+        });
+      }
+      
+      const cargoMsg = cargoLost > 0 ? ` Pirates destroyed ${cargoLost} units of cargo.` : '';
       gs.ledger.unshift({
         year: gs.turn,
         phase: 'Combat',
-        entry: `Pirates boarded. ${marksLost} marks taken. The ledger records the loss without comment.`
+        entry: `Pirates boarded. ${marksLost} marks taken.${cargoMsg} The ledger records the loss without comment.`
       });
     }
   } else if (choice === 'pay') {
@@ -225,6 +310,39 @@ function resolvePirateEncounter(choice) {
   }
 
   window._currentPirateEncounter = null;
+
+  // Update pirate reputation based on outcome
+  if (choice === 'fight' && survival === 1) {
+    // Won combat - become more feared
+    if (gs.pirateReputation === 'known') {
+      gs.pirateReputation = 'feared';
+      gs.ledger.unshift({
+        year: gs.turn,
+        phase: 'Pirate Reputation',
+        entry: 'The pirates whisper your name. You are feared.'
+      });
+    }
+  } else if (choice === 'pay') {
+    // Paid tribute - become prey
+    if (gs.pirateReputation === 'known' || gs.pirateReputation === 'feared') {
+      gs.pirateReputation = 'prey';
+      gs.ledger.unshift({
+        year: gs.turn,
+        phase: 'Pirate Reputation',
+        entry: 'You paid tribute. The pirates see you as prey.'
+      });
+    }
+  } else if (choice === 'flee' && survival < 1) {
+    // Failed to flee - become prey
+    if (gs.pirateReputation === 'known') {
+      gs.pirateReputation = 'prey';
+      gs.ledger.unshift({
+        year: gs.turn,
+        phase: 'Pirate Reputation',
+        entry: 'You fled in terror. The pirates mark you as prey.'
+      });
+    }
+  }
 
   // Return to game flow
   document.getElementById('panel-combat').style.display = 'none';

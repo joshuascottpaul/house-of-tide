@@ -27,6 +27,9 @@ let gs = {
   heirSpouse: null,  // Heir's spouse (Paravia marriage system)
   achievements: [],  // Unlocked achievements
   tutorialsShown: { buildings: false, skills: false, marriage: false, venture: false, combat: false },  // Tutorial tracking
+  taxRate: 'medium',  // Tax policy: low, medium, high
+  pirateReputation: 'known',  // Pirate rep: feared, known, prey
+  portFavor: {},  // Port favor: { Verantia: 5, Masso: 3, ... }
   rivals:{
     borracchi:{ relationship:0, lastInteraction:0, notes:[] },
     spinetta: { relationship:0, lastInteraction:0, notes:[] },
