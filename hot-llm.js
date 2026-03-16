@@ -253,10 +253,12 @@ async function callLLM(systemPrompt, userMsg, opts = {}) {
       const sh   = clean.match(/"ships_delta"\s*:\s*(-?\d+)/);
       const led  = clean.match(/"ledger_entry"\s*:\s*"((?:[^"\\]|\\.)*)"/);
       const choices = clean.match(/"choices"\s*:\s*\[([\s\S]*?)\]/);
-      
+
       if (!nar) {
-        debugLog(metaStr, raw, '✗ Field rescue also failed — no narrative key', true);
-        throw new Error('No JSON in response');
+        debugLog(metaStr, raw, '✗ Field rescue failed — no narrative key found. User should retry.', true);
+        // DO NOT create hardcoded fallback - that violates "AI is Dungeon Master"
+        // Throw error to trigger retry button
+        throw new Error('AI response was not valid JSON and could not be parsed. Please click "Try Again" to regenerate.');
       }
       parsed = {
         narrative:        nar[1].replace(/\\n/g,'\n'),
