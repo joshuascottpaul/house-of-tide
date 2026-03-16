@@ -981,7 +981,23 @@ function beginYear() {
   gs._yearGross  = gross;
   gs._upkeep     = cost;
   gs._yearIncome = gross - cost;   // can be negative at low rep
-  gs.marks = Math.max(0, gs.marks + gs._yearIncome);
+  
+  // ── NEW: House expenses (prevents coasting) ─────────────
+  // Buildings cost maintenance, lifestyle costs increase with reputation
+  const buildingMaintenance = Object.keys(gs.buildings).length * 25; // 25 mk per building
+  const lifestyleCost = gs.reputation * 15; // Higher rep = higher expectations
+  const totalExpenses = buildingMaintenance + lifestyleCost;
+  
+  gs.marks = Math.max(0, gs.marks + gs._yearIncome - totalExpenses);
+  
+  // Record expenses in ledger
+  if (totalExpenses > 0) {
+    gs.ledger.unshift({
+      year: gs.turn,
+      phase: 'Expenses',
+      entry: `House expenses: ${totalExpenses} mk (${buildingMaintenance} mk maintenance, ${lifestyleCost} mk lifestyle). The ledger notes: status has its price.`
+    });
+  }
   // ─────────────────────────────────────────────────────────
 
   // ── Loan interest + shadow enforcement ──────────────
@@ -1218,6 +1234,21 @@ Respond with JSON only.`;
     // Third option (index 2) tends toward the long-game view
     const choiceIdx = gs.currentEvent ? gs.currentEvent.choices.indexOf(choice) : -1;
     if (choiceIdx === 2) gs.decisions.patient++;
+    
+    // ── Reputation decay for perpetual caution (anti-coasting) ─
+    const totalChoices = (gs.decisions.bold||0) + (gs.decisions.cautious||0) + (gs.decisions.patient||0);
+    if (totalChoices >= 5) {
+      const cautionRatio = (gs.decisions.cautious||0) / Math.max(1, totalChoices);
+      // If 70%+ choices are cautious/patient, reputation for hesitating
+      if (cautionRatio > 0.7 && gs.reputation > 1 && Math.random() < 0.3) {
+        gs.reputation--;
+        gs.ledger.unshift({
+          year: gs.turn,
+          phase: 'Reputation',
+          entry: 'The house hesitates while others act. The ledger notes: perpetual caution is weakness.'
+        });
+      }
+    }
     // ─────────────────────────────────────────────────────────
 
     // ── Record choice to history for continuity ──────────────
