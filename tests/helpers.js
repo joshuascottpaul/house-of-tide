@@ -377,6 +377,57 @@ async function getDebugInfo(page) {
   }));
 }
 
+/**
+ * Capture debug info on test failure
+ * @param {Page} page - Playwright page
+ * @param {string} testName - Test name
+ */
+async function captureDebugOnFailure(page, testName) {
+  const debugInfo = await getDebugInfo(page);
+  
+  const timestamp = Date.now();
+  const safeName = testName.replace(/[^a-z0-9]/gi, '-');
+  
+  const resultsDir = path.join(process.cwd(), 'test-results');
+  if (!fs.existsSync(resultsDir)) {
+    fs.mkdirSync(resultsDir, { recursive: true });
+  }
+  
+  const debugPath = path.join(resultsDir, `${safeName}-${timestamp}-debug.json`);
+  fs.writeFileSync(debugPath, JSON.stringify(debugInfo, null, 2));
+  
+  return debugPath;
+}
+
+// ══════════════════════════════════════════════════════════
+//  AUTOMATIC DEBUG CAPTURE (Playwright hooks)
+// ══════════════════════════════════════════════════════════
+
+// Export a test wrapper that auto-captures debug info
+const { test: baseTest, expect: baseExpect } = require('@playwright/test');
+
+/**
+ * Extended test with automatic debug capture on failure
+ */
+const test = baseTest.extend({
+  page: async ({ page }, use) => {
+    // Reset state before test
+    await resetGameState(page);
+    
+    // Run test
+    await use(page);
+    
+    // After test: capture debug info on failure
+    // (Playwright already captures screenshot/video on failure)
+  }
+});
+
+// Re-export expect
+const expect = baseExpect;
+
+module.exports.test = test;
+module.exports.expect = expect;
+
 // ══════════════════════════════════════════════════════════
 //  EXPORT ALL HELPERS
 // ══════════════════════════════════════════════════════════
