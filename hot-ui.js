@@ -222,6 +222,17 @@ function updateStatusBar() {
   document.getElementById('stat-turn').textContent  = gs.turn;
   document.getElementById('stat-age').textContent   = gs.age;
   document.getElementById('stat-ships').textContent = gs.ships;
+  
+  // Update cannons display
+  const cannonsContainer = document.getElementById('stat-cannons-container');
+  const cannonsEl = document.getElementById('stat-cannons');
+  if (cannonsContainer && cannonsEl && gs.cannons > 0) {
+    cannonsEl.textContent = `🔫 ${gs.cannons}`;
+    cannonsContainer.style.display = 'block';
+    cannonsEl.title = `Defense rating: Reduces pirate encounter chance by ${gs.cannons * 2}%`;
+  } else if (cannonsContainer) {
+    cannonsContainer.style.display = 'none';
+  }
 
   const mk = document.getElementById('stat-marks');
   mk.textContent = `${gs.marks} mk`;

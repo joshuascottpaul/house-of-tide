@@ -43,12 +43,54 @@ const PORTS = {
 };
 
 function selectPort(portName) {
+  const oldPort = gs.currentPort;
   gs.currentPort = portName;
-  gs.ledger.unshift({
-    year: gs.turn,
-    phase: 'Travel',
-    entry: `Sailed for ${portName}. ${PORTS[portName].description}`
-  });
+  
+  // Travel time consequence (advances turn if changing ports)
+  if (oldPort && oldPort !== portName) {
+    const travelTime = getTravelTime(oldPort, portName);
+    if (travelTime > 0) {
+      gs.turn += travelTime;
+      gs.ledger.unshift({
+        year: gs.turn,
+        phase: 'Travel',
+        entry: `Voyage from ${oldPort} to ${portName} took ${travelTime} turn${travelTime > 1 ? 's' : ''}. ${travelTime >= 2 ? 'The journey was perilous.' : 'The journey was uneventful.'}`
+      });
+    }
+  } else {
+    gs.ledger.unshift({
+      year: gs.turn,
+      phase: 'Travel',
+      entry: `Sailed for ${portName}. ${PORTS[portName].description}`
+    });
+  }
+  
+  // Log port selection
+  if (window.Logger) {
+    Logger.info(Logger.CATEGORIES.TRADING, `Port selected: ${portName}`, {
+      fromPort: oldPort,
+      travelTime: oldPort !== portName ? getTravelTime(oldPort, portName) : 0
+    });
+  }
+}
+
+/**
+ * Get travel time between ports
+ * @param {string} fromPort - Origin port
+ * @param {string} toPort - Destination port
+ * @returns {number} Number of turns
+ */
+function getTravelTime(fromPort, toPort) {
+  // Travel times (in turns)
+  const travelTimes = {
+    'Verantia': { 'Masso': 1, 'Caldera': 1, 'Northern': 2 },
+    'Masso': { 'Verantia': 1, 'Caldera': 1, 'Northern': 2 },
+    'Caldera': { 'Verantia': 1, 'Masso': 1, 'Northern': 2 },
+    'Northern': { 'Verantia': 2, 'Masso': 2, 'Caldera': 2 }
+  };
+  
+  if (fromPort === toPort) return 0;
+  return travelTimes[fromPort]?.[toPort] || 1;
 }
 
 function getPortModifiers(portName) {

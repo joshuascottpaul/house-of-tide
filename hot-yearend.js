@@ -32,14 +32,24 @@ function calculateFleetIncome() {
   const variance = 0.85 + Math.random() * 0.3;  // ±15%
   const baseRate = 85;   // gross per ship per year
   const upkeep = 20;     // crew, berthing, maintenance per ship
-  
+
   const greedyBonus = (gs.heirTrait && gs.heirTrait.key === 'greedy') ? 1.2 : 1.0;
   
-  const gross = Math.round(gs.ships * baseRate * repMod * variance * greedyBonus);
+  // Tax policy modifier
+  const taxModifiers = getTaxModifiers();
+  const taxMod = taxModifiers.income;
+  const repChange = taxModifiers.repChange;
+
+  const gross = Math.round(gs.ships * baseRate * repMod * variance * greedyBonus * taxMod);
   const cost = gs.ships * upkeep;
   const net = gross - cost;
 
-  return { gross, cost, net, repMod, variance };
+  // Apply reputation change from tax policy
+  if (repChange !== 0) {
+    gs.reputation = Math.max(0, Math.min(10, gs.reputation + repChange));
+  }
+
+  return { gross, cost, net, repMod, variance, taxMod, repChange };
 }
 
 /**
@@ -141,6 +151,31 @@ function showYearEnd() {
       ? `${gs.heirName}, ${gs.heirAge}, has been asking questions. ${cap} wants to know about the ${pos} ships, the ${pos} debts, the ${pos} enemies. You tell ${ho} what ${pos} father tells all heirs: soon enough.`
       : `${gs.heirName} is ${nextAge}. Old enough to understand what ${gs.heirTrait.label.toLowerCase()} means. Old enough to make ${pos} own mistakes. You remember being ${nextAge}. The ledger does not care.`;
   }
+  
+  // Add tax decision UI
+  const financeEl = document.getElementById('ye-finance');
+  if (financeEl) {
+    financeEl.innerHTML += `
+      <div style="margin-top:1.5rem;padding:1rem;border:1px solid #3a2c18;border-radius:3px;">
+        <div style="font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.1em;color:#a08848;text-transform:uppercase;margin-bottom:.5rem;">Tax Policy</div>
+        <p style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:1rem;">Set the tax rate for the coming year. This affects both income and reputation.</p>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+          <button class="finance-btn" onclick="setTaxRate('low')">
+            Low Tax<br><span style="font-size:.65rem;color:#6a9838;">+10% income, -1 rep/year</span>
+          </button>
+          <button class="finance-btn" onclick="setTaxRate('medium')">
+            Medium Tax<br><span style="font-size:.65rem;color:#a08848;">No change</span>
+          </button>
+          <button class="finance-btn" onclick="setTaxRate('high')">
+            High Tax<br><span style="font-size:.65rem;color:#c84030;">-10% income, +1 rep/year</span>
+          </button>
+        </div>
+        <div id="tax-current" style="margin-top:.5rem;font-family:'IM Fell English',serif;font-size:.7rem;color:#7a6840;">
+          Current: Medium Tax
+        </div>
+      </div>
+    `;
+  }
 
   // Check for tutorials
   if (window.checkYearEndTutorials) {
@@ -172,6 +207,50 @@ function showYearEnd() {
       turn: gs.turn,
       settlement
     });
+  }
+}
+
+/**
+ * Set tax rate
+ * @param {string} rate - Tax rate (low, medium, high)
+ */
+function setTaxRate(rate) {
+  if (!gs.taxRate) gs.taxRate = 'medium';
+  gs.taxRate = rate;
+  
+  // Update UI
+  const currentEl = document.getElementById('tax-current');
+  if (currentEl) {
+    const rateNames = { low: 'Low', medium: 'Medium', high: 'High' };
+    currentEl.textContent = `Current: ${rateNames[rate]} Tax`;
+  }
+  
+  // Log tax decision
+  gs.ledger.unshift({
+    year: gs.turn,
+    phase: 'Tax Policy',
+    entry: `Tax rate set to ${rate}. ${rate === 'low' ? 'The merchants rejoice.' : rate === 'high' ? 'The people grumble, but the coffers swell.' : 'The status quo maintained.'}`
+  });
+  
+  if (window.Logger) {
+    Logger.info(Logger.CATEGORIES.STATE, `Tax rate set: ${rate}`);
+  }
+}
+
+/**
+ * Get tax rate modifier
+ * @returns {object} Income and reputation modifiers
+ */
+function getTaxModifiers() {
+  if (!gs.taxRate) gs.taxRate = 'medium';
+  
+  switch(gs.taxRate) {
+    case 'low':
+      return { income: 1.10, repChange: -1 };
+    case 'high':
+      return { income: 0.90, repChange: 1 };
+    default: // medium
+      return { income: 1.0, repChange: 0 };
   }
 }
 

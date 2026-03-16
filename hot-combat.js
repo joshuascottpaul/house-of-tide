@@ -231,6 +231,17 @@ function resolvePirateEncounter(choice) {
   if (survival > 0) {
     advancePhase();
   } else {
+    // Check if any allies died in combat
+    if (gs.allies && gs.allies.length > 0) {
+      const fallenAlly = gs.allies[Math.floor(Math.random() * gs.allies.length)];
+      if (fallenAlly && fallenAlly.canDie) {
+        gs.ledger.unshift({
+          year: gs.turn,
+          phase: 'Memorial',
+          entry: `In Memoriam: ${fallenAlly.name}, ${fallenAlly.role}. Served Gen ${gs.generation}. ${fallenAlly.bond >= 7 ? 'Faithful to the end.' : 'The ledger notes their service.'}`
+        });
+      }
+    }
     showDeathScreen();
   }
 
