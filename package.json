@@ -8,7 +8,8 @@
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
     "test:report": "playwright show-report",
-    "dev": "webpack serve --config webpack.dev.js",
+    "dev": "npx http-server -p 8080 -c-1",
+    "dev:webpack": "webpack serve --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
     "analyze": "webpack --config webpack.prod.js --profile --json > stats.json && webpack-bundle-analyzer stats.json"
   },
@@ -21,7 +22,9 @@
   "author": "House of Tide Team",
   "license": "MIT",
   "devDependencies": {
-    "@playwright/test": "^1.58.2",
+    "@playwright/test": "^1.58.2"
+  },
+  "optionalDependencies": {
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.8.1",
     "html-webpack-plugin": "^5.5.3",
