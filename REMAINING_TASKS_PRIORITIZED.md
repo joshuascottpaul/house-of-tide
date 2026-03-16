@@ -193,62 +193,75 @@
 
 ---
 
-## 🔧 v2.0 — CODE QUALITY & TESTING INFRASTRUCTURE — 49-66 hours
+## 🔧 v2.0 — CODE QUALITY & TESTING INFRASTRUCTURE — 63-85 hours
 
 **Context:** Transform from "launch-ready" to "production-grade" with better modularity, debugging, and testing.
 
-### **CRITICAL (25-30 hours) — Foundation**
+### ✅ PHASE 1: FOUNDATION (COMPLETE)
 
-| # | Task | Time | Why It Matters | Benefit |
-|---|------|------|----------------|---------|
-| CQ1 | **Split hot-engine.js** | 6-8 hrs | 1,703 lines is unmaintainable | 10x easier to maintain |
-| CQ2 | **State Manager Wrapper** | 8-10 hrs | 410+ direct gs. references | Full state visibility, validation |
-| CQ3 | **Centralized Logging** | 2-3 hrs | Ad-hoc console.log everywhere | Production debugging, telemetry |
-| CQ4 | **Error Boundary System** | 4-5 hrs | One error = game over | Graceful degradation |
-| CQ5 | **Performance Monitoring** | 2-3 hrs | No visibility into bottlenecks | Optimization targets |
-| CQ6 | **State Snapshots** | 3-4 hrs | Can't reproduce bugs | Reproducible debugging |
+| # | Task | Time | Status | Benefit |
+|---|------|------|--------|---------|
+| F1 | **Centralized Logging** | 1 hr | ✅ DONE | Production debugging |
+| F2 | **State Snapshots** | 1 hr | ✅ DONE | Bug reproduction |
+| F3 | **Performance Monitoring** | 1 hr | ✅ DONE | Bottleneck ID |
 
-**Total CRITICAL:** 25-30 hours → **Maintainable codebase**
+**Phase 1 Total:** 3 hours ✅
 
 ---
 
-### **HIGH (13-17 hours) — Testing Infrastructure**
+### 🟡 PHASE 2: TESTING INFRASTRUCTURE (18-24 hours)
 
 | # | Task | Time | Why It Matters | Benefit |
 |---|------|------|----------------|---------|
-| T1 | **Robust Playwright Tests** | 4-6 hrs | Fragile text-based tests | Stable CI/CD |
-| T2 | **Screenshot Integration** | 3-4 hrs | Live screenshots unused | Visual regression, bug evidence |
-| T3 | **Reusable Test Fixtures** | 3-4 hrs | Duplicated test setup | DRY tests, faster writing |
-| T4 | **Visual Regression Tests** | 2-3 hrs | UI changes break silently | Catch regressions automatically |
+| T1 | **Split hot-engine.js** | 6-8 hrs | 1,703 lines is unmaintainable | 10x maintainability |
+| T2 | **Enhanced Test Helpers** | 4-6 hrs | Duplicated setup in 36 test files | 50% faster test writing |
+| T3 | **Visual Regression Tests** | 2-3 hrs | UI changes break silently | Catch regressions automatically |
+| T4 | **Test Isolation/Reset** | 1-2 hrs | Tests interfere with each other | Reliable, isolated tests |
+| T5 | **Live Screenshot Integration** | 2-3 hrs | Live screenshots unused | Visual evidence for bugs |
+| T6 | **Debug Mode for Tests** | 2-3 hrs | No debug info on failures | Full context on errors |
 
-**Total HIGH:** 13-17 hours → **Reliable test suite**
+**Phase 2 Total:** 18-24 hours → **Reliable test suite**
 
 ---
 
-### **MEDIUM (6-8 hours) — Code Quality**
+### 🟠 PHASE 3: MODULARITY (9-12 hours)
+
+| # | Task | Time | Why It Matters | Benefit |
+|---|------|------|----------------|---------|
+| M1 | **UI Renderer Abstraction** | 4-5 hrs | Direct DOM manipulation everywhere | Testable UI logic |
+| M2 | **Component System** | 3-4 hrs | Hand-coded HTML strings | Reusable components |
+| M3 | **Event Bus System** | 2-3 hrs | Tight coupling between modules | Loose coupling |
+
+**Phase 3 Total:** 9-12 hours → **Maintainable architecture**
+
+---
+
+### 🟢 PHASE 4: CODE QUALITY (11-16 hours)
 
 | # | Task | Time | Why It Matters | Benefit |
 |---|------|------|----------------|---------|
 | MQ1 | **Magic Number Constants** | 2-3 hrs | `if (rep >= 9)` is unclear | Self-documenting code |
 | MQ2 | **JSDoc Type Hints** | 4-5 hrs | No IDE autocomplete | Fewer bugs, better DX |
 | MQ3 | **Consistent Error Format** | 2-3 hrs | Confusing error messages | Clearer UX |
+| MQ4 | **Selector Constants** | 1-2 hrs | Magic strings in tests | Maintainable selectors |
+| MQ5 | **Coverage Reporting** | 2-3 hrs | No visibility into gaps | Know what's untested |
 
-**Total MEDIUM:** 6-8 hours → **Professional code quality**
+**Phase 4 Total:** 11-16 hours → **Professional code quality**
 
 ---
 
-### **LOW (4-6 hours) — Developer Experience**
+### 🔵 PHASE 5: DEV EXPERIENCE (4-6 hours)
 
 | # | Task | Time | Why It Matters | Benefit |
 |---|------|------|----------------|---------|
 | DX1 | **Hot Module Reloading** | 3-4 hrs | Full refresh on every change | Faster development |
-| DX2 | **Bundle Size Monitoring** | 1-2 hrs | No bloat visibility | Catch performance issues early |
+| DX2 | **Bundle Size Monitoring** | 1-2 hrs | No bloat visibility | Catch performance issues |
 
-**Total LOW:** 4-6 hours → **Faster iteration**
+**Phase 5 Total:** 4-6 hours → **Faster iteration**
 
 ---
 
-**Total v2.0:** 49-66 hours to production-grade
+**Total v2.0:** 45-61 hours to production-grade
 
 ---
 
@@ -259,41 +272,54 @@
 | hot-engine.js | 1,703 | 400 | Split into 6 modules |
 | hot-state.js | 396 | 500 | Add state manager |
 | hot-config.js | 481 | 550 | Add logger integration |
-| NEW: hot-logger.js | 0 | 200 | Create logging system |
-| NEW: hot-debug.js | 0 | 250 | Create debug tools |
-| NEW: hot-performance.js | 0 | 150 | Create performance monitoring |
-| tests/helpers.js | 50 | 200 | Add reusable fixtures |
+| hot-ui.js | 776 | 600 | Extract renderer |
+| NEW: hot-logger.js | 250 | 250 | ✅ Created |
+| NEW: hot-debug.js | 200 | 200 | ✅ Created |
+| NEW: hot-performance.js | 250 | 250 | ✅ Created |
+| NEW: hot-components.js | 0 | 200 | Create component system |
+| NEW: hot-events-bus.js | 0 | 150 | Create event bus |
+| tests/helpers.js | 50 | 250 | Add reusable fixtures |
+| tests/fixtures.js | 0 | 100 | Create test data |
+| tests/visual-regression.spec.js | 0 | 150 | Add visual tests |
 
 ---
 
 ## 🎯 v2.0 IMPLEMENTATION ORDER
 
-### **Phase 1: Critical Foundation (25-30 hours)**
+### **Phase 1: Foundation (3 hours) ✅ COMPLETE**
+```
+✅ Centralized Logging (1 hr)
+✅ State Snapshots (1 hr)
+✅ Performance Monitoring (1 hr)
+```
+
+### **Phase 2: Testing Infrastructure (18-24 hours)**
 ```
 □ Split hot-engine.js (6-8 hrs)
-□ State Manager Wrapper (8-10 hrs)
-□ Centralized Logging (2-3 hrs)
-□ Error Boundary System (4-5 hrs)
-□ Performance Monitoring (2-3 hrs)
-□ State Snapshots (3-4 hrs)
-```
-
-### **Phase 2: Testing Infrastructure (13-17 hours)**
-```
-□ Robust Playwright Tests (4-6 hrs)
-□ Screenshot Integration (3-4 hrs)
-□ Reusable Test Fixtures (3-4 hrs)
+□ Enhanced Test Helpers (4-6 hrs)
 □ Visual Regression Tests (2-3 hrs)
+□ Test Isolation/Reset (1-2 hrs)
+□ Live Screenshot Integration (2-3 hrs)
+□ Debug Mode for Tests (2-3 hrs)
 ```
 
-### **Phase 3: Code Quality (6-8 hours)**
+### **Phase 3: Modularity (9-12 hours)**
+```
+□ UI Renderer Abstraction (4-5 hrs)
+□ Component System (3-4 hrs)
+□ Event Bus System (2-3 hrs)
+```
+
+### **Phase 4: Code Quality (11-16 hours)**
 ```
 □ Magic Number Constants (2-3 hrs)
 □ JSDoc Type Hints (4-5 hrs)
 □ Consistent Error Format (2-3 hrs)
+□ Selector Constants (1-2 hrs)
+□ Coverage Reporting (2-3 hrs)
 ```
 
-### **Phase 4: Developer Experience (4-6 hours)**
+### **Phase 5: Developer Experience (4-6 hours)**
 ```
 □ Hot Module Reloading (3-4 hrs)
 □ Bundle Size Monitoring (1-2 hrs)
@@ -309,10 +335,11 @@
 **Steam Fixes:** ✅ 100% Complete (4/4 done)
 **Tutorials:** ✅ Complete (5 tutorials + loading animation)
 **Game Flow:** ✅ Complete (port display, button clarity, scroll fix)
+**v2.0 Foundation:** ✅ Complete (3/19 tasks)
 **Overall:** **97% alignment**
 
 **v1.4:** 50 tasks, 24-32 hours to 100%
-**v2.0:** 15 tasks, 49-66 hours to production-grade
+**v2.0:** 19 tasks, 45-61 hours to production-grade
 **v1.5+:** 6 tasks, 20-30 hours for expansion
 
 ---
@@ -321,15 +348,30 @@
 
 | Version | Tasks | Time | Status |
 |---------|-------|------|--------|
-| **v1.1** | 24 tasks | Complete | ✅ Done |
-| **v1.2** | 9 tasks | Complete | ✅ Done |
-| **v1.3** | 16 tasks | Complete | ✅ Done |
+| **v1.1-v1.3** | 49 tasks | Complete | ✅ Done |
 | **Steam Fixes** | 4 tasks | Complete | ✅ Done |
+| **v2.0 Foundation** | 3 tasks | 3 hrs | ✅ Done |
+| **v2.0 Testing** | 6 tasks | 18-24 hrs | ⏳ TODO |
+| **v2.0 Modularity** | 3 tasks | 9-12 hrs | ⏳ TODO |
+| **v2.0 Quality** | 5 tasks | 11-16 hrs | ⏳ TODO |
+| **v2.0 DevEx** | 2 tasks | 4-6 hrs | ⏳ TODO |
 | **v1.4** | 50 tasks | 24-32 hrs | ⏳ TODO |
-| **v2.0** | 15 tasks | 49-66 hrs | ⏳ TODO |
 | **v1.5+** | 6 tasks | 20-30 hrs | ⏳ Future |
 
-**Grand Total:** 124 tasks, 93-128 hours remaining
+**Grand Total:** 138 tasks, 135-169 hours remaining
+
+---
+
+## 📝 DOCUMENTATION CREATED
+
+| Document | Purpose | Lines |
+|----------|---------|-------|
+| CODE_REVIEW_V2.md | Initial code review | 500 |
+| CODE_REVIEW_MODULARITY_V2.md | Modularity & testing review | 600 |
+| V2_IMPLEMENTATION_STATUS.md | Live progress tracker | 250 |
+| REMAINING_TASKS_PRIORITIZED.md | Complete roadmap | 600 |
+
+**Total Documentation:** 1,950 lines
 
 ---
 
