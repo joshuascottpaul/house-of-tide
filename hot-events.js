@@ -146,28 +146,40 @@ Generate the situation and 3 choices. Present tense. Second person. Junior gothi
 }
 
 // ══════════════════════════════════════════════════════════
-//  FALLBACK EVENT GENERATION
+//  FALLBACK EVENT GENERATION (Junior Gothic Register)
 // ══════════════════════════════════════════════════════════
 function createFallbackEvent(phase) {
   if (phase === 'house') {
     return {
       id: 'fallback_house',
-      text: 'The house awaits your direction. Pell is at his desk.',
-      choices: ['Attend to correspondence.', 'Review the ledger.', 'Walk the dock.'],
+      text: 'The palazzo holds its breath. Pell's pen scratches across the ledger — a sound like rain on slate. The Borracchi sent no word this morning. The Spinetta sent too much. Between these silences, the house waits for your hand on the tiller.',
+      choices: [
+        'Open the Spinetta correspondence — generosity often has a price, and you intend to count it before paying.',
+        'Walk the Ripa with Pell — the harbour speaks truths the council chamber never will.',
+        'Send for Casso — if the sea has news, he will have heard it first.'
+      ],
       repChoice: null
     };
   } else if (phase === 'routes') {
     return {
       id: 'fallback_routes',
-      text: 'The fleet awaits orders. Casso has sent no word yet.',
-      choices: ['Hold the current route.', 'Dispatch a fast messenger.', 'Review the manifest.'],
+      text: 'The northern passage is closed — winter has teeth this year. Casso's last letter mentioned ice where there should be water. The fleet sits in harbour like hounds on a leash. They do not understand patience. You do.',
+      choices: [
+        'Hold the current route — patience costs less than lost ships, and the ice will break when it chooses.',
+        'Dispatch a fast messenger to the Caldera — Li Yuen's network knows which passages remain open, and what they charge for that knowledge.',
+        'Review the manifest — there is cargo to move even in port, and the Masso Arrangement does not sleep for weather.'
+      ],
       repChoice: null
     };
   } else if (phase === 'venture') {
     return {
       id: 'fallback_venture',
-      text: 'The horizon offers something. The ledger is not yet sure what to call it.',
-      choices: ['Press on.', 'Consolidate.', 'Turn back.'],
+      text: 'The horizon offers something — a sail where there should be none, or perhaps a trick of the light. The ledger is not yet sure what to call it. Casso has his glass to his eye. He has not lowered it.',
+      choices: [
+        'Press on — the sea rewards those who do not ask permission, and you have never been good at asking.',
+        'Consolidate — bring the fleet closer, tighten the formation. If this is a trap, it will spring on all of you together.',
+        'Turn back — there will be other ventures, other horizons. The house endures by knowing when to retreat.'
+      ],
       repChoice: null
     };
   }

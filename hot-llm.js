@@ -263,7 +263,7 @@ async function callLLM(systemPrompt, userMsg, opts = {}) {
         marks_delta:      mk  ? parseInt(mk[1])  : 0,
         reputation_delta: rep ? parseInt(rep[1]) : 0,
         ships_delta:      sh  ? parseInt(sh[1])  : 0,
-        ledger_entry:     led ? led[1] : 'The ledger notes the event without comment.',
+        ledger_entry:     led ? led[1] : 'The ledger records the event. The sea does not comment.',
         choices:          choices ? JSON.parse('[' + choices[1] + ']') : [],
         open_thread:      null,
         resolve_thread:   null
