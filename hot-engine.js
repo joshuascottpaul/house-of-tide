@@ -1275,6 +1275,28 @@ function seed_label_from_type(type) {
 
 async function makeChoice(choice, isVenture) {
   document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+  
+  // Check for skill check in choice
+  const skillMatch = choice.match(/\[Use (\w+) \(DC (\d+)\)\]/i);
+  let skillResult = null;
+  
+  if (skillMatch) {
+    const skill = skillMatch[1].toLowerCase();
+    const dc = parseInt(skillMatch[2]);
+    skillResult = makeSkillCheck(skill, dc);
+    
+    // Show skill check result
+    const msg = skillResult.success
+      ? `Skill check: ${skill} vs DC ${dc} — SUCCESS (${skillResult.total})`
+      : `Skill check: ${skill} vs DC ${dc} — FAILURE (${skillResult.total})`;
+    
+    document.getElementById('loading-msg').textContent = msg;
+    showPanel('loading-panel');
+    
+    // Wait a moment to show result
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+  
   document.getElementById('loading-msg').textContent = rand(LOADING_MSGS);
   showPanel('loading-panel');
 

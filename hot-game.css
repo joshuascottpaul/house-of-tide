@@ -83,6 +83,17 @@ h1 { font-family:'IM Fell English SC',serif; font-size:clamp(2.8rem,9vw,5.5rem);
 .choice-hint.warning { color:#a86830; }
 .choice-risk-icons { font-size:1.1em; margin-right:.35rem; display:inline-block; }
 
+/* Skill check indicator */
+.choice-skill-indicator {
+  display: block;
+  font-family: 'IM Fell English SC', serif;
+  font-size: 0.65rem;
+  color: #6080a0;
+  margin-top: 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 /* ── PREFETCH STATUS INDICATORS ── */
 .choice-btn { position: relative; padding-right: 2.2rem; }
 .choice-btn.choice-loading::after {

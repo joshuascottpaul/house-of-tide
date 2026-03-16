@@ -68,13 +68,14 @@ function analyzeChoiceRisk(choiceText) {
 function renderChoices(containerId, choices, isVenture) {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
-  choices.forEach(c => {
+  choices.forEach((c, index) => {
     const btn = document.createElement('button');
     btn.className = 'choice-btn' + (isVenture ? ' choice-btn-v' : '');
+    btn.setAttribute('data-testid', `choice-${index}`);
 
     // Analyze risk and append hints
     const risk = analyzeChoiceRisk(c);
-    
+
     // Add visual risk indicators at the start of the choice
     let choiceHtml = c;
     const icons = [];
@@ -83,8 +84,22 @@ function renderChoices(containerId, choices, isVenture) {
     if (icons.length > 0) {
       choiceHtml = `<span class="choice-risk-icons">${icons.join(' ')}</span> ${c}`;
     }
-    
+
     btn.innerHTML = choiceHtml;
+
+    // Check for skill check in choice text
+    const skillMatch = c.match(/\[Use (\w+) \(DC (\d+)\)\]/i);
+    if (skillMatch) {
+      const skill = skillMatch[1].toLowerCase();
+      const dc = parseInt(skillMatch[2]);
+      const skillLevel = gs.skills[skill] || 0;
+      
+      // Add skill indicator
+      const skillIndicator = document.createElement('span');
+      skillIndicator.className = 'choice-skill-indicator';
+      skillIndicator.innerHTML = ` +${skillLevel} ${skill} (DC ${dc})`;
+      btn.appendChild(skillIndicator);
+    }
 
     if (risk.cost) {
       const hint = document.createElement('span');

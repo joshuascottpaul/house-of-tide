@@ -224,6 +224,21 @@ const SKILLS = {
 };
 
 /**
+ * Skill check difficulty classes
+ */
+const SKILL_DC = {
+  EASY: 8,
+  MEDIUM: 12,
+  HARD: 15,
+  VERY_HARD: 18
+};
+
+/**
+ * Skill check bonuses per level
+ */
+const SKILL_BONUS_PER_LEVEL = 1; // +1 per skill level
+
+/**
  * Export all constants for global access
  */
 window.CONSTANTS = {
@@ -241,10 +256,64 @@ window.CONSTANTS = {
   PHASES,
   COMMODITIES,
   PORTS,
-  SKILLS
+  SKILLS,
+  SKILL_DC,
+  SKILL_BONUS_PER_LEVEL
 };
 
 // Log initialization
 if (window.Logger) {
   Logger.info(Logger.CATEGORIES.STATE, 'Constants system initialized');
 }
+
+// ══════════════════════════════════════════════════════════
+//  SKILL CHECK HELPER FUNCTIONS
+// ══════════════════════════════════════════════════════════
+
+/**
+ * Make a skill check
+ * @param {string} skill - Skill name
+ * @param {number} dc - Difficulty class
+ * @returns {object} Check result { success, roll, total, dc }
+ */
+function makeSkillCheck(skill, dc) {
+  const skillLevel = gs.skills[skill] || 0;
+  const roll = Math.floor(Math.random() * 20) + 1; // d20
+  const bonus = skillLevel * SKILL_BONUS_PER_LEVEL;
+  const total = roll + bonus;
+  const success = total >= dc;
+  
+  const result = {
+    skill,
+    dc,
+    roll,
+    bonus,
+    total,
+    success,
+    natural20: roll === 20,
+    natural1: roll === 1
+  };
+  
+  // Log skill check
+  if (window.Logger) {
+    Logger.info(Logger.CATEGORIES.STATE, `Skill check: ${skill} vs DC ${dc}`, result);
+  }
+  
+  return result;
+}
+
+/**
+ * Get skill check DC name
+ * @param {number} dc - Difficulty class
+ * @returns {string} DC name
+ */
+function getDCName(dc) {
+  if (dc <= SKILL_DC.EASY) return 'Easy';
+  if (dc <= SKILL_DC.MEDIUM) return 'Medium';
+  if (dc <= SKILL_DC.HARD) return 'Hard';
+  return 'Very Hard';
+}
+
+// Export skill check functions
+window.makeSkillCheck = makeSkillCheck;
+window.getDCName = getDCName;
