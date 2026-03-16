@@ -16,6 +16,7 @@ const PORTS = {
     name: 'Verantia',
     description: 'The old city. Built on reclaimed marsh.',
     modifiers: { saltfish: 1.0, wine: 1.1, alum: 0.95, tin: 1.0 },
+    specialties: [],  // Balanced port, no specialties
     riskLevel: 'low',
     rivals: ['Borracchi', 'Spinetta']
   },
@@ -23,6 +24,7 @@ const PORTS = {
     name: 'Masso',
     description: 'Port town two days south. Never respectable.',
     modifiers: { saltfish: 1.2, wine: 0.8, alum: 1.1, tin: 0.9 },
+    specialties: ['wine'],  // Wine production (20% cheaper)
     riskLevel: 'medium',
     rivals: ['Shadow lenders']
   },
@@ -30,6 +32,7 @@ const PORTS = {
     name: 'Caldera Strait',
     description: 'Passage between island chains. Li Yuen collects tolls.',
     modifiers: { saltfish: 0.8, wine: 1.3, alum: 1.2, tin: 0.7 },
+    specialties: ['tin'],  // Tin mining (30% cheaper)
     riskLevel: 'medium',
     rivals: ['Li Yuen']
   },
@@ -37,10 +40,72 @@ const PORTS = {
     name: 'Northern Isles',
     description: 'Cold waters. Salt fish capital. Winter passage closed.',
     modifiers: { saltfish: 0.6, wine: 1.5, alum: 1.4, tin: 1.3 },
+    specialties: ['saltfish'],  // Salt fish capital (40% cheaper)
     riskLevel: 'high',
     rivals: ['Pirates', 'Weather']
   }
 };
+
+/**
+ * Get port favor modifier
+ * @param {string} portName - Port name
+ * @returns {number} Price modifier based on favor (0.85 to 1.0)
+ */
+function getPortFavorModifier(portName) {
+  if (!gs.portFavor) gs.portFavor = {};
+  const favor = gs.portFavor[portName] || 0;
+  
+  // Favor tiers: 0-2 (Stranger), 3-5 (Known), 6-8 (Trusted), 9-10 (Honored)
+  if (favor >= 9) return 0.85;  // 15% discount
+  if (favor >= 6) return 0.90;  // 10% discount
+  if (favor >= 3) return 0.95;  // 5% discount
+  return 1.0;  // No discount
+}
+
+/**
+ * Update port favor
+ * @param {string} portName - Port name
+ * @param {number} change - Favor change (+/-)
+ */
+function updatePortFavor(portName, change) {
+  if (!gs.portFavor) gs.portFavor = {};
+  if (!gs.portFavor[portName]) gs.portFavor[portName] = 0;
+  
+  gs.portFavor[portName] = Math.max(0, Math.min(10, gs.portFavor[portName] + change));
+  
+  // Log favor change
+  const favor = gs.portFavor[portName];
+  const tier = favor >= 9 ? 'Honored' : favor >= 6 ? 'Trusted' : favor >= 3 ? 'Known' : 'Stranger';
+  
+  gs.ledger.unshift({
+    year: gs.turn,
+    phase: 'Port Favor',
+    entry: `${portName} favor changed by ${change > 0 ? '+' : ''}${change}. Current: ${favor} (${tier})`
+  });
+  
+  if (window.Logger) {
+    Logger.info(Logger.CATEGORIES.TRADING, `Port favor updated: ${portName}`, {
+      favor,
+      tier,
+      change
+    });
+  }
+}
+
+/**
+ * Get port favor tier name
+ * @param {string} portName - Port name
+ * @returns {string} Tier name
+ */
+function getPortFavorTier(portName) {
+  if (!gs.portFavor) gs.portFavor = {};
+  const favor = gs.portFavor[portName] || 0;
+  
+  if (favor >= 9) return 'Honored';
+  if (favor >= 6) return 'Trusted';
+  if (favor >= 3) return 'Known';
+  return 'Stranger';
+}
 
 function selectPort(portName) {
   const oldPort = gs.currentPort;
@@ -102,15 +167,30 @@ function renderPortSelector() {
   const container = document.getElementById('port-selector');
   if (!container) return;
 
-  // Show CURRENT port (not destination selection - that happens in Routes phase)
+  // Show CURRENT port with specialties and favor
   const currentPort = gs.currentPort || 'Verantia';
+  const port = PORTS[currentPort];
+  const favorTier = getPortFavorTier(currentPort);
+  
+  const specialtiesHtml = port.specialties && port.specialties.length > 0
+    ? `<div style="margin-top:.5rem;font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.05em;color:#6a9838;text-transform:uppercase;">Specialties: ${port.specialties.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(', ')} (20-40% cheaper)</div>`
+    : '';
+  
+  const favorHtml = `
+    <div style="margin-top:.3rem;font-family:'IM Fell English SC',serif;font-size:.55rem;letter-spacing:.05em;color:#6080a0;text-transform:uppercase;">
+      Port Favor: ${favorTier}
+    </div>
+  `;
+  
   container.innerHTML = `
     <div style="font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.1em;color:#a08848;text-transform:uppercase;margin-bottom:.5rem;">
       Current Port: <span style="color:var(--gold-hi);">${currentPort.toUpperCase()}</span>
     </div>
-    <p style="font-family:'IM Fell English',serif;font-size:.75rem;color:#7a6840;font-style:italic;margin-bottom:1rem;">
-      ${PORTS[currentPort].description}
+    <p style="font-family:'IM Fell English',serif;font-size:.75rem;color:#7a6840;font-style:italic;margin-bottom:.5rem;">
+      ${port.description}
     </p>
+    ${specialtiesHtml}
+    ${favorHtml}
   `;
 }
 
@@ -238,20 +318,24 @@ function rollMarketPrices() {
   for (var i = 0; i < commodities.length; i++) {
     var c = commodities[i];
     var base = COMMODITY_BASE[c];
-    
+
     // Apply seasonal modifier
     var mod = seasonMods[c];
-    
+
     // Apply PORT modifier (geographic arbitrage!)
     if (portMods[c]) {
       mod = mod * portMods[c];
     }
     
+    // Apply PORT FAVOR modifier (relationship discount)
+    var favorMod = getPortFavorModifier(currentPort);
+    mod = mod * favorMod;
+
     // Apply event modifier if active
     if (activeEvent && activeEvent.event && activeEvent.event.mods && activeEvent.event.mods[c]) {
       mod = mod * activeEvent.event.mods[c];
     }
-    
+
     // ±15% random variance
     var variance = 0.85 + Math.random() * 0.30;
     var buyRaw  = base.buy  * mod * variance;
@@ -484,9 +568,14 @@ function buyCargo(commodity, qty) {
 
   gs.marks -= cost;
   gs.cargo[commodity] = (gs.cargo[commodity] || 0) + qty;
-  
+
   // Track cost basis for profit calculation
   updateCostBasis(commodity, qty, price.buy);
+  
+  // Gain port favor for trading (small amount)
+  if (gs.currentPort) {
+    updatePortFavor(gs.currentPort, 1);  // +1 favor per trade
+  }
 
   gs.ledger.unshift({
     year:  gs.turn,
@@ -554,9 +643,14 @@ function sellCargo(commodity, qty) {
   
   gs.marks += revenue;
   gs.cargo[commodity] -= qty;
-  
+
   // Reduce cost basis
   reduceCostBasis(commodity, qty);
+  
+  // Gain port favor for trading (small amount)
+  if (gs.currentPort) {
+    updatePortFavor(gs.currentPort, 1);  // +1 favor per trade
+  }
 
   var profitNote = profit > 0 ? ' (+'.profit+' mk profit)' : profit < 0 ? ' ('+profit+' mk loss)' : '';
   gs.ledger.unshift({
