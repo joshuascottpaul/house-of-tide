@@ -182,7 +182,13 @@ JSON only. No preamble. No markdown. No text outside the object.
 {"situation":"The scene. Present tense, second person, 2-4 sentences. Junior gothic register. Specific detail that does not fit, or weight the player carries into the choice.","choices":["Complete sentence choice 1 — specific to this situation.","Complete sentence choice 2 — specific to this situation.","Complete sentence choice 3 — specific to this situation."],"repChoice":null,"thread_hint":null}
 
 situation: The actual scene, in register. Not a summary of the scene type.
-choices: Exactly 3. Complete sentences. A=action (costs information), B=intelligence (costs time), C=honest position (player decides if cowardice or strategy). Do not label them. Do not make A obviously better than C.
+choices: Exactly 3. Complete sentences. Design so NO choice is obviously safe:
+  - Choice 1: Bold action (risk marks/rep, potential high reward)
+  - Choice 2: Measured response (moderate risk, moderate reward)
+  - Choice 3: Caution (LOW risk, but has OPPORTUNITY COST — mention what player misses)
+  Do NOT make any choice risk-free. Even caution should cost something (time, opportunity, reputation for hesitating).
+  Example bad: "Observe without committing." ← This is free safety. DON'T DO THIS.
+  Example good: "Wait for more information — but the moment will pass, and Borracchi will not hesitate." ← Caution has cost.
 
 CRITICAL: CHOICES MUST BE PLAIN TEXT STRINGS ONLY. Do NOT wrap choices in JSON objects. Do NOT include "choice": or "cost": fields inside the choices array.
 
