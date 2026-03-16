@@ -381,9 +381,11 @@ input[type=text]:focus { border-bottom-color:var(--rust); }
 .phase-pip.venture { color:#8878c0; border-color:#3a3068; }
 .rep-tier { font-family:'IM Fell English SC',serif; font-size:.62rem;
   letter-spacing:.08em; display:block; }
-.rep-tier.high   { color:#7aaa40; }
-.rep-tier.medium { color:#9a8848; }
-.rep-tier.low    { color:#c04030; }
+.rep-tier.legendary   { color:#d4a030; }
+.rep-tier.renowned    { color:#7aaa40; }
+.rep-tier.established { color:#9a8848; }
+.rep-tier.precarious  { color:#c04030; }
+.rep-tier.disgraced   { color:#a03030; }
 
 /* ── GAME CONTENT ── */
 #game-content { max-width:680px; margin:0 auto; padding:2rem 1.5rem 5rem; width:100%; }
