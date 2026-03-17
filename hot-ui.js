@@ -567,6 +567,11 @@ function generationalHandoff() {
     year: gs.turn, phase: 'Succession',
     entry: `The house passes to ${newFounderName}. ${oldFounderName} is entered in the record. Generation ${generation} of House ${gs.dynastyName} begins.`
   });
+  
+  // Record generation to dynasty history
+  if (window.recordGeneration) {
+    recordGeneration();
+  }
 
   // ── Transfer the house ──
   gs.founderName    = newFounderName;

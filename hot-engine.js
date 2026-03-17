@@ -683,6 +683,139 @@ function proposeMarriage(candidate) {
 }
 
 // ══════════════════════════════════════════════════════════
+//  DYNASTY HISTORY TRACKING
+// ══════════════════════════════════════════════════════════
+
+/**
+ * Record current generation to dynasty history
+ */
+function recordGeneration() {
+  if (!gs.dynastyHistory) gs.dynastyHistory = [];
+  
+  // Get achievements for this generation
+  const genAchievements = ACHIEVEMENTS.filter(a => 
+    gs.achievements && gs.achievements.includes(a.id)
+  ).map(a => ({ id: a.id, name: a.name, icon: a.icon }));
+  
+  // Count buildings owned
+  const buildingCount = gs.buildings ? Object.keys(gs.buildings).length : 0;
+  
+  // Create generation record
+  const generationRecord = {
+    generation: gs.generation,
+    founder: gs.founderName,
+    heir: gs.heirName,
+    startYear: gs.turn - (gs.age - 28),  // Approximate start year
+    endYear: gs.turn,
+    achievements: genAchievements,
+    stats: {
+      maxMarks: gs.marks,
+      maxShips: gs.ships,
+      maxRep: gs.reputation,
+      buildings: buildingCount,
+      piratesDefeated: 0,  // TODO: Track this
+      tradesCompleted: 0   // TODO: Track this
+    }
+  };
+  
+  // Add to history
+  gs.dynastyHistory.push(generationRecord);
+  
+  // Log to ledger
+  gs.ledger.unshift({
+    year: gs.turn,
+    phase: 'Dynasty',
+    entry: `Generation ${gs.generation} recorded: ${gs.founderName} → ${gs.heirName}`
+  });
+  
+  if (window.Logger) {
+    Logger.info(Logger.CATEGORIES.STATE, 'Generation recorded', generationRecord);
+  }
+}
+
+/**
+ * Show dynasty history viewer UI
+ */
+function showDynastyHistory() {
+  try {
+    const history = gs.dynastyHistory || [];
+    
+    let html = `
+      <div style="padding:2rem; max-width:800px; margin:0 auto; max-height:80vh; overflow-y:auto;">
+        <h2 style="font-family:'IM Fell English SC',serif; color:var(--gold-hi); letter-spacing:.1em; margin-bottom:1rem;">📜 Dynasty History</h2>
+        <div style="margin-bottom:1rem; color:#9a8858; font-style:italic;">
+          Generations: ${history.length}
+        </div>
+        
+        <div style="position:relative; padding-left:2rem;">
+          <!-- Timeline line -->
+          <div style="position:absolute; left:0.5rem; top:0; bottom:0; width:2px; background:linear-gradient(to bottom, #a07820, #5a4828);"></div>
+          
+          ${history.map((gen, index) => `
+            <div style="position:relative; margin-bottom:2rem; padding-left:1.5rem;">
+              <!-- Timeline dot -->
+              <div style="position:absolute; left:-0.2rem; top:0; width:1rem; height:1rem; background:#a07820; border-radius:50%; border:2px solid #090705;"></div>
+              
+              <div style="border:1px solid #4a3820; padding:1rem; background:rgba(26,20,8,0.8); border-radius:4px;">
+                <div style="font-family:'IM Fell English SC',serif; font-size:0.85rem; color:#c8a870; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.5rem;">
+                  Generation ${gen.generation}
+                </div>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-bottom:0.5rem;">
+                  <div style="font-family:'IM Fell English',serif; font-size:0.75rem; color:#7a6840;">
+                    <span style="color:#a08848;">Founder:</span> ${gen.founder}
+                  </div>
+                  <div style="font-family:'IM Fell English',serif; font-size:0.75rem; color:#7a6840;">
+                    <span style="color:#a08848;">Heir:</span> ${gen.heir}
+                  </div>
+                  <div style="font-family:'IM Fell English',serif; font-size:0.75rem; color:#7a6840;">
+                    <span style="color:#a08848;">Years:</span> ${gen.startYear} — ${gen.endYear}
+                  </div>
+                  <div style="font-family:'IM Fell English',serif; font-size:0.75rem; color:#7a6840;">
+                    <span style="color:#a08848;">Buildings:</span> ${gen.stats.buildings}
+                  </div>
+                </div>
+                
+                ${gen.achievements.length > 0 ? `
+                  <div style="margin-top:0.5rem;">
+                    <div style="font-family:'IM Fell English SC',serif; font-size:0.65rem; color:#7a6840; text-transform:uppercase; margin-bottom:0.3rem;">Achievements</div>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                      ${gen.achievements.map(a => `
+                        <span style="font-size:1.2rem;" title="${a.name}">${a.icon}</span>
+                      `).join('')}
+                    </div>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          `).join('')}
+          
+          ${history.length === 0 ? `
+            <div style="padding:2rem; text-align:center; color:#7a6840; font-family:'IM Fell English',serif; font-style:italic;">
+              The dynasty has just begun. Your story awaits...
+            </div>
+          ` : ''}
+        </div>
+        
+        <button onclick="this.closest('.dynasty-overlay').remove()"
+          style="margin-top:1.5rem; background:none; border:1px solid #5a4020; color:var(--gold);
+          font-family:'IM Fell English SC',serif; font-size:0.75rem; padding:0.65rem 1.8rem;
+          cursor:pointer; text-transform:uppercase;">Close</button>
+      </div>
+    `;
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'dynasty-overlay';
+    overlay.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:500; overflow-y:auto;';
+    overlay.innerHTML = html;
+    document.body.appendChild(overlay);
+  } catch (e) {
+    console.error('Error showing dynasty history:', e);
+    alert('Dynasty History: ' + e.message);
+  }
+}
+
+// ══════════════════════════════════════════════════════════
 //  ACHIEVEMENT SYSTEM (Retention — Milestones)
 // ══════════════════════════════════════════════════════════
 
@@ -1795,6 +1928,11 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ── Init ──────────────────────────────────────────────────
+
+// Export dynasty history functions
+window.recordGeneration = recordGeneration;
+window.showDynastyHistory = showDynastyHistory;
+
 window.addEventListener('DOMContentLoaded', () => {
   loadCFG();
   renderTitleSaves();

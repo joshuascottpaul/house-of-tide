@@ -31,6 +31,7 @@ let gs = {
   pirateReputation: 'known',  // Pirate rep: feared, known, prey
   portFavor: {},  // Port favor: { Verantia: 5, Masso: 3, ... }
   heirEducation: { focus: null, progress: 0, events: [] },  // Heir education tracking
+  dynastyHistory: [],  // Dynasty history: [{ generation, founder, heir, startYear, endYear, achievements, events }]
   rivals:{
     borracchi:{ relationship:0, lastInteraction:0, notes:[] },
     spinetta: { relationship:0, lastInteraction:0, notes:[] },
