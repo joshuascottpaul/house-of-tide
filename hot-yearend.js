@@ -152,6 +152,14 @@ function showYearEnd() {
       : `${gs.heirName} is ${nextAge}. Old enough to understand what ${gs.heirTrait.label.toLowerCase()} means. Old enough to make ${pos} own mistakes. You remember being ${nextAge}. The ledger does not care.`;
   }
   
+  // Add education UI if heir is of age (10-17)
+  if (gs.heirAge >= 10 && gs.heirAge < 18) {
+    addEducationUI();
+  }
+  
+  // Add building upgrade UI
+  addBuildingUpgradeUI();
+  
   // Add tax decision UI
   const financeEl = document.getElementById('ye-finance');
   if (financeEl) {
@@ -207,6 +215,163 @@ function showYearEnd() {
       turn: gs.turn,
       settlement
     });
+  }
+}
+
+/**
+ * Add heir education UI to year-end panel
+ */
+function addEducationUI() {
+  const financeEl = document.getElementById('ye-finance');
+  if (!financeEl) return;
+  
+  const focus = gs.heirEducation.focus || 'none';
+  const progress = gs.heirEducation.progress || 0;
+  const progressPercent = (progress / 8) * 100;  // 8 years of education (10-17)
+  
+  const focusNames = {
+    commerce: 'Commerce (+Negotiation, +Seamanship)',
+    politics: 'Politics (+Politics, +Intrigue)',
+    balance: 'Balance (+1 to all skills)'
+  };
+  
+  financeEl.innerHTML = `
+    <div style="margin-top:1.5rem;padding:1rem;border:1px solid #3a2c18;border-radius:3px;">
+      <div style="font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.1em;color:#a08848;text-transform:uppercase;margin-bottom:.5rem;">Heir Education</div>
+      <p style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:1rem;">${gs.heirName} is ${gs.heirAge}. Choose their focus for the coming year.</p>
+      
+      ${focus !== 'none' ? `
+        <div style="margin-bottom:1rem;">
+          <div style="font-family:'IM Fell English SC',serif;font-size:.6rem;color:#7a6840;text-transform:uppercase;margin-bottom:.3rem;">Current Focus: ${focusNames[focus]}</div>
+          <div style="width:100%;height:8px;background:rgba(58,44,24,0.5);border-radius:4px;overflow:hidden;">
+            <div style="width:${progressPercent}%;height:100%;background:linear-gradient(90deg, #6a9838, #a0c858);"></div>
+          </div>
+          <div style="font-family:'IM Fell English',serif;font-size:.65rem;color:#7a6840;margin-top:.3rem;">Progress: ${progress}/8 years</div>
+        </div>
+      ` : ''}
+      
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <button class="finance-btn" onclick="setEducationFocus('commerce')" ${focus === 'commerce' ? 'disabled style="opacity:0.5;"' : ''}>
+          Commerce<br><span style="font-size:.65rem;color:#6a9838;">+1 Negotiation, +1 Seamanship</span>
+        </button>
+        <button class="finance-btn" onclick="setEducationFocus('politics')" ${focus === 'politics' ? 'disabled style="opacity:0.5;"' : ''}>
+          Politics<br><span style="font-size:.65rem;color:#6080a0;">+1 Politics, +1 Intrigue</span>
+        </button>
+        <button class="finance-btn" onclick="setEducationFocus('balance')" ${focus === 'balance' ? 'disabled style="opacity:0.5;"' : ''}>
+          Balance<br><span style="font-size:.65rem;color:#a08848;">+1 to all skills</span>
+        </button>
+      </div>
+    </div>
+  ` + financeEl.innerHTML;
+}
+
+/**
+ * Add building upgrade UI to year-end panel
+ */
+function addBuildingUpgradeUI() {
+  const financeEl = document.getElementById('ye-finance');
+  if (!financeEl || !gs.buildings || Object.keys(gs.buildings).length === 0) return;
+  
+  const upgradeCosts = {
+    warehouse: { cost: 800, name: 'Grand Warehouse' },
+    guild_seat: { cost: 1500, name: 'Council Seat' },
+    shipyard: { cost: 2000, name: 'Master Shipyard' },
+    palazzo_wing: { cost: 1200, name: 'Grand Palazzo' },
+    counting_house: { cost: 1000, name: 'Bank' },
+    safehouse: { cost: 700, name: 'Fortress' }
+  };
+  
+  const upgradeButtons = Object.keys(gs.buildings)
+    .filter(id => gs.buildings[id].level < 2)
+    .map(id => {
+      const upgrade = upgradeCosts[id];
+      const canAfford = gs.marks >= upgrade.cost;
+      return `
+        <button class="finance-btn" onclick="upgradeBuilding('${id}')" ${!canAfford ? 'disabled style="opacity:0.5;"' : ''}>
+          Upgrade ${BUILDINGS[id].name}<br>
+          <span style="font-size:.65rem;color:${canAfford ? '#6a9838' : '#c84030'};">${upgrade.cost} mk → ${upgrade.name}</span>
+        </button>
+      `;
+    }).join('');
+  
+  if (upgradeButtons) {
+    financeEl.innerHTML = `
+      <div style="margin-top:1.5rem;padding:1rem;border:1px solid #3a2c18;border-radius:3px;">
+        <div style="font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.1em;color:#a08848;text-transform:uppercase;margin-bottom:.5rem;">Building Upgrades</div>
+        <p style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:1rem;">Upgrade your buildings for enhanced effects.</p>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+          ${upgradeButtons}
+        </div>
+      </div>
+    ` + financeEl.innerHTML;
+  }
+}
+
+/**
+ * Set heir education focus
+ * @param {string} focus - Education focus (commerce, politics, balance)
+ */
+function setEducationFocus(focus) {
+  if (!gs.heirEducation) gs.heirEducation = { focus: null, progress: 0, events: [] };
+  
+  // If changing focus, reset progress
+  if (gs.heirEducation.focus !== focus) {
+    gs.heirEducation.focus = focus;
+    gs.heirEducation.progress = 1;
+    
+    gs.ledger.unshift({
+      year: gs.turn,
+      phase: 'Education',
+      entry: `${gs.heirName} begins studying ${focus}. The ${focus === 'commerce' ? 'ledgers and ships' : focus === 'politics' ? 'council chambers and shadows' : 'arts of all trades'} await.`
+    });
+  } else {
+    // Continue same focus
+    gs.heirEducation.progress = Math.min(8, gs.heirEducation.progress + 1);
+    
+    gs.ledger.unshift({
+      year: gs.turn,
+      phase: 'Education',
+      entry: `${gs.heirName} continues ${focus} studies. Year ${gs.heirEducation.progress} of 8.`
+    });
+  }
+  
+  // Apply skill bonuses
+  applyEducationBonuses(focus);
+  
+  // Log education
+  if (window.Logger) {
+    Logger.info(Logger.CATEGORIES.STATE, `Education focus set: ${focus}`, {
+      focus,
+      progress: gs.heirEducation.progress
+    });
+  }
+  
+  // Refresh UI
+  showYearEnd();
+}
+
+/**
+ * Apply education bonuses to skills
+ * @param {string} focus - Education focus
+ */
+function applyEducationBonuses(focus) {
+  if (!gs.skills) gs.skills = { negotiation: 0, seamanship: 0, politics: 0, intrigue: 0 };
+  
+  switch(focus) {
+    case 'commerce':
+      gs.skills.negotiation = Math.min(5, (gs.skills.negotiation || 0) + 1);
+      gs.skills.seamanship = Math.min(5, (gs.skills.seamanship || 0) + 1);
+      break;
+    case 'politics':
+      gs.skills.politics = Math.min(5, (gs.skills.politics || 0) + 1);
+      gs.skills.intrigue = Math.min(5, (gs.skills.intrigue || 0) + 1);
+      break;
+    case 'balance':
+      gs.skills.negotiation = Math.min(5, (gs.skills.negotiation || 0) + 1);
+      gs.skills.seamanship = Math.min(5, (gs.skills.seamanship || 0) + 1);
+      gs.skills.politics = Math.min(5, (gs.skills.politics || 0) + 1);
+      gs.skills.intrigue = Math.min(5, (gs.skills.intrigue || 0) + 1);
+      break;
   }
 }
 

@@ -187,33 +187,88 @@ const BUILDINGS = {
 function purchaseBuilding(buildingId) {
   const building = BUILDINGS[buildingId];
   if (!building) return false;
-  
+
   // Check if already owned
   if (gs.buildings && gs.buildings[buildingId]) {
     return false;
   }
-  
+
   // Check affordability
   if (gs.marks < building.cost) {
     return false;
   }
-  
+
   // Purchase
   gs.marks -= building.cost;
-  
+
   if (!gs.buildings) gs.buildings = {};
   gs.buildings[buildingId] = {
+    level: 1,
     purchased: gs.turn,
     founder: gs.founderName,
     generation: gs.generation
   };
-  
+
   // Record in ledger
   gs.ledger.unshift({
     year: gs.turn,
     phase: 'Building',
     entry: `${building.name} commissioned — ${building.cost} marks. ${building.description}. Built by ${gs.founderName}.`
   });
+
+  updateStatusBar();
+  renderBuildingsDisplay();
+  autoSave();
+
+  return true;
+}
+
+/**
+ * Upgrade building to next level
+ * @param {string} buildingId - Building ID
+ * @returns {boolean} True if upgrade successful
+ */
+function upgradeBuilding(buildingId) {
+  if (!gs.buildings || !gs.buildings[buildingId]) return false;
+  
+  const buildingData = gs.buildings[buildingId];
+  const currentLevel = buildingData.level || 1;
+  const building = BUILDINGS[buildingId];
+  
+  if (currentLevel >= 2) return false;  // Max level reached
+  
+  // Upgrade costs and effects
+  const upgrades = {
+    warehouse: { cost: 800, effect: 'Grand Warehouse (+40% cargo)' },
+    guild_seat: { cost: 1500, effect: 'Council Seat (+2 rep/year)' },
+    shipyard: { cost: 2000, effect: 'Master Shipyard (-20% ship cost)' },
+    palazzo_wing: { cost: 1200, effect: 'Grand Palazzo (+4 education)' },
+    counting_house: { cost: 1000, effect: 'Bank (+20% income)' },
+    safehouse: { cost: 700, effect: 'Fortress (-40% mortality)' }
+  };
+  
+  const upgrade = upgrades[buildingId];
+  if (!upgrade) return false;
+  
+  if (gs.marks < upgrade.cost) return false;  // Can't afford
+  
+  // Upgrade building
+  gs.marks -= upgrade.cost;
+  buildingData.level = 2;
+  
+  gs.ledger.unshift({
+    year: gs.turn,
+    phase: 'Building Upgrade',
+    entry: `${building.name} upgraded to ${upgrade.effect} — ${upgrade.cost} marks.`
+  });
+  
+  if (window.Logger) {
+    Logger.info(Logger.CATEGORIES.STATE, `Building upgraded: ${buildingId}`, {
+      building: building.name,
+      level: 2,
+      cost: upgrade.cost
+    });
+  }
   
   updateStatusBar();
   renderBuildingsDisplay();
@@ -222,10 +277,18 @@ function purchaseBuilding(buildingId) {
   return true;
 }
 
+/**
+ * Get building effect with upgrade bonus
+ * @param {string} buildingId - Building ID
+ * @returns {number} Effect value
+ */
 function getBuildingEffect(buildingId) {
   if (!gs.buildings || !gs.buildings[buildingId]) return 0;
   const building = BUILDINGS[buildingId];
-  return building ? building.value : 0;
+  const level = gs.buildings[buildingId].level || 1;
+  
+  // Upgraded buildings have doubled effect
+  return building ? building.value * level : 0;
 }
 
 function getTotalBuildingEffect(effectType) {
@@ -244,19 +307,22 @@ function getTotalBuildingEffect(effectType) {
 function renderBuildingsDisplay() {
   const display = document.getElementById('buildings-display');
   if (!display) return;
-  
+
   if (!gs.buildings || Object.keys(gs.buildings).length === 0) {
     display.style.display = 'none';
     return;
   }
-  
+
   display.style.display = 'flex';
   display.innerHTML = Object.keys(gs.buildings).map(id => {
     const building = BUILDINGS[id];
     const purchaseInfo = gs.buildings[id];
+    const level = purchaseInfo.level || 1;
+    const levelIcon = level === 2 ? ' ⭐' : '';
+    
     return `
       <span class="building-badge" data-testid="building-badge-${id}" title="${building.name} (Gen ${purchaseInfo.generation})">
-        <span class="building-icon">${building.icon}</span>
+        <span class="building-icon">${building.icon}${levelIcon}</span>
         <span class="building-name">${building.name}</span>
         <span class="building-founder">by ${purchaseInfo.founder}</span>
       </span>
