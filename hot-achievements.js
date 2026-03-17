@@ -1,5 +1,77 @@
 // ══════════════════════════════════════════════════════════
-//  ACHIEVEMENT SYSTEM (Integrated with gs.achievements)
+//  ACHIEVEMENT NOTIFICATIONS
+// ══════════════════════════════════════════════════════════
+
+/**
+ * Show achievement unlock notification
+ * @param {object} achievement - Achievement object
+ */
+function showAchievementNotification(achievement) {
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = 'achievement-notification';
+  notification.innerHTML = `
+    <div class="achievement-notification-icon">🏆</div>
+    <div class="achievement-notification-content">
+      <div class="achievement-notification-title">Achievement Unlocked!</div>
+      <div class="achievement-notification-name">${achievement.name}</div>
+      <div class="achievement-notification-desc">${achievement.description}</div>
+    </div>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Animate in
+  setTimeout(() => {
+    notification.classList.add('show');
+  }, 100);
+  
+  // Remove after 5 seconds
+  setTimeout(() => {
+    notification.classList.remove('show');
+    setTimeout(() => {
+      notification.remove();
+    }, 500);
+  }, 5000);
+  
+  // Log achievement
+  if (window.Logger) {
+    Logger.info(Logger.CATEGORIES.ACHIEVEMENTS, `Achievement unlocked: ${achievement.id}`, achievement);
+  }
+}
+
+/**
+ * Unlock an achievement and show notification
+ * @param {string} achievementId - Achievement ID
+ */
+function unlockAchievement(achievementId) {
+  if (!gs.achievements) gs.achievements = [];
+  
+  // Check if already unlocked
+  if (gs.achievements.includes(achievementId)) return false;
+  
+  // Find achievement
+  const achievement = ACHIEVEMENTS.find(a => a.id === achievementId);
+  if (!achievement) return false;
+  
+  // Unlock it
+  gs.achievements.push(achievementId);
+  
+  // Show notification
+  showAchievementNotification(achievement);
+  
+  // Log to ledger
+  gs.ledger.unshift({
+    year: gs.turn,
+    phase: 'Achievement',
+    entry: `Achievement unlocked: ${achievement.name}`
+  });
+  
+  return true;
+}
+
+// ══════════════════════════════════════════════════════════
+//  ACHIEVEMENT SYSTEM
 // ══════════════════════════════════════════════════════════
 
 function showAchievementsPanel() {
@@ -63,3 +135,4 @@ function showAchievementsPanel() {
 
 // Export for global access
 window.showAchievementsPanel = showAchievementsPanel;
+window.unlockAchievement = unlockAchievement;

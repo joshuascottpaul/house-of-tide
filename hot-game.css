@@ -94,6 +94,67 @@ h1 { font-family:'IM Fell English SC',serif; font-size:clamp(2.8rem,9vw,5.5rem);
   letter-spacing: 0.05em;
 }
 
+/* ── ACHIEVEMENT NOTIFICATIONS ──────────────────────────── */
+.achievement-notification {
+  position: fixed;
+  top: -200px;
+  right: 20px;
+  background: linear-gradient(135deg, rgba(26, 20, 8, 0.95), rgba(42, 30, 14, 0.95));
+  border: 2px solid #a07820;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  z-index: 10000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  transition: top 0.5s ease;
+  min-width: 300px;
+}
+
+.achievement-notification.show {
+  top: 20px;
+}
+
+.achievement-notification-icon {
+  font-size: 2.5rem;
+  animation: achievementPulse 1s ease infinite;
+}
+
+@keyframes achievementPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.achievement-notification-content {
+  flex: 1;
+}
+
+.achievement-notification-title {
+  font-family: 'IM Fell English SC', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: #a07820;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.achievement-notification-name {
+  font-family: 'IM Fell English SC', serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  color: #c8a870;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.achievement-notification-desc {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.7rem;
+  color: #7a6840;
+  line-height: 1.4;
+}
+
 /* ── COMBAT VISUALS ────────────────────────────────────── */
 .combat-visual {
   display: flex;

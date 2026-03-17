@@ -589,15 +589,19 @@ function resolvePirateEncounter(choice) {
   }
   
   window._currentPirateEncounter = null;
-  
+
   // Return to game flow
   document.getElementById('panel-combat').style.display = 'none';
   if (survival > 0) {
+    // Check survivor achievement
+    if (!hasAchievement('survivor')) {
+      unlockAchievement('survivor', []);
+    }
     advancePhase();
   } else {
     showDeathScreen();
   }
-  
+
   return { survival, marksLost, shipLost };
 }
 
@@ -749,10 +753,18 @@ function hasAchievement(id) {
 }
 
 function unlockAchievement(id, achievementsArray) {
+  // Check if already unlocked
+  if (gs.achievements.includes(id)) return;
+  
   gs.achievements.push(id);
   const achievement = ACHIEVEMENTS.find(a => a.id === id);
   if (achievement) {
     achievementsArray.push(achievement);
+    
+    // Show notification
+    if (window.unlockAchievement) {
+      window.unlockAchievement(id);
+    }
   }
 }
 
