@@ -250,4 +250,4 @@ window.addEventListener('load', () => {
 
 window.Performance = Performance;
 
-// Logger.info(Logger.CATEGORIES.PERF, 'Performance monitoring initialized');
+Logger.info(Logger.CATEGORIES.PERF, 'Performance monitoring initialized');

@@ -6,6 +6,9 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
 }
 
+// Export for global access (HTML onclick handlers)
+window.showScreen = showScreen;
+
 const PANELS = ['panel-event','panel-venture','loading-panel','panel-result','panel-yearend'];
 function showPanel(id) {
   PANELS.forEach(p=>{ const el=document.getElementById(p); if(el) el.style.display='none'; });

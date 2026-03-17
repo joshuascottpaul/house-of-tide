@@ -183,4 +183,4 @@ if (_origBeginPhase) {
 
 window.DebugSnapshots = DebugSnapshots;
 
-Logger.info(Logger.CATEGORIES.STATE, 'DebugSnapshots initialized');
+// Logger.info(Logger.CATEGORIES.STATE, 'DebugSnapshots initialized');
