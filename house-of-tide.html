@@ -234,6 +234,10 @@
         <span class="stat-name">Ships</span>
         <span id="stat-ships" class="stat-val">1</span>
       </div>
+      <div class="stat" id="stat-cannons-container" style="display:none;">
+        <span class="stat-name">Cannons</span>
+        <span id="stat-cannons" class="stat-val"></span>
+      </div>
       <div class="stat">
         <span class="stat-name">Reputation</span>
         <span id="stat-rep" class="stat-val">5/10</span>
@@ -298,6 +302,10 @@
         <div class="phase-hdr-line r"></div>
       </div>
       <p id="combat-narrative" class="event-text" style="font-size:1.05rem;margin:1.5rem 0;"></p>
+      
+      <!-- Visual combat display -->
+      <div id="combat-display" style="margin:1.5rem 0;"></div>
+      
       <div style="display:flex;justify-content:space-between;margin:1rem 0;padding:1rem;background:rgba(42,10,10,.3);border-radius:3px;">
         <div id="combat-enemy" style="color:#c84030;font-family:'IM Fell English SC',serif;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;"></div>
         <div id="combat-player" style="color:#6080a0;font-family:'IM Fell English SC',serif;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;"></div>
@@ -415,7 +423,16 @@
 <script src="hot-config.js"></script>
 <script src="hot-logger.js"></script>
 <script src="hot-debug.js"></script>
+<script src="hot-constants.js"></script>
+<script src="hot-errors.js"></script>
+<script src="hot-ui-selectors.js"></script>
 <script src="hot-performance.js"></script>
+<script src="hot-background.js"></script>
+<script src="hot-combat.js"></script>
+<script src="hot-tutorials.js"></script>
+<script src="hot-victory.js"></script>
+<script src="hot-threads.js"></script>
+<script src="hot-yearend.js"></script>
 <script src="hot-llm.js"></script>
 <script src="hot-state.js"></script>
 <script src="hot-ui.js"></script>

@@ -187,33 +187,88 @@ const BUILDINGS = {
 function purchaseBuilding(buildingId) {
   const building = BUILDINGS[buildingId];
   if (!building) return false;
-  
+
   // Check if already owned
   if (gs.buildings && gs.buildings[buildingId]) {
     return false;
   }
-  
+
   // Check affordability
   if (gs.marks < building.cost) {
     return false;
   }
-  
+
   // Purchase
   gs.marks -= building.cost;
-  
+
   if (!gs.buildings) gs.buildings = {};
   gs.buildings[buildingId] = {
+    level: 1,
     purchased: gs.turn,
     founder: gs.founderName,
     generation: gs.generation
   };
-  
+
   // Record in ledger
   gs.ledger.unshift({
     year: gs.turn,
     phase: 'Building',
     entry: `${building.name} commissioned — ${building.cost} marks. ${building.description}. Built by ${gs.founderName}.`
   });
+
+  updateStatusBar();
+  renderBuildingsDisplay();
+  autoSave();
+
+  return true;
+}
+
+/**
+ * Upgrade building to next level
+ * @param {string} buildingId - Building ID
+ * @returns {boolean} True if upgrade successful
+ */
+function upgradeBuilding(buildingId) {
+  if (!gs.buildings || !gs.buildings[buildingId]) return false;
+  
+  const buildingData = gs.buildings[buildingId];
+  const currentLevel = buildingData.level || 1;
+  const building = BUILDINGS[buildingId];
+  
+  if (currentLevel >= 2) return false;  // Max level reached
+  
+  // Upgrade costs and effects
+  const upgrades = {
+    warehouse: { cost: 800, effect: 'Grand Warehouse (+40% cargo)' },
+    guild_seat: { cost: 1500, effect: 'Council Seat (+2 rep/year)' },
+    shipyard: { cost: 2000, effect: 'Master Shipyard (-20% ship cost)' },
+    palazzo_wing: { cost: 1200, effect: 'Grand Palazzo (+4 education)' },
+    counting_house: { cost: 1000, effect: 'Bank (+20% income)' },
+    safehouse: { cost: 700, effect: 'Fortress (-40% mortality)' }
+  };
+  
+  const upgrade = upgrades[buildingId];
+  if (!upgrade) return false;
+  
+  if (gs.marks < upgrade.cost) return false;  // Can't afford
+  
+  // Upgrade building
+  gs.marks -= upgrade.cost;
+  buildingData.level = 2;
+  
+  gs.ledger.unshift({
+    year: gs.turn,
+    phase: 'Building Upgrade',
+    entry: `${building.name} upgraded to ${upgrade.effect} — ${upgrade.cost} marks.`
+  });
+  
+  if (window.Logger) {
+    Logger.info(Logger.CATEGORIES.STATE, `Building upgraded: ${buildingId}`, {
+      building: building.name,
+      level: 2,
+      cost: upgrade.cost
+    });
+  }
   
   updateStatusBar();
   renderBuildingsDisplay();
@@ -222,10 +277,18 @@ function purchaseBuilding(buildingId) {
   return true;
 }
 
+/**
+ * Get building effect with upgrade bonus
+ * @param {string} buildingId - Building ID
+ * @returns {number} Effect value
+ */
 function getBuildingEffect(buildingId) {
   if (!gs.buildings || !gs.buildings[buildingId]) return 0;
   const building = BUILDINGS[buildingId];
-  return building ? building.value : 0;
+  const level = gs.buildings[buildingId].level || 1;
+  
+  // Upgraded buildings have doubled effect
+  return building ? building.value * level : 0;
 }
 
 function getTotalBuildingEffect(effectType) {
@@ -244,19 +307,22 @@ function getTotalBuildingEffect(effectType) {
 function renderBuildingsDisplay() {
   const display = document.getElementById('buildings-display');
   if (!display) return;
-  
+
   if (!gs.buildings || Object.keys(gs.buildings).length === 0) {
     display.style.display = 'none';
     return;
   }
-  
+
   display.style.display = 'flex';
   display.innerHTML = Object.keys(gs.buildings).map(id => {
     const building = BUILDINGS[id];
     const purchaseInfo = gs.buildings[id];
+    const level = purchaseInfo.level || 1;
+    const levelIcon = level === 2 ? ' ⭐' : '';
+    
     return `
       <span class="building-badge" data-testid="building-badge-${id}" title="${building.name} (Gen ${purchaseInfo.generation})">
-        <span class="building-icon">${building.icon}</span>
+        <span class="building-icon">${building.icon}${levelIcon}</span>
         <span class="building-name">${building.name}</span>
         <span class="building-founder">by ${purchaseInfo.founder}</span>
       </span>
@@ -523,15 +589,19 @@ function resolvePirateEncounter(choice) {
   }
   
   window._currentPirateEncounter = null;
-  
+
   // Return to game flow
   document.getElementById('panel-combat').style.display = 'none';
   if (survival > 0) {
+    // Check survivor achievement
+    if (!hasAchievement('survivor')) {
+      unlockAchievement('survivor', []);
+    }
     advancePhase();
   } else {
     showDeathScreen();
   }
-  
+
   return { survival, marksLost, shipLost };
 }
 
@@ -613,6 +683,139 @@ function proposeMarriage(candidate) {
 }
 
 // ══════════════════════════════════════════════════════════
+//  DYNASTY HISTORY TRACKING
+// ══════════════════════════════════════════════════════════
+
+/**
+ * Record current generation to dynasty history
+ */
+function recordGeneration() {
+  if (!gs.dynastyHistory) gs.dynastyHistory = [];
+  
+  // Get achievements for this generation
+  const genAchievements = ACHIEVEMENTS.filter(a => 
+    gs.achievements && gs.achievements.includes(a.id)
+  ).map(a => ({ id: a.id, name: a.name, icon: a.icon }));
+  
+  // Count buildings owned
+  const buildingCount = gs.buildings ? Object.keys(gs.buildings).length : 0;
+  
+  // Create generation record
+  const generationRecord = {
+    generation: gs.generation,
+    founder: gs.founderName,
+    heir: gs.heirName,
+    startYear: gs.turn - (gs.age - 28),  // Approximate start year
+    endYear: gs.turn,
+    achievements: genAchievements,
+    stats: {
+      maxMarks: gs.marks,
+      maxShips: gs.ships,
+      maxRep: gs.reputation,
+      buildings: buildingCount,
+      piratesDefeated: 0,  // TODO: Track this
+      tradesCompleted: 0   // TODO: Track this
+    }
+  };
+  
+  // Add to history
+  gs.dynastyHistory.push(generationRecord);
+  
+  // Log to ledger
+  gs.ledger.unshift({
+    year: gs.turn,
+    phase: 'Dynasty',
+    entry: `Generation ${gs.generation} recorded: ${gs.founderName} → ${gs.heirName}`
+  });
+  
+  if (window.Logger) {
+    Logger.info(Logger.CATEGORIES.STATE, 'Generation recorded', generationRecord);
+  }
+}
+
+/**
+ * Show dynasty history viewer UI
+ */
+function showDynastyHistory() {
+  try {
+    const history = gs.dynastyHistory || [];
+    
+    let html = `
+      <div style="padding:2rem; max-width:800px; margin:0 auto; max-height:80vh; overflow-y:auto;">
+        <h2 style="font-family:'IM Fell English SC',serif; color:var(--gold-hi); letter-spacing:.1em; margin-bottom:1rem;">📜 Dynasty History</h2>
+        <div style="margin-bottom:1rem; color:#9a8858; font-style:italic;">
+          Generations: ${history.length}
+        </div>
+        
+        <div style="position:relative; padding-left:2rem;">
+          <!-- Timeline line -->
+          <div style="position:absolute; left:0.5rem; top:0; bottom:0; width:2px; background:linear-gradient(to bottom, #a07820, #5a4828);"></div>
+          
+          ${history.map((gen, index) => `
+            <div style="position:relative; margin-bottom:2rem; padding-left:1.5rem;">
+              <!-- Timeline dot -->
+              <div style="position:absolute; left:-0.2rem; top:0; width:1rem; height:1rem; background:#a07820; border-radius:50%; border:2px solid #090705;"></div>
+              
+              <div style="border:1px solid #4a3820; padding:1rem; background:rgba(26,20,8,0.8); border-radius:4px;">
+                <div style="font-family:'IM Fell English SC',serif; font-size:0.85rem; color:#c8a870; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.5rem;">
+                  Generation ${gen.generation}
+                </div>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-bottom:0.5rem;">
+                  <div style="font-family:'IM Fell English',serif; font-size:0.75rem; color:#7a6840;">
+                    <span style="color:#a08848;">Founder:</span> ${gen.founder}
+                  </div>
+                  <div style="font-family:'IM Fell English',serif; font-size:0.75rem; color:#7a6840;">
+                    <span style="color:#a08848;">Heir:</span> ${gen.heir}
+                  </div>
+                  <div style="font-family:'IM Fell English',serif; font-size:0.75rem; color:#7a6840;">
+                    <span style="color:#a08848;">Years:</span> ${gen.startYear} — ${gen.endYear}
+                  </div>
+                  <div style="font-family:'IM Fell English',serif; font-size:0.75rem; color:#7a6840;">
+                    <span style="color:#a08848;">Buildings:</span> ${gen.stats.buildings}
+                  </div>
+                </div>
+                
+                ${gen.achievements.length > 0 ? `
+                  <div style="margin-top:0.5rem;">
+                    <div style="font-family:'IM Fell English SC',serif; font-size:0.65rem; color:#7a6840; text-transform:uppercase; margin-bottom:0.3rem;">Achievements</div>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                      ${gen.achievements.map(a => `
+                        <span style="font-size:1.2rem;" title="${a.name}">${a.icon}</span>
+                      `).join('')}
+                    </div>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          `).join('')}
+          
+          ${history.length === 0 ? `
+            <div style="padding:2rem; text-align:center; color:#7a6840; font-family:'IM Fell English',serif; font-style:italic;">
+              The dynasty has just begun. Your story awaits...
+            </div>
+          ` : ''}
+        </div>
+        
+        <button onclick="this.closest('.dynasty-overlay').remove()"
+          style="margin-top:1.5rem; background:none; border:1px solid #5a4020; color:var(--gold);
+          font-family:'IM Fell English SC',serif; font-size:0.75rem; padding:0.65rem 1.8rem;
+          cursor:pointer; text-transform:uppercase;">Close</button>
+      </div>
+    `;
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'dynasty-overlay';
+    overlay.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:500; overflow-y:auto;';
+    overlay.innerHTML = html;
+    document.body.appendChild(overlay);
+  } catch (e) {
+    console.error('Error showing dynasty history:', e);
+    alert('Dynasty History: ' + e.message);
+  }
+}
+
+// ══════════════════════════════════════════════════════════
 //  ACHIEVEMENT SYSTEM (Retention — Milestones)
 // ══════════════════════════════════════════════════════════
 
@@ -683,10 +886,18 @@ function hasAchievement(id) {
 }
 
 function unlockAchievement(id, achievementsArray) {
+  // Check if already unlocked
+  if (gs.achievements.includes(id)) return;
+  
   gs.achievements.push(id);
   const achievement = ACHIEVEMENTS.find(a => a.id === id);
   if (achievement) {
     achievementsArray.push(achievement);
+    
+    // Show notification
+    if (window.unlockAchievement) {
+      window.unlockAchievement(id);
+    }
   }
 }
 
@@ -1275,6 +1486,28 @@ function seed_label_from_type(type) {
 
 async function makeChoice(choice, isVenture) {
   document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+  
+  // Check for skill check in choice
+  const skillMatch = choice.match(/\[Use (\w+) \(DC (\d+)\)\]/i);
+  let skillResult = null;
+  
+  if (skillMatch) {
+    const skill = skillMatch[1].toLowerCase();
+    const dc = parseInt(skillMatch[2]);
+    skillResult = makeSkillCheck(skill, dc);
+    
+    // Show skill check result
+    const msg = skillResult.success
+      ? `Skill check: ${skill} vs DC ${dc} — SUCCESS (${skillResult.total})`
+      : `Skill check: ${skill} vs DC ${dc} — FAILURE (${skillResult.total})`;
+    
+    document.getElementById('loading-msg').textContent = msg;
+    showPanel('loading-panel');
+    
+    // Wait a moment to show result
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+  
   document.getElementById('loading-msg').textContent = rand(LOADING_MSGS);
   showPanel('loading-panel');
 
@@ -1695,6 +1928,11 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ── Init ──────────────────────────────────────────────────
+
+// Export dynasty history functions
+window.recordGeneration = recordGeneration;
+window.showDynastyHistory = showDynastyHistory;
+
 window.addEventListener('DOMContentLoaded', () => {
   loadCFG();
   renderTitleSaves();

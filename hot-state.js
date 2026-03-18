@@ -20,13 +20,18 @@ let gs = {
   cargoBasis: { saltfish:0, wine:0, alum:0, tin:0 },  // Tracks total cost basis for each commodity
   marketPrices: null,
   allies: [],  // Named NPCs: Casso, Pell, Tucci, etc.
-  buildings: {},  // Owned buildings: { warehouse: { purchased, founder, generation } }
+  buildings: {},  // Owned buildings: { warehouse: { level: 1, purchased, founder, generation } }
   victoryType: null,  // Victory condition achieved: 'economic', 'political', 'dynastic'
   cannons: 0,  // Defense rating (Taipan! - protects from pirates)
   skills: { negotiation: 0, seamanship: 0, politics: 0, intrigue: 0 },  // Founder skills (Oregon Trail)
   heirSpouse: null,  // Heir's spouse (Paravia marriage system)
   achievements: [],  // Unlocked achievements
   tutorialsShown: { buildings: false, skills: false, marriage: false, venture: false, combat: false },  // Tutorial tracking
+  taxRate: 'medium',  // Tax policy: low, medium, high
+  pirateReputation: 'known',  // Pirate rep: feared, known, prey
+  portFavor: {},  // Port favor: { Verantia: 5, Masso: 3, ... }
+  heirEducation: { focus: null, progress: 0, events: [] },  // Heir education tracking
+  dynastyHistory: [],  // Dynasty history: [{ generation, founder, heir, startYear, endYear, achievements, events }]
   rivals:{
     borracchi:{ relationship:0, lastInteraction:0, notes:[] },
     spinetta: { relationship:0, lastInteraction:0, notes:[] },

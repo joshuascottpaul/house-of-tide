@@ -250,4 +250,4 @@ window.ErrorCapture = ErrorCapture;
 
 // Initialize with info level
 Logger.setLevel('info');
-// Logger.info(Logger.CATEGORIES.STATE, 'Logger initialized');
+Logger.info(Logger.CATEGORIES.STATE, 'Logger initialized');

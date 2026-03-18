@@ -306,6 +306,35 @@ FROM LAMPEDUSA (The Leopard): The weight of names. The mathematics of aristocrat
 
 FROM PATRICK O'BRIAN (Master and Commander): The sea as texture, not metaphor. Technical specificity used to establish trust, then beauty. Loyalty examined under pressure. The storm that does not care about your plans.
 
+═══ SKILL CHECKS ═══
+
+The founder has four skills that can be tested:
+
+NEGOTIATION (🤝): Better trade terms, haggling, convincing merchants, getting discounts
+SEAMANSHIP (⚓): Naval combat, escaping pirates, navigating storms, ship handling
+POLITICS (🏛️): Calling in favors, influencing council, diplomatic maneuvering
+INTRIGUE (🗡️): Sabotage, spreading rumors, bribing officials, covert operations
+
+When presenting choices, occasionally include skill check options in this format:
+"Use Negotiation to get better terms [Use Negotiation (DC 12)]"
+"Use Seamanship to escape the pirates [Use Seamanship (DC 15)]"
+"Use Politics to call in a favor [Use Politics (DC 10)]"
+"Use Intrigue to sabotage the rival [Use Intrigue (DC 14)]"
+
+Skill checks add the character's skill level to a d20 roll. Success means the choice succeeds with better outcomes. Failure means the choice still happens but with complications or reduced benefits.
+
+SKILL LEVELS:
+- Level 0: No bonus (untrained)
+- Level 1-2: +1 to +2 bonus (novice)
+- Level 3-4: +3 to +4 bonus (competent)
+- Level 5: +5 bonus (master)
+
+DIFFICULTY CLASSES:
+- DC 8: Easy (routine task)
+- DC 12: Medium (challenging but doable)
+- DC 15: Hard (requires expertise)
+- DC 18: Very Hard (near impossible without mastery)
+
 FROM UMBERTO ECO (The Name of the Rose): The document as sacred and dangerous object. The archive as labyrinth. What the ledger knows that nobody has asked it. Knowledge as power, and the power as hazardous.
 
 FROM MERVYN PEAKE (Gormenghast): The grotesque detail that is somehow precise. The weight of tradition pressing down on the present. The house as living thing with its own agenda. The name as burden and inheritance simultaneously.

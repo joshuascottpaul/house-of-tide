@@ -83,6 +83,189 @@ h1 { font-family:'IM Fell English SC',serif; font-size:clamp(2.8rem,9vw,5.5rem);
 .choice-hint.warning { color:#a86830; }
 .choice-risk-icons { font-size:1.1em; margin-right:.35rem; display:inline-block; }
 
+/* Skill check indicator */
+.choice-skill-indicator {
+  display: block;
+  font-family: 'IM Fell English SC', serif;
+  font-size: 0.65rem;
+  color: #6080a0;
+  margin-top: 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── ACHIEVEMENT NOTIFICATIONS ──────────────────────────── */
+.achievement-notification {
+  position: fixed;
+  top: -200px;
+  right: 20px;
+  background: linear-gradient(135deg, rgba(26, 20, 8, 0.95), rgba(42, 30, 14, 0.95));
+  border: 2px solid #a07820;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  z-index: 10000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  transition: top 0.5s ease;
+  min-width: 300px;
+}
+
+.achievement-notification.show {
+  top: 20px;
+}
+
+.achievement-notification-icon {
+  font-size: 2.5rem;
+  animation: achievementPulse 1s ease infinite;
+}
+
+@keyframes achievementPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.achievement-notification-content {
+  flex: 1;
+}
+
+.achievement-notification-title {
+  font-family: 'IM Fell English SC', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: #a07820;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.achievement-notification-name {
+  font-family: 'IM Fell English SC', serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  color: #c8a870;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.achievement-notification-desc {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.7rem;
+  color: #7a6840;
+  line-height: 1.4;
+}
+
+/* ── COMBAT VISUALS ────────────────────────────────────── */
+.combat-visual {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 1.5rem;
+  background: rgba(26, 10, 10, 0.5);
+  border-radius: 4px;
+  margin: 1rem 0;
+}
+
+.combat-side {
+  text-align: center;
+  flex: 1;
+}
+
+.combat-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.combat-label {
+  font-family: 'IM Fell English SC', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: #a08848;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.combat-health-bar {
+  width: 100%;
+  height: 10px;
+  background: rgba(100, 0, 0, 0.3);
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 0.5rem 0;
+}
+
+.combat-health-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #c84030, #e86050);
+  transition: width 0.3s ease;
+}
+
+.combat-stats {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+
+.combat-vs {
+  font-family: 'IM Fell English SC', serif;
+  font-size: 1.2rem;
+  color: #a08848;
+  font-weight: bold;
+  padding: 0 1rem;
+}
+
+/* Combat tactic buttons */
+.combat-tactic-btn {
+  background: rgba(42, 30, 14, 0.6);
+  border: 2px solid #3a2c18;
+  border-radius: 4px;
+  padding: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.combat-tactic-btn:hover {
+  background: rgba(42, 30, 14, 0.8);
+  border-color: #5a4828;
+}
+
+.combat-tactic-btn.selected {
+  background: rgba(160, 120, 32, 0.3);
+  border-color: #a07820;
+}
+
+.tactic-name {
+  font-family: 'IM Fell English SC', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: #c8a870;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.tactic-bonus {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.75rem;
+  margin-bottom: 0.3rem;
+}
+
+.tactic-bonus.positive {
+  color: #6a9838;
+}
+
+.tactic-bonus.negative {
+  color: #c84030;
+}
+
+.tactic-risk {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.65rem;
+  color: #7a6840;
+  font-style: italic;
+}
+
 /* ── PREFETCH STATUS INDICATORS ── */
 .choice-btn { position: relative; padding-right: 2.2rem; }
 .choice-btn.choice-loading::after {

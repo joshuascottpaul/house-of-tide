@@ -6,6 +6,9 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
 }
 
+// Export for global access (HTML onclick handlers)
+window.showScreen = showScreen;
+
 const PANELS = ['panel-event','panel-venture','loading-panel','panel-result','panel-yearend'];
 function showPanel(id) {
   PANELS.forEach(p=>{ const el=document.getElementById(p); if(el) el.style.display='none'; });
@@ -68,13 +71,14 @@ function analyzeChoiceRisk(choiceText) {
 function renderChoices(containerId, choices, isVenture) {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
-  choices.forEach(c => {
+  choices.forEach((c, index) => {
     const btn = document.createElement('button');
     btn.className = 'choice-btn' + (isVenture ? ' choice-btn-v' : '');
+    btn.setAttribute('data-testid', `choice-${index}`);
 
     // Analyze risk and append hints
     const risk = analyzeChoiceRisk(c);
-    
+
     // Add visual risk indicators at the start of the choice
     let choiceHtml = c;
     const icons = [];
@@ -83,8 +87,22 @@ function renderChoices(containerId, choices, isVenture) {
     if (icons.length > 0) {
       choiceHtml = `<span class="choice-risk-icons">${icons.join(' ')}</span> ${c}`;
     }
-    
+
     btn.innerHTML = choiceHtml;
+
+    // Check for skill check in choice text
+    const skillMatch = c.match(/\[Use (\w+) \(DC (\d+)\)\]/i);
+    if (skillMatch) {
+      const skill = skillMatch[1].toLowerCase();
+      const dc = parseInt(skillMatch[2]);
+      const skillLevel = gs.skills[skill] || 0;
+      
+      // Add skill indicator
+      const skillIndicator = document.createElement('span');
+      skillIndicator.className = 'choice-skill-indicator';
+      skillIndicator.innerHTML = ` +${skillLevel} ${skill} (DC ${dc})`;
+      btn.appendChild(skillIndicator);
+    }
 
     if (risk.cost) {
       const hint = document.createElement('span');
@@ -222,6 +240,17 @@ function updateStatusBar() {
   document.getElementById('stat-turn').textContent  = gs.turn;
   document.getElementById('stat-age').textContent   = gs.age;
   document.getElementById('stat-ships').textContent = gs.ships;
+  
+  // Update cannons display
+  const cannonsContainer = document.getElementById('stat-cannons-container');
+  const cannonsEl = document.getElementById('stat-cannons');
+  if (cannonsContainer && cannonsEl && gs.cannons > 0) {
+    cannonsEl.textContent = `🔫 ${gs.cannons}`;
+    cannonsContainer.style.display = 'block';
+    cannonsEl.title = `Defense rating: Reduces pirate encounter chance by ${gs.cannons * 2}%`;
+  } else if (cannonsContainer) {
+    cannonsContainer.style.display = 'none';
+  }
 
   const mk = document.getElementById('stat-marks');
   mk.textContent = `${gs.marks} mk`;
@@ -541,6 +570,11 @@ function generationalHandoff() {
     year: gs.turn, phase: 'Succession',
     entry: `The house passes to ${newFounderName}. ${oldFounderName} is entered in the record. Generation ${generation} of House ${gs.dynastyName} begins.`
   });
+  
+  // Record generation to dynasty history
+  if (window.recordGeneration) {
+    recordGeneration();
+  }
 
   // ── Transfer the house ──
   gs.founderName    = newFounderName;
@@ -599,7 +633,7 @@ function showError(err) {
   } else if (err.message && (err.message.includes('JSON') || err.message.includes('No JSON'))) {
     msg = 'The model returned something the ledger could not parse.';
     // Add retry button for JSON errors
-    const retryBtn = ' <button onclick="retryLastChoice()" style="background:#2a1e0e;border:1px solid #5a4828;color:#c8a870;font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.1em;cursor:pointer;text-transform:uppercase;padding:.2rem .6rem;border-radius:3px;margin-left:.5rem;">↻ Try Again</button>';
+    const retryBtn = ` <button onclick="retryLastChoice()" style="background:#2a1e0e;border:1px solid #5a4828;color:#c8a870;font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.1em;cursor:pointer;text-transform:uppercase;padding:.2rem .6rem;border-radius:3px;margin-left:.5rem;">↻ Try Again</button>`;
     msg += retryBtn;
     msg += ' <span style="color:#5a4828;">or switch to a larger model in ⊞ Settings (llama3.1:8b or claude-haiku recommended).</span>';
   } else if (err.message && err.message.includes('API key')) {

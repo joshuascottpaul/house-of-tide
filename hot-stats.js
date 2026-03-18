@@ -132,9 +132,16 @@ function showStatsDashboard() {
         </div>
       </div>
       
-      <button onclick="this.closest('.stats-overlay').remove()" 
-        style="margin-top:1.5rem; background:none; border:1px solid #5a4020; color:var(--gold); 
-        font-family:'IM Fell English SC',serif; font-size:.75rem; padding:.65rem 1.8rem; 
+      <div style="margin-top:1rem; text-align:center;">
+        <button onclick="if(window.showDynastyHistory) { this.closest('.stats-overlay').remove(); showDynastyHistory(); }"
+          style="background:none; border:1px solid #4a3820; color:#7a6840;
+          font-family:'IM Fell English SC',serif; font-size:.65rem; padding:.5rem 1rem;
+          cursor:pointer; text-transform:uppercase;">📜 View Dynasty History</button>
+      </div>
+
+      <button onclick="this.closest('.stats-overlay').remove()"
+        style="margin-top:1.5rem; background:none; border:1px solid #5a4020; color:var(--gold);
+        font-family:'IM Fell English SC',serif; font-size:.75rem; padding:.65rem 1.8rem;
         cursor:pointer; text-transform:uppercase;">Close</button>
     </div>
   `;
