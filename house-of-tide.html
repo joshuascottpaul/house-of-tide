@@ -39,7 +39,10 @@
     </div>
     <button class="btn" onclick="showScreen('screen-name')">Begin the Founding</button>
     <div style="margin-top:.8rem;">
-      <button id="test-btn" onclick="testConnection()" style="background:none;border:none;font-family:'IM Fell English SC',serif;font-size:.72rem;letter-spacing:.12em;color:#7a6840;text-transform:uppercase;cursor:pointer;transition:color .2s;padding:.3rem 0;" onmouseover="this.style.color='#5a4020'" onmouseout="this.style.color='#7a6840'">⊞ &nbsp;Test Connection</button>
+      <div style="display:flex;align-items:center;justify-content:center;gap:1.2rem;">
+        <button id="test-btn" onclick="testConnection()" style="background:none;border:none;font-family:'IM Fell English SC',serif;font-size:.72rem;letter-spacing:.12em;color:#7a6840;text-transform:uppercase;cursor:pointer;transition:color .2s;padding:.3rem 0;" onmouseover="this.style.color='#5a4020'" onmouseout="this.style.color='#7a6840'">⊞ &nbsp;Test Connection</button>
+        <button onclick="openOllamaWizard()" style="background:none;border:none;font-family:'IM Fell English SC',serif;font-size:.72rem;letter-spacing:.12em;color:#7a6840;text-transform:uppercase;cursor:pointer;transition:color .2s;padding:.3rem 0;" onmouseover="this.style.color='#5a4020'" onmouseout="this.style.color='#7a6840'">? &nbsp;Setup Guide</button>
+      </div>
       <div id="test-result" style="font-style:italic;font-size:.82rem;margin-top:.5rem;line-height:1.7;min-height:1.2rem;"></div>
     </div>
     <div id="title-saves" class="title-saves" style="display:none;">
@@ -445,6 +448,7 @@
 <script src="hot-achievements.js"></script>
 <script src="hot-screenshot.js"></script>
 <script src="hot-screenshot-live.js"></script>
+<script src="hot-ollama-wizard.js"></script>
 
 <!-- ══ SETTINGS MODAL ═══════════════════════════════════ -->
 <div id="settings-overlay" onclick="if(event.target===this)closeSettings()">
@@ -619,6 +623,18 @@
     </div>
 
     <div class="settings-section">
+      <div class="settings-label">Accessibility</div>
+      <div style="font-family:'IM Fell English',serif;font-size:.78rem;color:#9a8858;margin-bottom:.5rem;">Color Blind Mode</div>
+      <select class="settings-select" id="s-colorblind" onchange="previewColorBlindMode(this.value)">
+        <option value="none">None (default)</option>
+        <option value="deuteranopia">Deuteranopia (red-green, most common)</option>
+        <option value="protanopia">Protanopia (red-green, red-weak)</option>
+        <option value="tritanopia">Tritanopia (blue-yellow)</option>
+      </select>
+      <div class="settings-hint">Remaps red/green status colors to distinguishable alternatives. Takes effect immediately and persists between sessions.</div>
+    </div>
+
+    <div class="settings-section">
       <div class="settings-label">Debug Log</div>
       <label class="settings-radio">
         <input type="checkbox" id="s-debug">
@@ -629,6 +645,95 @@
     <div class="settings-row">
       <button class="settings-close" onclick="closeSettings()">Cancel</button>
       <button class="settings-save" onclick="saveSettings()">Save &amp; Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ OLLAMA WIZARD ══════════════════════════════════════ -->
+<div id="ollama-wizard" onclick="if(event.target===this)closeOllamaWizard()">
+  <div class="wizard-box">
+    <div class="wizard-title">⊞ &nbsp; Ollama Setup Guide &nbsp; ⊞</div>
+    <div class="wizard-progress">
+      <div class="wizard-pip current" title="Check"></div>
+      <div class="wizard-pip" title="Install"></div>
+      <div class="wizard-pip" title="Model"></div>
+      <div class="wizard-pip" title="CORS"></div>
+      <div class="wizard-pip" title="Done"></div>
+    </div>
+
+    <!-- Step: check -->
+    <div class="wizard-step active" id="wizard-step-check">
+      <div class="wizard-step-title">Step 1 — Checking Ollama</div>
+      <div class="wizard-body" id="wizard-check-status">Checking…</div>
+      <div class="wizard-actions">
+        <button class="wizard-btn" onclick="wizardCheckAgain()">Check Again</button>
+        <button class="wizard-btn" onclick="_wizardGo('install')">Ollama Not Installed</button>
+        <button class="wizard-btn" onclick="closeOllamaWizard()">Close</button>
+      </div>
+    </div>
+
+    <!-- Step: install -->
+    <div class="wizard-step" id="wizard-step-install">
+      <div class="wizard-step-title">Step 2 — Install &amp; Start Ollama</div>
+      <div class="wizard-body">
+        Ollama is not running. Install it from <strong style="color:#c8a870">ollama.com</strong>, then start it:
+      </div>
+      <code class="wizard-code">open -a Ollama</code>
+      <div class="wizard-body" style="margin-top:.5rem;font-size:.8rem;color:#9a8858;">
+        On Windows: launch Ollama from the Start Menu.<br>
+        On Linux: <code>ollama serve</code> in a terminal.
+      </div>
+      <div class="wizard-actions">
+        <button class="wizard-btn primary" onclick="wizardCheckAgain()">I Started Ollama — Check Again</button>
+        <button class="wizard-btn" onclick="closeOllamaWizard()">Close</button>
+      </div>
+    </div>
+
+    <!-- Step: model -->
+    <div class="wizard-step" id="wizard-step-model">
+      <div class="wizard-step-title">Step 3 — Pull a Model</div>
+      <div class="wizard-body">
+        Ollama is running but no model is pulled yet. Run this in Terminal:
+      </div>
+      <code class="wizard-code" id="wizard-pull-cmd">ollama pull mistral:latest</code>
+      <div class="wizard-body" style="margin-top:.5rem;font-size:.8rem;color:#9a8858;">
+        Other good options: <code>qwen2.5:7b</code> · <code>llama3.1:8b</code><br>
+        The download is ~4–5 GB. This takes a few minutes.
+      </div>
+      <div class="wizard-body" id="wizard-model-status"></div>
+      <div class="wizard-actions">
+        <button class="wizard-btn primary" onclick="wizardCheckModel()">Check — Is the Model Ready?</button>
+        <button class="wizard-btn" onclick="closeOllamaWizard()">Close</button>
+      </div>
+    </div>
+
+    <!-- Step: cors -->
+    <div class="wizard-step" id="wizard-step-cors">
+      <div class="wizard-step-title">Step 4 — Fix CORS</div>
+      <div class="wizard-body">
+        Ollama is running and the model is ready, but browser requests are being blocked by CORS. Run this in Terminal, then restart Ollama:
+      </div>
+      <code class="wizard-code">launchctl setenv OLLAMA_ORIGINS "*"</code>
+      <div class="wizard-body" style="font-size:.8rem;color:#9a8858;margin-top:.3rem;">
+        On Linux/Windows set environment variable <code>OLLAMA_ORIGINS=*</code> before starting Ollama.
+      </div>
+      <div class="wizard-body" id="wizard-cors-status"></div>
+      <div class="wizard-actions">
+        <button class="wizard-btn primary" onclick="wizardCheckCors()">Check — Is CORS Fixed?</button>
+        <button class="wizard-btn" onclick="closeOllamaWizard()">Close</button>
+      </div>
+    </div>
+
+    <!-- Step: done -->
+    <div class="wizard-step" id="wizard-step-done">
+      <div class="wizard-step-title">All Set</div>
+      <div class="wizard-body">
+        <span class="wizard-ok">✓ Ollama is running, your model is ready, and CORS is configured.</span><br><br>
+        You can now use Test Connection on the title screen to confirm, then begin your house.
+      </div>
+      <div class="wizard-actions">
+        <button class="wizard-btn primary" onclick="closeOllamaWizard()">Close &amp; Start Playing</button>
+      </div>
     </div>
   </div>
 </div>

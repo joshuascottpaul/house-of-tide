@@ -11,7 +11,8 @@ const CFG_DEFAULTS = {
   claudeApiKey:'',
   openaiModel: 'gpt-4o-mini',
   openaiApiKey:'',
-  debugMode:   false
+  debugMode:      false,
+  colorBlindMode: 'none'  // 'none' | 'deuteranopia' | 'protanopia' | 'tritanopia'
 };
 
 // Alternative MLX models (copy/paste into Settings if needed):
@@ -29,6 +30,15 @@ function loadCFG() {
   } catch(_) {}
   updateEngineLabel();
   document.getElementById('debug-toggle').style.display = CFG.debugMode ? 'block' : 'none';
+  applyColorBlindMode(CFG.colorBlindMode);
+}
+function applyColorBlindMode(mode) {
+  document.body.classList.remove('cb-deuteranopia', 'cb-protanopia', 'cb-tritanopia');
+  if (mode && mode !== 'none') document.body.classList.add('cb-' + mode);
+}
+function previewColorBlindMode(mode) {
+  // Live preview — not saved until Save & Close
+  applyColorBlindMode(mode);
 }
 function saveCFG() {
   try { localStorage.setItem(CFG_KEY, JSON.stringify(CFG)); } catch(_) {}
@@ -197,6 +207,9 @@ function openSettings() {
   const debugCheckbox = document.getElementById('s-debug');
   if (debugCheckbox) debugCheckbox.checked = CFG.debugMode;
 
+  const cbSel = document.getElementById('s-colorblind');
+  if (cbSel) cbSel.value = CFG.colorBlindMode || 'none';
+
   // Appearance settings (optional - may not exist in older versions)
   const appearanceInputs = [
     { id: 's-bg-opacity', value: appearance?.bgOpacity },
@@ -273,7 +286,9 @@ function saveSettings() {
   CFG.claudeApiKey= document.getElementById('s-api-key').value.trim();
   CFG.openaiModel = document.getElementById('s-openai-model').value;
   CFG.openaiApiKey= document.getElementById('s-openai-key').value.trim();
-  CFG.debugMode   = document.getElementById('s-debug').checked;
+  CFG.debugMode       = document.getElementById('s-debug').checked;
+  const cbSel2 = document.getElementById('s-colorblind');
+  if (cbSel2) { CFG.colorBlindMode = cbSel2.value; applyColorBlindMode(CFG.colorBlindMode); }
   const oSel = document.getElementById('s-ollama-model');
   CFG.ollamaModel = oSel.value === 'custom'
     ? (document.getElementById('s-ollama-custom').value.trim() || 'mistral:latest')
@@ -462,6 +477,8 @@ window.saveMlxSettings = saveMlxSettings;
 window.updateMlxLaunchCmd = updateMlxLaunchCmd;
 window.updateAppearanceSettings = updateAppearanceSettings;
 window.resetAppearanceSettings = resetAppearanceSettings;
+window.previewColorBlindMode = previewColorBlindMode;
+window.applyColorBlindMode = applyColorBlindMode;
 
 // Also export after DOM ready (belt and suspenders)
 if (document.readyState === 'loading') {
@@ -476,5 +493,7 @@ if (document.readyState === 'loading') {
     window.updateMlxLaunchCmd = updateMlxLaunchCmd;
     window.updateAppearanceSettings = updateAppearanceSettings;
     window.resetAppearanceSettings = resetAppearanceSettings;
+    window.previewColorBlindMode = previewColorBlindMode;
+    window.applyColorBlindMode = applyColorBlindMode;
   });
 }
