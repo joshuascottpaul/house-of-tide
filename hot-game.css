@@ -1549,4 +1549,125 @@ body > *:not(#bg-image):not(#settings-overlay):not(#debug-panel) { position: rel
 @keyframes pulse {
   0%, 100% { opacity: 0.4; }
   50% { opacity: 1; }
+
+/* ── COLOR BLIND MODES ── */
+/* Deuteranopia / Protanopia (red-green): swap red→orange, green→blue */
+body.cb-deuteranopia, body.cb-protanopia {
+  --red:   #e07020;
+  --green: #4080c0;
+}
+body.cb-deuteranopia .tactic-bonus.positive,
+body.cb-protanopia   .tactic-bonus.positive  { color: #4080c0 !important; }
+body.cb-deuteranopia .tactic-bonus.negative,
+body.cb-protanopia   .tactic-bonus.negative  { color: #e07020 !important; }
+body.cb-deuteranopia .thread-item.urgent,
+body.cb-protanopia   .thread-item.urgent     { color: #e07020 !important; }
+body.cb-deuteranopia .rep-tier.renowned,
+body.cb-protanopia   .rep-tier.renowned      { color: #4080c0 !important; }
+body.cb-deuteranopia .rep-tier.precarious,
+body.cb-protanopia   .rep-tier.precarious    { color: #e07020 !important; }
+body.cb-deuteranopia .rep-tier.disgraced,
+body.cb-protanopia   .rep-tier.disgraced     { color: #c04810 !important; }
+body.cb-deuteranopia .choice-btn.choice-cached::after,
+body.cb-protanopia   .choice-btn.choice-cached::after { color: #4080c0 !important; }
+
+/* Tritanopia (blue-yellow): swap blue→red, keep green/red but shift */
+body.cb-tritanopia {
+  --red:   #c03080;
+  --green: #209888;
+}
+body.cb-tritanopia .tactic-bonus.positive  { color: #209888 !important; }
+body.cb-tritanopia .tactic-bonus.negative  { color: #c03080 !important; }
+body.cb-tritanopia .thread-item.urgent     { color: #c03080 !important; }
+body.cb-tritanopia .rep-tier.renowned      { color: #209888 !important; }
+body.cb-tritanopia .rep-tier.precarious    { color: #c03080 !important; }
+body.cb-tritanopia .rep-tier.disgraced     { color: #a02060 !important; }
+body.cb-tritanopia .choice-btn.choice-cached::after { color: #209888 !important; }
+
+/* Wizard overlay */
+#ollama-wizard {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.82);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+}
+#ollama-wizard.open { display: flex; }
+.wizard-box {
+  background: #0e0b06;
+  border: 1px solid #5a4020;
+  max-width: 520px;
+  width: 92%;
+  padding: 2rem 2.2rem;
+  font-family: 'IM Fell English SC', serif;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+.wizard-title {
+  font-size: 1rem;
+  color: #f0dfa8;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 1.2rem;
+  border-bottom: 1px solid #2a1e0e;
+  padding-bottom: .7rem;
+}
+.wizard-step { display: none; }
+.wizard-step.active { display: block; }
+.wizard-step-title {
+  font-size: .72rem;
+  letter-spacing: .12em;
+  color: #a08848;
+  text-transform: uppercase;
+  margin-bottom: .7rem;
+}
+.wizard-body {
+  font-family: 'IM Fell English', serif;
+  font-size: .88rem;
+  color: #c8a870;
+  line-height: 1.7;
+  margin-bottom: .8rem;
+}
+.wizard-code {
+  display: block;
+  padding: .4rem .7rem;
+  background: #0c0a06;
+  border: 1px solid #4a3820;
+  color: #c8a870;
+  font-size: .78rem;
+  font-family: monospace;
+  user-select: all;
+  margin: .5rem 0;
+}
+.wizard-ok   { color: #6a9838; }
+.wizard-fail { color: #c84030; }
+.wizard-actions { display: flex; gap: .6rem; margin-top: 1rem; flex-wrap: wrap; }
+.wizard-btn {
+  background: #1a1408;
+  border: 1px solid #5a4020;
+  color: #c8a870;
+  font-family: 'IM Fell English SC', serif;
+  font-size: .62rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: .4rem .9rem;
+  cursor: pointer;
+}
+.wizard-btn:hover { background: #2a1e0e; }
+.wizard-btn.primary { border-color: #a07820; color: #f0d070; }
+.wizard-progress {
+  display: flex;
+  gap: .4rem;
+  margin-bottom: 1.2rem;
+}
+.wizard-pip {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #2a1e0e;
+  border: 1px solid #3a2c18;
+}
+.wizard-pip.done    { background: #6a9838; border-color: #4a7820; }
+.wizard-pip.current { background: #a08848; border-color: #7a6020; }
 }
