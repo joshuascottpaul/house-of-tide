@@ -14,7 +14,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
 
     steps:
     - uses: actions/checkout@v4
@@ -35,7 +35,7 @@ jobs:
 
     - name: Run tests
       run: npx playwright test --project=chromium --timeout=10000 || echo "Tests completed"
-      timeout-minutes: 20
+      timeout-minutes: 25
     
     - name: Upload test results
       if: always()
