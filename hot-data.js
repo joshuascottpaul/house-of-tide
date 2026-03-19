@@ -80,23 +80,6 @@ const LOADING_MSGS = [
   "The year considers its position…",
 ];
 
-const YEAR_END_NOTES = [
-  "The year closes like a ledger: columns balanced or not, the notation the same either way.",
-  "Winter. The harbour empties. The Borracchi's lights stay on longer than usual.",
-  "Another year recorded. The sea does not mark the occasion.",
-  "The season turns. The ledger adds a page. This is what a year is.",
-  "The routes close for winter. What was left unfinished waits in spring, patient as a creditor.",
-  "In Masso they are celebrating something. In Verantia, as always, they are watching to see who else is.",
-  "The Caldera straits freeze at the narrows. Your captains come home. Most of them.",
-  "The harbour master files his annual report. You are mentioned twice. Neither mention is wrong.",
-  "The accounting is done. The numbers say one thing. The rumours say another. The ledger takes no position.",
-  "Winter comes in from the east, which Casso says means a hard crossing season. Casso is usually right about what he says aloud.",
-  "The year ends without ceremony, which is the only ceremony the sea permits.",
-  "The Spinetta have been quiet this quarter. In Verantia, quiet is never good news about the quiet party.",
-  "The palazzo roof survived another winter. The repairman's third estimate still sits on your desk. You have not opened it.",
-  "Another revolution. The city watches the same stars and draws insufficient conclusions, as it always has.",
-];
-
 const HEIR_TRAITS = {
   reckless:   { label:"Reckless",   death:"who spends money the way weather spends energy — completely, and without warning. This will be the treasury's problem soon." },
   cautious:   { label:"Cautious",   death:"who counts everything twice and trusts the second count less than the first. In a house with debts, this is either wisdom or paralysis." },

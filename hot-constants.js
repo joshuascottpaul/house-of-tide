@@ -132,7 +132,7 @@ const THREADS = {
 /**
  * Tutorial triggers
  */
-const TUTORIALS = {
+const TUTORIAL_TRIGGERS = {
   BUILDINGS_YEAR: 2,
   SKILLS_YEAR: 3,
   MARRIAGE_YEAR: 4,
@@ -204,16 +204,6 @@ const COMMODITIES = {
 };
 
 /**
- * Port names
- */
-const PORTS = {
-  VERANTIA: 'Verantia',
-  MASSO: 'Masso',
-  CALDERA: 'Caldera',
-  NORTHERN: 'Northern'
-};
-
-/**
  * Skill types
  */
 const SKILLS = {
@@ -249,13 +239,12 @@ window.CONSTANTS = {
   ECONOMY,
   COMBAT,
   THREADS,
-  TUTORIALS,
+  TUTORIALS: TUTORIAL_TRIGGERS,
   AI,
   UI,
   SAVE,
   PHASES,
   COMMODITIES,
-  PORTS,
   SKILLS,
   SKILL_DC,
   SKILL_BONUS_PER_LEVEL

@@ -65,13 +65,13 @@ test.describe('Heir Influence', () => {
       
       for (const trait of traits) {
         try {
-          // Mock gs object for testing
-          window.gs = {
+          // Mock gs — assign directly to the let binding, not window.gs
+          Object.assign(gs, {
             heirTrait: { key: trait },
             heirName: 'TestHeir',
             heirAge: 15,
             hp: { sub: 'he', cap: 'He' }
-          };
+          });
           
           const result = applyHeirInfluence(testChoices, 'test');
           if (!Array.isArray(result)) return false;
