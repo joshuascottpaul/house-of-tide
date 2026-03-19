@@ -45,6 +45,7 @@ let gs = {
 // ══════════════════════════════════════════════════════════
 const SAVE_KEY_PREFIX = 'house_of_tide_save_';
 const AUTOSAVE_KEY    = 'house_of_tide_autosave';
+const QUICKSAVE_KEY   = 'house_of_tide_quicksave';
 const NUM_SLOTS       = 3;
 
 // ── Serialise / deserialise gs (Sets don't JSON-serialise natively) ──
@@ -301,6 +302,44 @@ function renderTitleSaves() {
       </div>
       <div class="tsi-arrow">→</div>
     </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+//  QUICK SAVE / QUICK LOAD  (F5 / F9)
+// ══════════════════════════════════════════════════════════
+
+function quickSave() {
+  if (!gs.dynastyName) { showNotification('Nothing to save yet'); return; }
+  const data = {
+    state:   serialiseState(),
+    savedAt: new Date().toISOString(),
+    label:   `House ${gs.dynastyName} — ${gs.founderName}`,
+    detail:  `Year ${gs.turn}, Age ${gs.age} · ${gs.marks} mk · Rep ${gs.reputation}/10`,
+  };
+  try {
+    localStorage.setItem(QUICKSAVE_KEY, JSON.stringify(data));
+    showNotification('⚡ Quick saved  (F9 to restore)');
+  } catch(e) { showNotification('⚠ Storage full — use a manual slot'); }
+}
+
+function quickLoad() {
+  const raw = localStorage.getItem(QUICKSAVE_KEY);
+  if (!raw) { showNotification('No quick save found — press F5 to create one'); return; }
+  try {
+    const data = JSON.parse(raw);
+    const savedAt = data.savedAt ? new Date(data.savedAt).toLocaleTimeString() : '?';
+    gs = deserialiseState(data.state);
+    closeSaveOverlay();
+    updateStatusBar();
+    document.getElementById('dynasty-label').textContent = `House ${gs.dynastyName} — ${gs.founderName}`;
+    updateRivalTooltip();
+    document.getElementById('advisor-toggle').style.display = 'block';
+    showScreen('screen-game');
+    updateLedgerHistory();
+    if (gs.phase === 'yearend') showYearEnd();
+    else beginPhase();
+    showNotification(`⚡ Restored quick save from ${savedAt}`);
+  } catch(e) { showNotification('⚠ Quick save corrupted'); }
 }
 
 // ══════════════════════════════════════════════════════════

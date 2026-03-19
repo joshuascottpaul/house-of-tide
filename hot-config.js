@@ -12,7 +12,8 @@ const CFG_DEFAULTS = {
   openaiModel: 'gpt-4o-mini',
   openaiApiKey:'',
   debugMode:      false,
-  colorBlindMode: 'none'  // 'none' | 'deuteranopia' | 'protanopia' | 'tritanopia'
+  colorBlindMode: 'none', // 'none' | 'deuteranopia' | 'protanopia' | 'tritanopia'
+  easyMode:       false   // Start with more marks, lower mortality, higher income
 };
 
 // Alternative MLX models (copy/paste into Settings if needed):
@@ -210,6 +211,9 @@ function openSettings() {
   const cbSel = document.getElementById('s-colorblind');
   if (cbSel) cbSel.value = CFG.colorBlindMode || 'none';
 
+  const easyCheck = document.getElementById('s-easy-mode');
+  if (easyCheck) easyCheck.checked = !!CFG.easyMode;
+
   // Appearance settings (optional - may not exist in older versions)
   const appearanceInputs = [
     { id: 's-bg-opacity', value: appearance?.bgOpacity },
@@ -289,6 +293,8 @@ function saveSettings() {
   CFG.debugMode       = document.getElementById('s-debug').checked;
   const cbSel2 = document.getElementById('s-colorblind');
   if (cbSel2) { CFG.colorBlindMode = cbSel2.value; applyColorBlindMode(CFG.colorBlindMode); }
+  const easyCheck2 = document.getElementById('s-easy-mode');
+  if (easyCheck2) CFG.easyMode = easyCheck2.checked;
   const oSel = document.getElementById('s-ollama-model');
   CFG.ollamaModel = oSel.value === 'custom'
     ? (document.getElementById('s-ollama-custom').value.trim() || 'mistral:latest')

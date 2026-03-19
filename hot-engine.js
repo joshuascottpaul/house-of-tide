@@ -74,7 +74,7 @@ function startGame() {
   gs = {
     dynastyName:dynasty, founderName:founder, heirName, heirFemale:female, hp,
     heirTrait:{key:traitKey,...HEIR_TRAITS[traitKey]},
-    marks:800, reputation:5, ships:1,
+    marks:(typeof CFG !== 'undefined' && CFG.easyMode) ? 1400 : 800, reputation:5, ships:1,
     turn:1, age:28, heirAge:7, generation:1,
     phase:'house',
     ventureAvailable:false, ventureUsed:false,
@@ -339,69 +339,13 @@ function getBuildingsSummary() {
   }).join('; ');
 }
 
-// ══════════════════════════════════════════════════════════
-//  VICTORY CONDITIONS — Multiple paths to win (Paravia)
-// ══════════════════════════════════════════════════════════
+// Victory conditions live in hot-victory.js (VICTORY_THRESHOLDS, checkVictoryConditions, getVictoryEpilogue)
 
-const VICTORY_THRESHOLDS = {
-  ECONOMIC: { marks: 10000, ships: 8, buildings: 4 },
-  POLITICAL: { reputation: 10, buildings: 3, rivalAlliances: 2 },
-  DYNASTIC: { generations: 5, reputation: 7, buildings: 2 }
-};
-
-function checkVictoryConditions() {
-  // Economic Victory — Master of Trade
-  if (gs.marks >= VICTORY_THRESHOLDS.ECONOMIC.marks && 
-      gs.ships >= VICTORY_THRESHOLDS.ECONOMIC.ships &&
-      Object.keys(gs.buildings).length >= VICTORY_THRESHOLDS.ECONOMIC.buildings) {
-    gs.victoryType = 'economic';
-    return 'economic';
-  }
-  
-  // Political Victory — Master of Verantia
-  if (gs.reputation >= VICTORY_THRESHOLDS.POLITICAL.reputation &&
-      Object.keys(gs.buildings).length >= VICTORY_THRESHOLDS.POLITICAL.buildings) {
-    // Check rival alliances (simplified: positive relationships)
-    const alliances = Object.values(gs.rivals).filter(r => r.relationship >= 3).length;
-    if (alliances >= VICTORY_THRESHOLDS.POLITICAL.rivalAlliances) {
-      gs.victoryType = 'political';
-      return 'political';
-    }
-  }
-  
-  // Dynastic Victory — Legacy Endures
-  if (gs.generation >= VICTORY_THRESHOLDS.DYNASTIC.generations &&
-      gs.reputation >= VICTORY_THRESHOLDS.DYNASTIC.reputation &&
-      Object.keys(gs.buildings).length >= VICTORY_THRESHOLDS.DYNASTIC.buildings) {
-    gs.victoryType = 'dynastic';
-    return 'dynastic';
-  }
-  
-  return null;
-}
-
-function getVictoryEpilogue() {
-  switch(gs.victoryType) {
-    case 'economic':
-      return `House ${gs.dynastyName} dominates the archipelago. Your fleet commands the seas. The ledger records: ${gs.marks} marks, ${gs.ships} ships. The Borracchi send gifts. The Spinetta seek alliances. The Calmari — for the first time in living memory — request an audience. You have become what you set out to build. The sea acknowledges your mastery.`;
-    case 'political':
-      return `House ${gs.dynastyName} is Verantia. Your seat in the Guild shapes policy. Your name opens doors that were locked to your founder. The harbourmaster bows. The notary seeks your approval. The ledger records not just wealth, but influence. You have not just survived the city — you have become it.`;
-    case 'dynastic':
-      return `Five generations. The palazzo remembers each founder. The warehouse your great-grandfather built still stands. The guild seat bears your name. The sea has taken some of your blood — the ledger does not forget — but the house endures. Your heir will continue. The ledger is still open.`;
-    default:
-      return `House ${gs.dynastyName} continues. The ledger records your deeds. The sea waits.`;
-  }
-}
+// Combat tactics live in hot-combat.js (COMBAT_TACTICS, buyCannons)
 
 // ══════════════════════════════════════════════════════════
 //  COMBAT/PIRATE SYSTEM (Taipan! — Direct Conflict)
 // ══════════════════════════════════════════════════════════
-
-const COMBAT_TACTICS = {
-  aggressive: { name: 'Full Broadside', bonus: 3, risk: 'Take more damage if you lose' },
-  defensive: { name: 'Hold Position', bonus: 0, risk: 'Safe but may not win' },
-  evasive: { name: 'Evasive Maneuvers', bonus: -2, risk: 'Harder to hit but less damage' }
-};
 
 function buyCannons(qty) {
   const costPerCannon = 50;
@@ -979,9 +923,12 @@ function checkMortalityEvent() {
     chance -= strongAllies * 0.02;
   }
   
+  // Easy mode: reduce mortality by 40%
+  if (typeof CFG !== 'undefined' && CFG.easyMode) chance *= 0.60;
+
   // Ensure chance stays in bounds
   chance = Math.max(0.01, Math.min(0.50, chance));
-  
+
   if (Math.random() > chance) return null;
   
   // Generate event via AI
@@ -1835,10 +1782,10 @@ Pell, what do you see?`;
 // ── Monkey-patches — MUST stay at the bottom, after target functions are defined ──
 
 // Show advisor toggle when entering game screen
-const _origBeginPhase = beginPhase;
+const _origBeginPhaseAdvisor = beginPhase;
 beginPhase = function() {
   document.getElementById('advisor-toggle').style.display = 'block';
-  _origBeginPhase();
+  _origBeginPhaseAdvisor();
 };
 
 // Hook auto-save into showResult (call after state changes)
@@ -1865,6 +1812,18 @@ document.addEventListener('keydown', (e) => {
     }
   }
   
+  // F5: Quick save
+  if (e.key === 'F5') {
+    quickSave();
+    e.preventDefault();
+  }
+
+  // F9: Quick load
+  if (e.key === 'F9') {
+    quickLoad();
+    e.preventDefault();
+  }
+
   // S: Save game
   if (e.key.toLowerCase() === 's' && !e.ctrlKey && !e.metaKey) {
     const saveBtn = document.querySelector('button[onclick="openSaveOverlay()"]');

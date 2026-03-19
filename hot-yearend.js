@@ -40,7 +40,8 @@ function calculateFleetIncome() {
   const taxMod = taxModifiers.income;
   const repChange = taxModifiers.repChange;
 
-  const gross = Math.round(gs.ships * baseRate * repMod * variance * greedyBonus * taxMod);
+  const easyBonus = (typeof CFG !== 'undefined' && CFG.easyMode) ? 1.25 : 1.0;
+  const gross = Math.round(gs.ships * baseRate * repMod * variance * greedyBonus * taxMod * easyBonus);
   const cost = gs.ships * upkeep;
   const net = gross - cost;
 

@@ -49,10 +49,26 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
     - uses: actions/checkout@v4
-    
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Minify JS and CSS for production
+      run: |
+        npm install -g terser clean-css-cli
+        for f in hot-*.js; do terser "$f" -o "$f" -c -m 2>/dev/null || true; done
+        cleancss -o hot-game.css hot-game.css 2>/dev/null || true
+        echo "Minified sizes:"
+        wc -c hot-*.js | tail -1
+        wc -c hot-game.css
+      timeout-minutes: 3
+
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
       with:
