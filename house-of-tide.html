@@ -43,7 +43,7 @@
         <button id="test-btn" onclick="testConnection()" style="background:none;border:none;font-family:'IM Fell English SC',serif;font-size:.72rem;letter-spacing:.12em;color:#7a6840;text-transform:uppercase;cursor:pointer;transition:color .2s;padding:.3rem 0;" onmouseover="this.style.color='#5a4020'" onmouseout="this.style.color='#7a6840'">⊞ &nbsp;Test Connection</button>
         <button onclick="openOllamaWizard()" style="background:none;border:none;font-family:'IM Fell English SC',serif;font-size:.72rem;letter-spacing:.12em;color:#7a6840;text-transform:uppercase;cursor:pointer;transition:color .2s;padding:.3rem 0;" onmouseover="this.style.color='#5a4020'" onmouseout="this.style.color='#7a6840'">? &nbsp;Setup Guide</button>
       </div>
-      <div id="test-result" style="font-style:italic;font-size:.82rem;margin-top:.5rem;line-height:1.7;min-height:1.2rem;"></div>
+      <div id="test-result" aria-live="polite" aria-atomic="true" style="font-style:italic;font-size:.82rem;margin-top:.5rem;line-height:1.7;min-height:1.2rem;"></div>
     </div>
     <div id="title-saves" class="title-saves" style="display:none;">
       <div class="rule-wide"></div>
@@ -54,14 +54,18 @@
 </div>
 
 <!-- ══ SAVE OVERLAY ════════════════════════════════════════ -->
-<div id="save-overlay">
+<div id="save-overlay" role="dialog" aria-modal="true" aria-labelledby="save-overlay-title">
   <div class="save-overlay-inner">
-    <div class="save-title"><span class="glyph glyph-star" style="font-size:.8em;margin-right:.3em;">✦</span> The Ledger Vault <span class="glyph glyph-star" style="font-size:.8em;margin-left:.3em;">✦</span></div>
+    <div class="save-title" id="save-overlay-title"><span class="glyph glyph-star" style="font-size:.8em;margin-right:.3em;">✦</span> The Ledger Vault <span class="glyph glyph-star" style="font-size:.8em;margin-left:.3em;">✦</span></div>
     <p class="save-subtitle">Three records may be kept. The sea takes no responsibility for what is not written down.</p>
     <div id="save-slot-1" class="save-slot"></div>
     <div id="save-slot-2" class="save-slot"></div>
     <div id="save-slot-3" class="save-slot"></div>
     <div class="save-autosave-note">✦ &nbsp; The ledger saves automatically after each turn &nbsp; ✦</div>
+    <div style="display:flex;gap:.6rem;justify-content:center;margin:.6rem 0;">
+      <button class="save-btn" onclick="exportAllSaves()" title="Download all saves as a single file for backup or sharing" style="font-size:.58rem;">↓ Export All Saves</button>
+      <button class="save-btn" onclick="importSave(1)" title="Load a previously exported save file" style="font-size:.58rem;">↑ Import Save File</button>
+    </div>
     <button class="save-close" onclick="closeSaveOverlay()">Return to the House</button>
   </div>
 </div>
@@ -85,12 +89,12 @@
         <div class="field-label">Your dynasty shall be called</div>
         <div class="name-row">
           <span class="name-prefix">House</span>
-          <input type="text" id="input-dynasty" placeholder="Solvi" maxlength="20">
+          <input type="text" id="input-dynasty" placeholder="Solvi" maxlength="20" aria-label="Dynasty name">
         </div>
       </div>
       <div class="name-group">
         <div class="field-label">The founder's name</div>
-        <input type="text" id="input-founder" placeholder="Maren" maxlength="20">
+        <input type="text" id="input-founder" placeholder="Maren" maxlength="20" aria-label="Founder's name">
       </div>
     </div>
     <p style="font-style:italic;color:#7a6840;font-size:.92rem;max-width:300px;line-height:1.85;">
@@ -213,37 +217,37 @@
         <div id="thread-tracker-list" style="display:none;"></div>
       </div>
       <div id="player-trait" style="font-family:'IM Fell English SC',serif;font-size:.58rem;letter-spacing:.13em;color:#5a4820;text-transform:uppercase;margin-top:.08rem;" title="Decision profile"></div>
-      <button onclick="openSaveOverlay()" style="margin-top:.3rem;background:none;border:1px solid #4a3820;font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.1em;color:#a08848;text-transform:uppercase;cursor:pointer;text-align:center;padding:.25rem .7rem;transition:all .2s;" onmouseover="this.style.borderColor='#a07820';this.style.color='#d4b46a'" onmouseout="this.style.borderColor='#4a3820';this.style.color='#a08848'">⊟ Save / Load</button>
+      <button onclick="openSaveOverlay()" aria-label="Open save and load menu (keyboard shortcut: S)" data-tip="Save, load, or export your progress. Keyboard: S" style="margin-top:.3rem;background:none;border:1px solid #4a3820;font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.1em;color:#a08848;text-transform:uppercase;cursor:pointer;text-align:center;padding:.25rem .7rem;transition:all .2s;" onmouseover="this.style.borderColor='#a07820';this.style.color='#d4b46a'" onmouseout="this.style.borderColor='#4a3820';this.style.color='#a08848'">⊟ Save / Load</button>
     </div>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.15rem;">
     <div class="stats">
-      <div class="stat">
+      <div class="stat" data-tip="Current phase of the year. Each year: House → Routes → Year End.">
         <span class="stat-name">Phase</span>
         <span id="stat-phase" class="phase-pip">The House</span>
       </div>
-      <div class="stat">
+      <div class="stat" data-tip="Years since your house was founded.">
         <span class="stat-name">Year</span>
         <span id="stat-turn" class="stat-val">1</span>
       </div>
-      <div class="stat">
+      <div class="stat" data-tip="Your current age. You will grow old and pass the house to your heir.">
         <span class="stat-name">Age</span>
         <span id="stat-age" class="stat-val">28</span>
       </div>
-      <div class="stat">
+      <div class="stat" aria-label="Treasury" data-tip="Available marks (currency). Spent on loans, upgrades, cannons, and choice costs.">
         <span class="stat-name">Treasury</span>
-        <span id="stat-marks" class="stat-val">800 mk</span>
+        <span id="stat-marks" class="stat-val" aria-live="polite">800 mk</span>
       </div>
-      <div class="stat">
+      <div class="stat" aria-label="Ships owned" data-tip="Trading vessels. More ships unlock sea routes and increase cargo capacity.">
         <span class="stat-name">Ships</span>
-        <span id="stat-ships" class="stat-val">1</span>
+        <span id="stat-ships" class="stat-val" aria-live="polite">1</span>
       </div>
-      <div class="stat" id="stat-cannons-container" style="display:none;">
+      <div class="stat" id="stat-cannons-container" style="display:none;" aria-label="Cannons (defense rating)" data-tip="Defense rating. More cannons reduce losses in pirate encounters.">
         <span class="stat-name">Cannons</span>
-        <span id="stat-cannons" class="stat-val"></span>
+        <span id="stat-cannons" class="stat-val" aria-live="polite"></span>
       </div>
-      <div class="stat">
+      <div class="stat" aria-label="Reputation in Verantia" data-tip="Standing in Verantia (1–10). Higher reputation unlocks better events, cheaper loans, and stronger alliances.">
         <span class="stat-name">Reputation</span>
-        <span id="stat-rep" class="stat-val">5/10</span>
+        <span id="stat-rep" class="stat-val" aria-live="polite">5/10</span>
         <span id="stat-rep-tier" class="rep-tier mid">Established</span>
       </div>
     </div>
@@ -252,7 +256,7 @@
   </div>
 
   <div id="game-content">
-    <div id="error-banner"></div>
+    <div id="error-banner" role="alert" aria-live="assertive"></div>
 
     <!-- Event panel -->
     <div id="panel-event">
@@ -281,7 +285,7 @@
         <span class="ship">🚢</span>
         <span class="ship">⛵</span>
       </div>
-      <div id="loading-msg" class="loading-msg loading-pulse">The ledger considers what to record…</div>
+      <div id="loading-msg" class="loading-msg loading-pulse" aria-live="polite" aria-atomic="true">The ledger considers what to record…</div>
     </div>
 
     <!-- Mortality panel -->
@@ -451,9 +455,9 @@
 <script src="hot-ollama-wizard.js"></script>
 
 <!-- ══ SETTINGS MODAL ═══════════════════════════════════ -->
-<div id="settings-overlay" onclick="if(event.target===this)closeSettings()">
+<div id="settings-overlay" role="dialog" aria-modal="true" aria-labelledby="settings-title" onclick="if(event.target===this)closeSettings()">
   <div class="settings-box">
-    <div class="settings-title">⊞ &nbsp; The Ledger's Engine &nbsp; ⊞</div>
+    <div class="settings-title" id="settings-title">⊞ &nbsp; The Ledger's Engine &nbsp; ⊞</div>
 
     <div class="settings-section">
       <div class="settings-label">Backend</div>
