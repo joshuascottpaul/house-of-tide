@@ -41,7 +41,6 @@
     <div style="margin-top:.8rem;">
       <div style="display:flex;align-items:center;justify-content:center;gap:1.2rem;">
         <button id="test-btn" onclick="testConnection()" style="background:none;border:none;font-family:'IM Fell English SC',serif;font-size:.72rem;letter-spacing:.12em;color:#7a6840;text-transform:uppercase;cursor:pointer;transition:color .2s;padding:.3rem 0;" onmouseover="this.style.color='#5a4020'" onmouseout="this.style.color='#7a6840'">⊞ &nbsp;Test Connection</button>
-        <button onclick="openOllamaWizard()" style="background:none;border:none;font-family:'IM Fell English SC',serif;font-size:.72rem;letter-spacing:.12em;color:#7a6840;text-transform:uppercase;cursor:pointer;transition:color .2s;padding:.3rem 0;" onmouseover="this.style.color='#5a4020'" onmouseout="this.style.color='#7a6840'">? &nbsp;Setup Guide</button>
       </div>
       <div id="test-result" aria-live="polite" aria-atomic="true" style="font-style:italic;font-size:.82rem;margin-top:.5rem;line-height:1.7;min-height:1.2rem;"></div>
     </div>
@@ -495,7 +494,10 @@
         placeholder="model name e.g. gemma3:4b"
         style="margin-top:.5rem;display:none;">
       <div class="settings-hint">Models must be pulled first: <code style="color:#7a6840">ollama pull &lt;model&gt;</code></div>
-      
+      <div style="margin-top:.6rem;">
+        <button onclick="closeSettings();openOllamaWizard()" style="background:none;border:1px solid #3a2c18;font-family:'IM Fell English SC',serif;font-size:.62rem;letter-spacing:.1em;color:#7a6840;text-transform:uppercase;padding:.3rem .7rem;cursor:pointer;transition:all .2s;border-radius:3px;" onmouseover="this.style.color='#a08848';this.style.borderColor='#5a4020'" onmouseout="this.style.color='#7a6840';this.style.borderColor='#3a2c18'">? &nbsp;Ollama Setup Guide</button>
+      </div>
+
       <div style="margin-top:.8rem;padding:.6rem .7rem;background:#1a1008;border:1px solid #3a2c18;border-radius:4px;">
         <div style="font-family:'IM Fell English SC',serif;font-size:.62rem;letter-spacing:.1em;color:#a08848;text-transform:uppercase;margin-bottom:.4rem;">⚠️ Connection Issues?</div>
         <div style="font-family:'IM Fell English',serif;font-size:.78rem;color:#9a8858;line-height:1.6;margin-bottom:.4rem;">
