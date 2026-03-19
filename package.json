@@ -11,7 +11,9 @@
     "dev": "npx http-server -p 8080 -c-1",
     "dev:webpack": "webpack serve --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
-    "analyze": "webpack --config webpack.prod.js --profile --json > stats.json && webpack-bundle-analyzer stats.json"
+    "analyze": "webpack --config webpack.prod.js --profile --json > stats.json && webpack-bundle-analyzer stats.json",
+    "minify": "for f in hot-*.js; do npx terser \"$f\" -o \"$f\" -c -m 2>/dev/null || true; done && npx cleancss -o hot-game.css hot-game.css 2>/dev/null || true",
+    "minify:check": "echo 'JS:' && wc -c hot-*.js | tail -1 && echo 'CSS:' && wc -c hot-game.css"
   },
   "keywords": [
     "game",

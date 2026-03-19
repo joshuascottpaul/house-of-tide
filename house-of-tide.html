@@ -447,12 +447,12 @@
 <script src="hot-trading.js"></script>
 <script src="hot-events.js"></script>
 <script src="hot-engine.js"></script>
-<script src="hot-sfx.js"></script>
-<script src="hot-stats.js"></script>
-<script src="hot-achievements.js"></script>
-<script src="hot-screenshot.js"></script>
-<script src="hot-screenshot-live.js"></script>
-<script src="hot-ollama-wizard.js"></script>
+<script src="hot-sfx.js" defer></script>
+<script src="hot-stats.js" defer></script>
+<script src="hot-achievements.js" defer></script>
+<script src="hot-screenshot.js" defer></script>
+<script src="hot-screenshot-live.js" defer></script>
+<script src="hot-ollama-wizard.js" defer></script>
 
 <!-- ══ SETTINGS MODAL ═══════════════════════════════════ -->
 <div id="settings-overlay" role="dialog" aria-modal="true" aria-labelledby="settings-title" onclick="if(event.target===this)closeSettings()">
@@ -600,6 +600,8 @@
         <div style="margin-bottom:.8rem;">
           <div style="font-family:'IM Fell English SC',serif;font-size:.7rem;letter-spacing:.1em;color:#a08848;text-transform:uppercase;margin-bottom:.3rem;">Gameplay Controls</div>
           <div><code style="color:#7a6840">1, 2, 3</code> — Select choice</div>
+          <div><code style="color:#7a6840">F5</code> — Quick save</div>
+          <div><code style="color:#7a6840">F9</code> — Quick load (restore F5 save)</div>
           <div><code style="color:#7a6840">S</code> — Save/Load menu</div>
           <div><code style="color:#7a6840">P</code> — Settings panel</div>
           <div><code style="color:#7a6840">Enter</code> — Continue/advance</div>
@@ -636,6 +638,15 @@
         <option value="tritanopia">Tritanopia (blue-yellow)</option>
       </select>
       <div class="settings-hint">Remaps red/green status colors to distinguishable alternatives. Takes effect immediately and persists between sessions.</div>
+
+      <div style="margin-top:.9rem;">
+        <div style="font-family:'IM Fell English',serif;font-size:.78rem;color:#9a8858;margin-bottom:.4rem;">Difficulty</div>
+        <label class="settings-radio">
+          <input type="checkbox" id="s-easy-mode">
+          <span>Easy Mode</span>
+        </label>
+        <div class="settings-hint">Start with 1,400 mk instead of 800. Fleet income +25%. Mortality risk −40%. Takes effect on your next new game.</div>
+      </div>
     </div>
 
     <div class="settings-section">
