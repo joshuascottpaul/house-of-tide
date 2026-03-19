@@ -1549,6 +1549,7 @@ body > *:not(#bg-image):not(#settings-overlay):not(#debug-panel) { position: rel
 @keyframes pulse {
   0%, 100% { opacity: 0.4; }
   50% { opacity: 1; }
+}
 
 /* ── TOOLTIPS ── */
 [data-tip] {
