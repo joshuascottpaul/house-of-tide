@@ -204,6 +204,7 @@ function renderSaveOverlay() {
         <div class="save-slot-empty" style="margin:.5rem 0;">Empty — no record kept here.</div>
         <div class="save-slot-actions">
           ${gs.dynastyName ? `<button class="save-btn" onclick="saveToSlot(${s})">Write here</button>` : ''}
+          <button class="save-btn" onclick="importSave(${s})" title="Load a save file into this slot">↑ Import</button>
         </div>`;
     } else {
       let data, label = '—', detail = '—', dateStr = '—';
@@ -224,6 +225,7 @@ function renderSaveOverlay() {
         <div class="save-slot-actions">
           <button class="save-btn load" onclick="loadFromSlot(${s})">Continue</button>
           ${gs.dynastyName ? `<button class="save-btn" onclick="saveToSlot(${s})">Overwrite</button>` : ''}
+          <button class="save-btn" onclick="exportSave(${s})" title="Download this save as a file">↓ Export</button>
           <button class="save-btn del" onclick="deleteSlot(${s})">Destroy</button>
         </div>
         <div class="save-confirm">Click Destroy again to confirm. This cannot be recovered.</div>`;
@@ -299,6 +301,79 @@ function renderTitleSaves() {
       </div>
       <div class="tsi-arrow">→</div>
     </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+//  EXPORT / IMPORT SAVES
+// ══════════════════════════════════════════════════════════
+
+function exportSave(slot) {
+  const raw = localStorage.getItem(SAVE_KEY_PREFIX + slot);
+  if (!raw) return;
+  let data;
+  try { data = JSON.parse(raw); } catch(e) { return; }
+  const filename = `hot-save-slot${slot}-${(data.label||'').replace(/[^a-z0-9]/gi,'-')}.json`;
+  _downloadJSON(raw, filename);
+}
+
+function exportAllSaves() {
+  const bundle = { version: 1, exportedAt: new Date().toISOString(), slots: {} };
+  for (let s = 1; s <= NUM_SLOTS; s++) {
+    const raw = localStorage.getItem(SAVE_KEY_PREFIX + s);
+    if (raw) bundle.slots[s] = JSON.parse(raw);
+  }
+  const auto = localStorage.getItem(AUTOSAVE_KEY);
+  if (auto) bundle.autosave = JSON.parse(auto);
+  const dynastyName = gs.dynastyName || 'House';
+  _downloadJSON(JSON.stringify(bundle, null, 2), `hot-saves-${dynastyName}.json`);
+}
+
+function _downloadJSON(json, filename) {
+  const blob = new Blob([json], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importSave(targetSlot) {
+  const input = document.createElement('input');
+  input.type  = 'file';
+  input.accept = '.json';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+
+      // Detect bundle vs single-slot save
+      if (parsed.version === 1 && parsed.slots) {
+        // Bundle — import all slots present
+        for (const [s, data] of Object.entries(parsed.slots)) {
+          localStorage.setItem(SAVE_KEY_PREFIX + s, JSON.stringify(data));
+        }
+        if (parsed.autosave) {
+          localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(parsed.autosave));
+        }
+        showNotification('✓ All saves imported');
+      } else if (parsed.state) {
+        // Single slot — import into targetSlot
+        localStorage.setItem(SAVE_KEY_PREFIX + targetSlot, JSON.stringify(parsed));
+        showNotification(`✓ Imported to Record ${targetSlot}`);
+      } else {
+        showNotification('⚠ Unrecognised save format');
+        return;
+      }
+      renderSaveOverlay();
+      renderTitleSaves();
+    } catch(err) {
+      showNotification('⚠ Could not read file');
+    }
+  };
+  input.click();
 }
 
 // ══════════════════════════════════════════════════════════
