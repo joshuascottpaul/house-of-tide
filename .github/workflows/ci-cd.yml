@@ -61,9 +61,8 @@ jobs:
 
     - name: Minify JS and CSS for production
       run: |
-        npm install -g terser clean-css-cli
+        npm install -g terser
         for f in hot-*.js; do terser "$f" -o "$f" -c 2>/dev/null || true; done
-        cleancss -o hot-game.css hot-game.css 2>/dev/null || true
         echo "Minified sizes:"
         wc -c hot-*.js | tail -1
         wc -c hot-game.css
