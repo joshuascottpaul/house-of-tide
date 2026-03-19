@@ -41,17 +41,44 @@ House of Tide is a narrative merchant dynasty game built as a single-page web ap
 
 ### Module Structure
 
-The codebase is organized into focused JavaScript modules:
+The codebase is organized into focused JavaScript modules loaded in this order:
 
-- **hot-engine.js** - Main game loop, keyboard shortcuts, event flow
-- **hot-state.js** - Game state management, save/load system
-- **hot-ui.js** - UI rendering and DOM manipulation
-- **hot-events.js** - Event generation, heir influence system
-- **hot-llm.js** - AI backend abstraction (MLX, Ollama, OpenAI, Claude)
-- **hot-economy.js** - Economic systems, loans, ships
-- **hot-trading.js** - Trading system with seasonal pricing
-- **hot-data.js** - Game data, constants, event templates
+**Data & Config (loaded first)**
+- **hot-data.js** - Game data, event templates, heir traits, epigrams
 - **hot-prompts.js** - AI prompts for narrative generation
+- **hot-config.js** - Settings persistence, appearance system, debug mode
+- **hot-logger.js** - Structured logging system
+- **hot-debug.js** - Debug overlay, monkey-patches for beginPhase
+- **hot-constants.js** - Numeric constants (TUTORIAL_TRIGGERS, thresholds, etc.)
+- **hot-errors.js** - Error capture and reporting
+- **hot-ui-selectors.js** - Centralized DOM selector constants
+
+**Systems (mid-load)**
+- **hot-performance.js** - Frame timing, performance monitoring
+- **hot-background.js** - Dynamic background image system
+- **hot-combat.js** - Combat/pirate system (COMBAT_TACTICS, buyCannons)
+- **hot-tutorials.js** - Tutorial modal system (TUTORIALS content, showTutorial)
+- **hot-victory.js** - Victory conditions (VICTORY_THRESHOLDS, checkVictoryConditions)
+- **hot-threads.js** - Narrative thread system
+- **hot-yearend.js** - Year-end notes and summaries (YEAR_END_NOTES)
+- **hot-llm.js** - AI backend abstraction (MLX, Ollama, OpenAI, Claude)
+- **hot-state.js** - Game state (`gs`), save/load system
+
+**UI & Gameplay (core)**
+- **hot-ui.js** - UI rendering, showScreen, DOM manipulation
+- **hot-economy.js** - Economic systems, loans, ships
+- **hot-trading.js** - Trading system with seasonal pricing (PORTS)
+- **hot-events.js** - Event generation, heir influence system
+- **hot-engine.js** - Main game loop, keyboard shortcuts, event flow
+
+**Features (loaded last)**
+- **hot-sfx.js** - Sound effects
+- **hot-stats.js** - Statistics dashboard
+- **hot-achievements.js** - Achievement system
+- **hot-screenshot.js** - Screenshot capture
+- **hot-screenshot-live.js** - Live screenshot sharing (File System Access API)
+
+> **IMPORTANT — Duplicate `const` rule**: All module files share the same global script scope in the browser. A `const` or `let` declared at the top level in any file conflicts with identically-named declarations in other files, causing a **parse-time SyntaxError that silently skips the entire file**. Each constant must be declared in exactly one file. When extracting code to a new module, always remove the original declaration.
 
 ### AI Integration
 
@@ -79,10 +106,43 @@ The AI receives:
 
 ### Testing Strategy
 
-- 53 Playwright tests covering UI, gameplay, backends, and edge cases
-- Tests use page object pattern via helpers.js
+- Playwright tests covering UI, gameplay, backends, and edge cases
+- Tests use shared helpers via `tests/helpers.js`
 - Critical paths: generational handoff, save/load, AI integration
 - Visual regression tests for screenshots
+
+**Testing Patterns — always follow these:**
+
+1. **Register `pageerror` BEFORE `page.goto()`**
+   ```js
+   const errors = [];
+   page.on('pageerror', e => errors.push(e.message)); // BEFORE goto
+   await page.goto('house-of-tide.html');
+   ```
+   A duplicate `const` or parse error silently kills entire scripts. The `pageerror` event catches these; `console.error` does not.
+
+2. **Assert screen changes immediately after button clicks**
+   ```js
+   await page.click('button:has-text("Begin the Founding")');
+   await expect(page.locator('#screen-name')).toBeVisible({ timeout: 3000 });
+   ```
+   `page.click()` succeeds even if the handler is broken. Assert the *effect*.
+
+3. **Access `gs` as a global, not `window.gs`**
+   ```js
+   // WRONG — gs is `let`, not a window property
+   await page.evaluate(() => window.gs);
+   // CORRECT
+   await page.evaluate(() => gs);
+   ```
+   Top-level `let`/`const` in non-module scripts are global but not on `window`.
+
+4. **`waitForEvent` waits for `#screen-game.active`, not AI panels**
+   `page.waitForSelector('#a, #b, #c')` picks the FIRST element in DOM order, not the
+   first to become visible. Since `#error-banner` is always present in the DOM (even
+   when empty) and comes before the event panels, it was always selected — and an empty
+   div is never "visible". `waitForEvent` now waits for `#screen-game.active` instead,
+   which is set immediately when onboarding is skipped, before any AI call.
 
 ### State Management
 

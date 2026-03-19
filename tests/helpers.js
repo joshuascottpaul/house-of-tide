@@ -18,17 +18,32 @@ async function startNewGame(page, options = {}) {
     skipOnboarding = true
   } = options;
 
+  // Register pageerror BEFORE goto so parse-time script errors are captured
+  const pageErrors = [];
+  page.on('pageerror', e => pageErrors.push(e.message));
+
   const filePath = 'file://' + path.join(process.cwd(), 'house-of-tide.html');
   await page.goto(filePath);
+  await page.waitForLoadState('networkidle');
+
+  // Fail fast if any script failed to parse/execute
+  if (pageErrors.length > 0) {
+    throw new Error(`Page errors on load: ${pageErrors.join('; ')}`);
+  }
+
+  // Click button and assert screen actually changed
   await page.click('button:has-text("Begin the Founding")');
+  await page.waitForSelector('#screen-name.active', { timeout: 5000 });
+
   await page.fill('#input-dynasty', dynasty);
   await page.fill('#input-founder', founder);
   await page.click('button:has-text("Open the Ledger")');
-  
+  await page.waitForSelector('#screen-onboard.active, button:has-text("Skip")', { timeout: 5000 });
+
   if (skipOnboarding) {
     await page.click('button:has-text("Skip")');
   }
-  
+
   await waitForEvent(page);
 }
 
@@ -40,8 +55,7 @@ async function resetGameState(page) {
   await page.evaluate(() => {
     // Clear all localStorage
     localStorage.clear();
-    // Reset global state
-    if (window.gs) window.gs = null;
+    // gs is a top-level `let` — can't nullify it, but startNewGame will reinitialise it
     // Clear logger
     if (window.Logger) window.Logger.clear();
     // Clear snapshots
@@ -55,11 +69,19 @@ async function resetGameState(page) {
 }
 
 /**
- * Wait for event text to load
+ * Wait for the game to reach the game screen after beginPhase().
+ * Waits for #screen-game.active (set immediately when onboarding is skipped,
+ * before any AI call completes). Does NOT require a live AI backend.
  * @param {Page} page - Playwright page
  */
 async function waitForEvent(page) {
-  await page.waitForSelector('#event-text', { state: 'visible', timeout: 30000 });
+  // #screen-game.active is set as soon as the game screen shows — no AI needed.
+  // waitForSelector's comma-selector picks the first DOM match, so avoid mixing
+  // always-empty elements (#error-banner) with content-filled ones in one selector.
+  await page.waitForSelector('#screen-game.active', {
+    state: 'visible',
+    timeout: 30000
+  });
 }
 
 /**
@@ -68,7 +90,8 @@ async function waitForEvent(page) {
  * @returns {Promise<object>} Game state object
  */
 async function getGameState(page) {
-  return await page.evaluate(() => window.gs);
+  // gs is a top-level `let` — not a window property, but accessible as a global
+  return await page.evaluate(() => gs);
 }
 
 // ══════════════════════════════════════════════════════════
@@ -373,7 +396,7 @@ async function getDebugInfo(page) {
     snapshots: window.DebugSnapshots?.exportSnapshots() || '[]',
     performance: window.Performance?.exportMetrics() || '{}',
     errors: window.ErrorCapture?.exportReport() || '[]',
-    gameState: window.gs || null
+    gameState: (typeof gs !== 'undefined' ? gs : null)
   }));
 }
 
