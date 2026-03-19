@@ -4,284 +4,94 @@
 
 You are the founder of a merchant house. You will trade, govern, and scheme. You will age. When you die, your heir continues. The sea does not care either way.
 
-**Status:** ✅ **Production Ready** (97% inspiration alignment)  
-**v2.0:** ✅ **Complete** - Modular, tested, documented  
-**Tests:** 51/51 passing (100%)  
-**Coverage:** 97% on infrastructure
+**Play now:** [joshuascottpaul.github.io/house-of-tide](https://joshuascottpaul.github.io/house-of-tide/)
 
 ---
 
 ## 🎮 How to Play
 
 ### Online (Recommended)
-1. Visit [your-deployment-url.com]
-2. Click "Begin the Founding"
-3. Name your dynasty and founder
-4. Make choices that shape your house's legacy
-5. Survive, thrive, and pass your legacy to your heir
+1. Visit the link above — no install required
+2. Choose an AI backend in **⊞ Settings** (Ollama is free and local; OpenAI/Claude need an API key)
+3. Click **Begin the Founding**
+4. Name your dynasty and founder
+5. Make choices that shape your house's legacy across generations
 
 ### Game Flow
 
 **House Phase** — Political situations, rival maneuvers, Pell's observations
-- Make 3 choices per event
-- Build relationships with named NPCs (Casso, Pell, Tucci)
-- Reputation changes based on decisions
-
-**Routes Phase** — Choose your destination, sail, encounter events
-- Select port: Verantia, Masso, Caldera, or Northern Isles
-- Travel events (pirates, weather, opportunities)
-- Geographic arbitrage: different ports have different prices
-
-**Trading Phase** — Buy low, sell high at CURRENT port
-- 4 commodities: Salt Fish, Wine, Alum, Tin
-- Max Buy / Sell All for quick trading
-- Cargo carries over between years (speculate on future prices)
-- "Close the Books" advances to Year-End
-
-**Year-End Phase** — Settlement, investments, tutorials
-- Passive fleet income (ships × reputation modifier)
-- Buy buildings (persist across generations)
-- Train skills (Negotiation, Seamanship, Politics, Intrigue)
-- Arrange heir marriages (political alliances)
-- Tutorials unlock: Buildings (Y2), Skills (Y3), Marriage (Y4), Ventures (Y5+)
+**Routes Phase** — Choose your port, sail, encounter travel events
+**Trading Phase** — Buy low, sell high; cargo carries between years
+**Year-End Phase** — Investments, buildings, skills, heir education, marriages
 
 ### Local Development
 ```bash
-# Clone the repository
 git clone https://github.com/joshuascottpaul/house-of-tide.git
 cd house-of-tide
 
-# Option 1: Simple HTTP server (recommended)
-python3 -m http.server 8000
-# Visit http://localhost:8000
-
-# Option 2: Direct file access
+# Option 1: Direct file access
 open house-of-tide.html
 
-# Option 3: Development server with HMR (requires webpack)
-npm run dev
-# Visit http://localhost:8080
+# Option 2: Static server
+python3 -m http.server 8000
+# Visit http://localhost:8000
 ```
 
 ### Running Tests
 ```bash
-# Run all tests
-npm test
-
-# Run with UI
-npm run test:ui
-
-# View test report
-npm run test:report
+npm install
+npx playwright test
+npx playwright show-report
 ```
-
----
-
-## 🎯 v1.x Features
-
-### Named NPCs (Oregon Trail Emotional Investment)
-- **Casso** (Senior Captain) - Records your losses without comment
-- **Pell** (Archivist) - Watches documents that require a second witness
-- **Tucci** (Harbourmaster) - Remembers every unpaid gratuity
-- Bond system (0-10) - High bond unlocks special dialogue
-- NPCs can die - you'll feel it because you knew the name
-
-### Mortality Events (Oregon Trail Tension)
-- Death can happen anytime, not just at 65
-- 5% base chance per turn, modified by reputation, rivals, age
-- AI-generated events: fever, assassination, shipwreck, poison, accident
-- 3 choices per event with different survival chances (30%-95%)
-- Strong allies protect you (high bond = lower mortality risk)
-
-### Building System (Paravia Tangible Legacy)
-- **Warehouse** (400 mk) — +20% cargo capacity
-- **Guild Seat** (800 mk) — +1 rep/year, bank rates -2%
-- **Shipyard** (1200 mk) — ships cost -10%
-- **Palazzo Wing** (600 mk) — heir education +2 years
-- **Counting House** (500 mk) — passive income +10%
-- **Safehouse** (350 mk) — mortality risk -20%
-- Buildings persist across generations
-- "The warehouse your founder built still stands."
-
-### Port System (Taipan! Geographic Strategy)
-- **Verantia** — The old city (balanced prices)
-- **Masso** — Port town south (wine cheap, saltfish expensive)
-- **Caldera Strait** — Li Yuen's tolls (wine expensive, tin cheap)
-- **Northern Isles** — Salt fish capital (saltfish cheap, wine expensive)
-- Choose destination each turn
-- Different prices per port = geographic arbitrage
-- **Profit loop:** Buy low in Northern Isles, sell high in Caldera
-
-### AI-Generated Market Shocks
-- Bumper harvest (0.4-0.6x prices - flooded market)
-- Locust plague (1.8-2.5x prices - destroyed crops)
-- Mine collapse (2.0-3.0x prices - scarce metals)
-- Pirate blockade (1.8-2.2x prices - ships can't arrive)
-
----
-
-## 🔧 v2.0 Infrastructure
-
-### Modularity (61% size reduction)
-- **hot-engine.js:** 1,703 → 660 lines
-- **6 modules extracted:** background, combat, tutorials, victory, threads, yearend
-- Separation of concerns achieved
-- Easier to test and maintain
-
-### Testing (100% pass rate)
-- **44 test files** (51 v2.0 tests)
-- **97% code coverage** on infrastructure
-- **50% faster** test writing
-- Visual regression testing (15 screenshots)
-- Automatic evidence capture
-
-### Code Quality
-- **Magic numbers → constants** (300 lines)
-- **Consistent error format** (350 lines)
-- **Selector constants** (300 lines)
-- **JSDoc guide** created (300 lines)
-- Coverage reporting configured
-
-### Developer Experience
-- **Hot Module Reloading** - Instant updates
-- **Bundle size monitoring** - <500 KB budget
-- **Optimized builds** - <30s build time
-- **Automated error capture** - Context + logging
-
----
-
-## 📊 Project Status
-
-| Version | Tasks | Complete | Status |
-|---------|-------|----------|--------|
-| **v1.1-v1.3** | 49 | 49 ✅ | 100% |
-| **v1.4** | 50 | 0 | 0% |
-| **v2.0** | 20 | 20 ✅ | 100% |
-| **v1.5+** | 6 | 0 | 0% |
-
-**Overall:** 75/155 tasks complete (48%)
-
-**Inspiration Alignment:** 97%
-- Taipan!: 90%
-- Paravia: 90%
-- Oregon Trail: 90%
-
----
-
-## 📚 Documentation
-
-- [Testing Infrastructure Guide](TESTING_INFRASTRUCTURE_GUIDE.md) - 800 lines
-- [Code Review v2.0](CODE_REVIEW_V2.md) - 500 lines
-- [Modularity Review](CODE_REVIEW_MODULARITY_V2.md) - 600 lines
-- [Test Suite Report](TEST_SUITE_REPORT.md) - 800 lines
-- [v2.0 Completion Report](V2_COMPLETION_REPORT.md) - 579 lines
-- [JSDoc Guide](JSDOC_GUIDE.md) - 300 lines
-- [Code Quality Report](CODE_QUALITY_REPORT.md) - 200 lines
-- [Bundle Size Guide](BUNDLE_SIZE_GUIDE.md) - 200 lines
-
-**Total:** 3,979 lines of documentation
-
----
-
-## 🚀 Launch Status
-
-**Technical Readiness:** ✅ READY
-- All code modular and maintainable
-- All tests passing (51/51)
-- 97% code coverage on infrastructure
-- Error handling standardized
-- Build system optimized
-- CI/CD configured and working
-
-**Feature Readiness:** ✅ 97% ALIGNMENT
-- Core gameplay: 100%
-- AI Dungeon Master: 100%
-- Generational play: 100%
-
-**Recommendation:** **READY TO LAUNCH**
-
----
-
-## 🎯 Next Steps
-
-### Option A: Launch Now (Recommended)
-- Game is fully playable at 97% alignment
-- All core features complete
-- Testing infrastructure solid
-- Code is modular and maintainable
-
-### Option B: Continue to v1.4 (24-32 hours)
-- 50 feature tasks
-- Reach 100% inspiration alignment
-- Quick wins: Cannon Display (15 min), Travel Time (1 hr)
-- Full feature set: Skill Checks, Tax Decisions, etc.
-
----
-
-## 🏆 Credits
-
-**Inspirations:**
-- Taipan! (1982) - Geographic trading strategy
-- Santa Paravia en Fiumaccio (1978) - Generational legacy
-- Oregon Trail (1971) - Named mortality, survival tension
-
-**Design Philosophy:**
-> "The AI is the Dungeon Master. The code is the campaign notes."
-
----
-
-**The ledger is open. The sea is waiting. Turn the page.** ⚓
-- AI knows your port, allies, rivals, and generates location-specific events
 
 ---
 
 ## 🤖 AI Backends
 
-House of Tide supports 4 AI backends for narrative generation:
-
 | Backend | Speed | Cost | Setup |
 |---------|-------|------|-------|
-| **MLX** (local) | Medium | Free | Install `mlx-openai-server` |
-| **Ollama** (local) | Slow | Free | Install Ollama app |
-| **OpenAI** (cloud) | Fast | Paid | API key required |
-| **Claude** (cloud) | Fast | Paid | API key required |
+| **Ollama** (local) | Medium | Free | Install Ollama — use **? Setup Guide** on title screen |
+| **MLX** (local, Apple Silicon) | Medium | Free | `mlx-openai-server launch --model-path <model> --model-type lm` |
+| **OpenAI** (cloud) | Fast | Paid | API key from platform.openai.com |
+| **Claude** (cloud) | Fast | Paid | API key from console.anthropic.com |
 
-### Setting Up Backends
+**New to Ollama?** Click **? Setup Guide** on the title screen for a step-by-step wizard.
 
-#### MLX (Apple Silicon, Recommended for Local)
-```bash
-# Install mlx-openai-server
-pipx install mlx-openai-server
+---
 
-# Launch with model
-mlx-openai-server launch --model-path mlx-community/Qwen2.5-3B-Instruct-4bit --model-type lm
+## 🎯 Features
 
-# In game: Settings → MLX (local)
-```
+### Core Gameplay
+- **Procedural narrative** — AI-generated events shaped by your decisions and history
+- **Rival families** — Borracchi, Spinetta, Calmari, Li Yuen with persistent relationship tracking
+- **Trading system** — 4 commodities (Salt Fish, Wine, Alum, Tin) with seasonal and port pricing
+- **Thread system** — Unresolved events return with consequences years later
+- **Heir system** — 8 personality traits (reckless, diplomatic, greedy…) affect available choices
+- **Mortality** — Death can come at any age; named allies reduce risk
+- **Buildings** — Warehouse, Guild Seat, Shipyard, Palazzo Wing, and more; persist across generations
+- **Combat** — Pirate encounters with tactical choices; cannons improve your odds
+- **Grand Ventures** — High-risk, high-reward events every few years
 
-#### Ollama (Cross-platform Local)
-```bash
-# Install from https://ollama.ai
+### Save System
+- **3 manual save slots** + auto-save after every turn
+- **Export saves** — download any slot as a `.json` file for backup or sharing
+- **Import saves** — restore from a file into any slot; supports both single-slot and full-bundle format
 
-# Pull a model
-ollama pull qwen2.5:7b
+### UI/UX
+- **Tooltips** — Hover any stat to learn what it means
+- **Dynamic backgrounds** — Change based on reputation, wealth, and phase
+- **Risk indicators** — 💰 for cost, ⚠️ for danger on choices
+- **Backend status badge** — Shows active AI engine at a glance
+- **Keyboard shortcuts** — Full keyboard navigation
+- **Statistics dashboard** — Track dynasty history across generations
+- **Achievement notifications** — Toast popups when achievements unlock
+- **Dynasty History Viewer** — Timeline of all generations in one place
+- **Live Share** — Screenshot updates to a local file every 3s for spectators
 
-# In game: Settings → Ollama → Select model
-```
-
-#### OpenAI (Cloud)
-```bash
-# Get API key from https://platform.openai.com/api-keys
-
-# In game: Settings → OpenAI API → Enter API key
-```
-
-#### Claude (Cloud)
-```bash
-# Get API key from https://console.anthropic.com/settings/keys
-
-# In game: Settings → Claude API → Enter API key
-```
+### Accessibility
+- **Color Blind Mode** — Deuteranopia, Protanopia, Tritanopia palettes (Settings → Accessibility)
+- **ARIA labels** — Screen reader support on all interactive elements and live stat regions
+- **Keyboard navigation** — Every action reachable without a mouse
 
 ---
 
@@ -289,110 +99,13 @@ ollama pull qwen2.5:7b
 
 | Key | Action |
 |-----|--------|
-| `1`, `2`, `3` | Select choice 1, 2, or 3 |
-| `S` | Open save/load menu |
-| `L` | Load game (when save menu open) |
-| `P` | Open settings |
-| `Enter` | Continue/advance |
+| `1`, `2`, `3` | Select choice |
+| `S` | Save / Load menu |
+| `P` | Settings |
+| `Enter` | Continue / advance |
 | `Escape` | Close overlays |
 | `⌘⇧D` | Toggle debug log |
 | `Ctrl+Shift+L` | Toggle live screenshot sharing |
-
----
-
-## 📸 Screenshot Sharing (New!)
-
-Share your gameplay live with others:
-
-1. Click **"🔴 Live Share"** on the title screen
-2. Choose where to save the screenshot file
-3. Screenshots update to that file every 3 seconds
-4. Share the file path to let others see your gameplay
-
-**Note:** Works best in Chrome/Edge. The red recording indicator shows when active.
-
----
-
-## 🧪 Running Tests
-
-```bash
-# Install dependencies
-npm install
-
-# Run all tests (takes ~2 minutes)
-npx playwright test
-
-# Run specific test file
-npx playwright test tests/keyboard-shortcuts.spec.js
-
-# Run tests in headed mode (see browser)
-npx playwright test --headed
-
-# Generate HTML report
-npx playwright show-report
-```
-
-### Test Coverage
-- **53 Playwright tests** — 100% passing
-- Tests cover: UI, gameplay, backends, edge cases
-
----
-
-## ✅ Manual Testing Checklist
-
-Before each release, run through this checklist:
-
-### Core Gameplay (30 min)
-- [ ] Start new game, complete onboarding
-- [ ] Play through 5 complete years
-- [ ] Make varied choices (not always option A)
-- [ ] Trigger at least one Grand Venture
-- [ ] Verify rival relationships change based on choices
-- [ ] Verify heir personality affects available choices
-- [ ] Save game, reload, verify state persists
-- [ ] Die and verify generational handoff works
-- [ ] Play 3 years as heir
-
-### Economic Systems (15 min)
-- [ ] Take a bank loan, verify interest compounds
-- [ ] Repay loan, verify credit score improves
-- [ ] Take shadow loan, let it go overdue, verify enforcement
-- [ ] Buy a ship, verify fleet grows
-- [ ] Sell a ship, verify marks increase
-- [ ] Trade commodities, verify prices change by season
-
-### Narrative Continuity (15 min)
-- [ ] Defer a Borracchi event, verify thread opens
-- [ ] Wait 2-3 years, verify thread returns
-- [ ] Resolve thread, verify it closes
-- [ ] Check that ledger entries reference past events
-
-### Edge Cases (15 min)
-- [ ] Reach 0 marks → verify death screen
-- [ ] Reach 0 ships → verify death screen
-- [ ] Reach reputation 10 → verify Legendary effects
-- [ ] Reach reputation 1 → verify Disgraced effects
-- [ ] Test all 4 backends (MLX, OpenAI, Claude, Ollama)
-- [ ] Test keyboard shortcuts (1,2,3,S,L,P,Enter,Escape)
-
-### UI/UX (10 min)
-- [ ] Verify loading spinner appears during AI calls
-- [ ] Verify risk indicators (💰⚠️) appear on appropriate choices
-- [ ] Verify backend status badge shows correct backend
-- [ ] Verify statistics dashboard opens and shows data
-- [ ] Verify custom background can be set
-- [ ] Verify sound effects toggle works
-- [ ] Verify save/load overlay works correctly
-- [ ] Test screenshot sharing (🔴 Live Share button)
-- [ ] Verify Ctrl+Shift+L toggles live recording
-
-### Accessibility (5 min)
-- [ ] Test keyboard-only navigation
-- [ ] Test with screen reader (VoiceOver/NVDA)
-- [ ] Verify all buttons have ARIA labels
-- [ ] Verify high contrast is readable
-
-**Total Time:** ~90 minutes
 
 ---
 
@@ -400,142 +113,100 @@ Before each release, run through this checklist:
 
 ```
 house-of-tide/
-├── house-of-tide.html    # Main HTML file
-├── hot-game.css          # All styles
-├── hot-data.js           # Game data, constants, events
-├── hot-prompts.js        # AI prompts
-├── hot-config.js         # Settings, localStorage
-├── hot-llm.js            # AI backend abstraction
-├── hot-state.js          # Game state, save/load
-├── hot-ui.js             # UI rendering
-├── hot-economy.js        # Economy, loans, ships
-├── hot-trading.js        # Trading system
-├── hot-events.js         # Event generation, heir influence
-├── hot-engine.js         # Game loop, keyboard shortcuts
-├── hot-sfx.js            # Sound effects
-├── hot-stats.js          # Statistics dashboard
-├── tests/                # Playwright tests
-│   ├── *.spec.js         # Test files (53 tests total)
-│   └── helpers.js        # Test utilities
-└── package.json          # NPM config for tests
+├── house-of-tide.html        # Main HTML
+├── hot-game.css              # All styles
+├── hot-data.js               # Game data, event templates, epigrams
+├── hot-prompts.js            # AI prompts
+├── hot-config.js             # Settings, appearance, color blind mode
+├── hot-logger.js             # Structured logging
+├── hot-debug.js              # Debug overlay
+├── hot-constants.js          # Numeric constants
+├── hot-errors.js             # Error capture
+├── hot-ui-selectors.js       # Centralized DOM selectors
+├── hot-performance.js        # Frame timing
+├── hot-background.js         # Dynamic backgrounds
+├── hot-combat.js             # Pirate / combat system
+├── hot-tutorials.js          # Tutorial modals
+├── hot-victory.js            # Victory conditions
+├── hot-threads.js            # Narrative thread system
+├── hot-yearend.js            # Year-end notes
+├── hot-llm.js                # AI backend abstraction
+├── hot-state.js              # Game state, save/load, export/import
+├── hot-ui.js                 # UI rendering
+├── hot-economy.js            # Loans, ships, economy
+├── hot-trading.js            # Trading with seasonal pricing
+├── hot-events.js             # Event generation, heir influence
+├── hot-engine.js             # Main game loop, keyboard shortcuts
+├── hot-sfx.js                # Sound effects
+├── hot-stats.js              # Statistics dashboard
+├── hot-achievements.js       # Achievement system
+├── hot-screenshot.js         # Screenshot capture
+├── hot-screenshot-live.js    # Live screenshot sharing
+├── hot-ollama-wizard.js      # Ollama setup wizard
+├── tests/
+│   ├── *.spec.js             # Playwright test files
+│   └── helpers.js            # Test utilities
+└── .github/workflows/
+    └── ci-cd.yml             # Test + deploy pipeline
 ```
 
 ---
 
-## 🎯 Features
+## 📊 Project Status
 
-### Core Gameplay
-- **Procedural narrative** — AI-generated events and choices
-- **Rival families** — Borracchi, Spinetta, Calmari, Li Yuen
-- **Trading system** — Buy/sell commodities with seasonal pricing
-- **Thread system** — Unresolved events return with consequences
-- **Heir system** — 8 personality traits affect available choices
-- **Save/load** — 3 save slots + auto-save
+| Version | Focus | Status |
+|---------|-------|--------|
+| **v1.1–v1.3** | Core gameplay, rivals, trading, combat | ✅ Complete |
+| **v1.4** | Skill checks, buildings, ports, governance, QoL | ✅ Complete |
+| **v1.5** | Accessibility, export/import, tooltips, performance | 🔄 In Progress |
+| **v1.6** | Endgame — multi-heir, rival campaigns, war, exploration | ⏳ Planned |
 
-### UI/UX
-- **Dynamic backgrounds** — Change based on game state (reputation, wealth, phase)
-- **Risk indicators** — 💰 for cost, ⚠️ for danger
-- **Backend status** — 🟢 MLX, 🔵 OpenAI, 🟠 Ollama, 🟣 Claude
-- **Keyboard shortcuts** — Full keyboard navigation
-- **Statistics dashboard** — Track your dynasty's history
+---
 
-### Accessibility
-- **ARIA labels** — Screen reader support
-- **Keyboard navigation** — All actions accessible via keyboard
-- **High contrast** — Clear visual design
+## 🧪 Testing
+
+```bash
+# Run all tests
+npx playwright test
+
+# Run a specific file
+npx playwright test tests/keyboard-shortcuts.spec.js
+
+# Headed mode (see browser)
+npx playwright test --headed
+
+# View HTML report
+npx playwright show-report
+```
+
+CI runs on every push to `main` via GitHub Actions. Tests must pass before deployment.
 
 ---
 
 ## 🚀 Deployment
 
-### Static Hosting (Recommended)
-House of Tide is a static site — deploy anywhere:
+The game is a static site — no build step required for deployment.
 
 ```bash
-# Netlify
-netlify deploy --prod
-
-# Vercel
-vercel --prod
-
-# GitHub Pages
-# Enable in repo settings → Pages
+# After any change:
+git add .
+git commit -m "describe changes"
+git push origin main
+# GitHub Actions tests → deploys to gh-pages automatically
 ```
 
-### Requirements
-- Any static hosting (Netlify, Vercel, GitHub Pages)
-- No backend required
-- No database required
-- No build step required
+---
+
+## 🏆 Credits
+
+**Inspirations:**
+- Taipan! (1982) — Geographic trading strategy
+- Santa Paravia en Fiumaccio (1978) — Generational legacy
+- Oregon Trail (1971) — Named mortality and survival tension
+
+**Design Philosophy:**
+> "The AI is the Dungeon Master. The code is the campaign notes."
 
 ---
 
-## 📊 Statistics Tracked
-
-- Games played
-- Total years played
-- Generations survived
-- Average lifespan
-- Highest reputation achieved
-- Highest marks achieved
-- Total choices made
-- Threads resolved
-- Rival alliances formed
-- Ventures completed
-
----
-
-## 🛠️ Development
-
-### Adding New Events
-1. Open `hot-data.js`
-2. Add event to `SITUATION_SEEDS.house` or `SITUATION_SEEDS.routes`
-3. Test with `npx playwright test`
-
-### Adding New Backends
-1. Open `hot-llm.js`
-2. Add new backend case in `callLLM()` function
-3. Add backend selector in `house-of-tide.html` settings
-
-### Modifying AI Prompts
-1. Open `hot-prompts.js`
-2. Edit `EVENT_GEN_PROMPT` or `SYSTEM_PROMPT`
-3. Test with different AI backends
-
----
-
-## 📝 Changelog
-
-### v1.0 (Current)
-- ✅ All core features implemented
-- ✅ 4 AI backends supported
-- ✅ 53 passing tests
-- ✅ Full keyboard navigation
-- ✅ Statistics dashboard
-- ✅ Custom backgrounds
-- ✅ Sound effects system
-- ✅ Streaming responses (OpenAI)
-
----
-
-## 🎨 Credits
-
-**Game Design & Development:** AI-Assisted Development Session  
-**Testing:** 53 Playwright tests  
-**Code Quality:** 8.5/10 audit score  
-
----
-
-## 📄 License
-
-MIT License — See LICENSE file
-
----
-
-## 🏴‍☠️ The Ledger Awaits
-
-The sea does not care about your plans. It does not care about your legacy. It does not care about your heir.
-
-The ledger, however, records everything.
-
-**Begin the founding.**
+**The ledger is open. The sea is waiting. Turn the page.** ⚓
