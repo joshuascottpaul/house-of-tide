@@ -1177,11 +1177,21 @@ body > *:not(#bg-image):not(#settings-overlay):not(#debug-panel) { position: rel
 
 /* ── RESPONSIVE MOBILE ── */
 @media (max-width: 768px) {
+  /* Allow screen to scroll on mobile */
+  #screen-game {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
   #status-bar {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(5, 4, 3, 0.95);
   }
 
   .stats {
@@ -1199,6 +1209,7 @@ body > *:not(#bg-image):not(#settings-overlay):not(#debug-panel) { position: rel
 
   #game-content {
     padding: 1rem;
+    padding-bottom: 3rem;
   }
 
   .choice-btn {
