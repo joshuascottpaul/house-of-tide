@@ -1,44 +1,69 @@
 # 🎯 House of Tide — Prioritized Task List by Version
 
-**Last Updated:** March 14, 2026
+**Last Updated:** March 20, 2026
 **Current Version:** v1.4 (30% complete - 15/50 tasks)
 **Next Milestone:** v1.4 Launch (35 tasks remaining)
 
 ---
 
-## 📊 **CI/CD STATUS**
+## 📋 **RESUME HERE — Bot Tier 1 MVP** ⭐
 
-### **Current Workflow:** `.github/workflows/ci-cd.yml`
+**Priority:** HIGH — Start with this when resuming work
 
-**Status:** ✅ Configured correctly
+**Why:** Bots give you game balance data and automated testing. 8-9 hours to first results.
 
-**Pipeline:**
-1. **Test Job** (Ubuntu, Node 20)
-   - Checkout code
-   - Install dependencies (`npm ci`)
-   - Install Playwright browsers
-   - Run tests (`npx playwright test`)
-   - Upload test results (30 days retention)
+**Status:** 4/8 tasks complete (50%) — In Progress in worktree `.worktrees/bot-tier1-mvp/`
 
-2. **Deploy Job** (after test passes)
-   - Deploy to GitHub Pages
-   - Publish to `gh-pages` branch
-   - Keep files (no cleanup)
+### **v1.7.1 — Tier 1: MVP** (8 tasks, 8-9 hours)
 
-**Potential Issues:**
-- ⚠️ Tests may timeout (no timeout configured)
-- ⚠️ No test coverage reporting
-- ⚠️ No failure notifications
+| # | Task | Time | Files | Status | Tests |
+|---|------|------|-------|--------|-------|
+| 1 | **Bot Personality Engine** | 2 hrs | `hot-bots-core.js` | ✅ Complete | 6 passing |
+| 2 | **Six Default Bots** | 30 min | `hot-bots-core.js` | ✅ Complete | (included) |
+| 3 | **Choice Analyzer** | 1 hr | `hot-bots-analyzer.js` | ✅ Complete | 8 passing |
+| 4 | **Bot Game Loop** | 2 hrs | `hot-bots-loop.js` | ✅ Complete | 8 passing |
+| 5 | **Console Commands** | 30 min | `hot-bots.js` | ⏳ In Progress | - |
+| 6 | **Stats Tracking (Simple)** | 1 hr | `hot-bots-stats.js` | ✅ Complete | 16 passing |
+| 7 | **Leaderboard (Console)** | 1 hr | `bots/leaderboard.js` | ⏳ TODO | - |
+| 8 | **Balance Report (Basic)** | 1 hr | `bots/balance-report.js` | ⏳ TODO | - |
 
-**Recommended CI/CD Improvements:**
-- Add test timeout (30 minutes)
-- Add coverage reporting
-- Add Slack/email notifications on failure
-- Add performance budget checks
+**Total Tests Passing:** 38 tests across 4 modules
+
+**Deliverable:**
+```javascript
+await HotBots.simulate('rabbit', 50); // 50 games in 2 minutes
+HotBots.leaderboard(); // See win rates
+```
+
+**Files Created (in worktree):**
+- `hot-bots-core.js` — ✅ Personality engine, 6 bot configs with weights
+- `hot-bots-analyzer.js` — ✅ Parse choice text for bold/cautious/political/mercantile/patient signals
+- `hot-bots-loop.js` — ✅ Autonomous game loop with makeChoice integration
+- `hot-bots-stats.js` — ✅ Track game outcomes in localStorage
+- `hot-bots.js` — ⏳ Global API, console commands (IN PROGRESS)
+- `bots/leaderboard.js` — ⏳ Console display, balance report (TODO)
+
+**Test Files Created:**
+- `tests/bot-personalities.spec.js` — 14 tests (personality + analyzer)
+- `tests/bot-game-loop.spec.js` — 8 tests (game loop integration)
+- `tests/bot-stats.spec.js` — 16 tests (stats persistence)
+
+**Implementation Notes:**
+- Bots score choices using weighted personality traits
+- Rabbit: cautious 0.5, bold 0.1 | Lion: bold 0.5, cautious 0.1 | Wolf: balanced 0.2 each
+- Game loop: wait for choices → bot selects → call `makeChoice()` → repeat
+- Stats: track marks, rep, generations, cause of death, win/loss
+
+**To Resume:**
+```bash
+cd .worktrees/bot-tier1-mvp
+git status  # Should be on feature/bot-tier1-mvp branch
+# Continue with Task 5: Create hot-bots.js
+```
 
 ---
 
-## 📋 **OUTSTANDING TASKS BY VERSION**
+## Full Task List Below
 
 ---
 
@@ -78,6 +103,170 @@
 | v1.4.6 Quality of Life | 4 ⏳ | 6-8 hrs | ⏳ TODO |
 
 **v1.4 Total:** 50 tasks, 24-32 hours (15 done, 35 remaining)
+
+---
+
+# 🤖 **v1.7 — Bot Dynasty League (OPTIMIZED)**
+
+**Progress:** 4/24 tasks (17%)
+**Remaining:** 20 tasks, 29-33 hours
+
+**Goal:** AI-driven bots for testing, content creation, and gameplay
+
+**Inspiration:** Civ AI leaders, Championship leagues
+
+**Status:** Tier 1 MVP 50% complete — In worktree `.worktrees/bot-tier1-mvp/`
+
+---
+
+## **v1.7.1 — Tier 1: MVP** (8 tasks, 8-9 hours) ⭐ **IN PROGRESS**
+
+**Goal:** Bots can play, you can see who wins
+
+| # | Task | Time | Priority | Status | Files | Tests |
+|---|------|------|----------|--------|-------|-------|
+| 1 | **Bot Personality Engine** | 2 hrs | 🔴 HIGH | ✅ Complete | `hot-bots-core.js` | 6 |
+| 2 | **Six Default Bots** | 30 min | 🔴 HIGH | ✅ Complete | `hot-bots-core.js` | - |
+| 3 | **Choice Analyzer** | 1 hr | 🔴 HIGH | ✅ Complete | `hot-bots-analyzer.js` | 8 |
+| 4 | **Bot Game Loop** | 2 hrs | 🔴 HIGH | ✅ Complete | `hot-bots-loop.js` | 8 |
+| 5 | **Console Commands** | 30 min | 🟡 MEDIUM | ⏳ In Progress | `hot-bots.js` | - |
+| 6 | **Stats Tracking (Simple)** | 1 hr | 🟡 MEDIUM | ✅ Complete | `hot-bots-stats.js` | 16 |
+| 7 | **Leaderboard (Console)** | 1 hr | 🟡 MEDIUM | ⏳ TODO | `bots/leaderboard.js` | - |
+| 8 | **Balance Report (Basic)** | 1 hr | 🟡 MEDIUM | ⏳ TODO | `bots/balance-report.js` | - |
+
+**Tier 1 Total:** 8-9 hours (4 complete, 4 remaining)
+**Tests Passing:** 38 tests
+
+**Deliverable:**
+```javascript
+await HotBots.simulate('rabbit', 50); // 50 games in 2 minutes
+HotBots.leaderboard(); // See win rates
+```
+
+**Value:** Know if "bold" play is OP in under 10 hours.
+
+**Worktree:** `.worktrees/bot-tier1-mvp/` (branch: `feature/bot-tier1-mvp`)
+
+---
+
+## **v1.7.2 — Tier 2: Watch Mode** (6 tasks, 6-7 hours)
+
+**Goal:** Watch bots play in browser, capture evidence
+
+| # | Task | Time | Priority | Status | Files |
+|---|------|------|----------|--------|-------|
+| 1 | **CDP Runner** | 2 hrs | 🔴 HIGH | ⏳ TODO | `bots/cdp-runner.js` |
+| 2 | **Screenshot Capture** | 1 hr | 🟡 MEDIUM | ⏳ TODO | `bots/screenshot.js` |
+| 3 | **CLI Commands** | 30 min | 🟡 MEDIUM | ⏳ TODO | `package.json` |
+| 4 | **Log Files (JSON)** | 1 hr | 🟡 MEDIUM | ⏳ TODO | `bots/logger.js` |
+| 5 | **Compare Mode** | 1 hr | 🟡 MEDIUM | ⏳ TODO | `bots/compare.js` |
+| 6 | **Export (CSV)** | 30 min | 🟡 MEDIUM | ⏳ TODO | `bots/export.js` |
+
+**Tier 2 Total:** 6-7 hours
+
+**Cumulative:** 14-16 hours
+
+**Deliverable:**
+```bash
+npm run bot:watch -- --bot=rabbit --turns=20
+```
+
+---
+
+## **v1.7.3 — Tier 3: Tournament** (5 tasks, 6-7 hours)
+
+**Goal:** Run championships, seasons
+
+| # | Task | Time | Priority | Status | Files |
+|---|------|------|----------|--------|-------|
+| 1 | **Tournament Runner** | 2 hrs | 🔴 HIGH | ⏳ TODO | `bots/tournament.js` |
+| 2 | **Scoring System** | 1 hr | 🔴 HIGH | ⏳ TODO | `bots/scoring.js` |
+| 3 | **Season Tracking** | 30 min | 🟡 MEDIUM | ⏳ TODO | `bots/seasons.js` |
+| 4 | **Championship UI** | 2 hrs | 🟡 MEDIUM | ⏳ TODO | `bots/championship.html` |
+| 5 | **Replay System** | 1 hr | 🟡 MEDIUM | ⏳ TODO | `bots/replay.js` |
+
+**Tier 3 Total:** 6-7 hours
+
+**Cumulative:** 20-23 hours
+
+**Deliverable:**
+```bash
+npm run bot:tournament -- --bots=6 --games=10 --season=1
+```
+
+---
+
+## **v1.7.4 — Tier 4: Bot Houses** (5 tasks, 9-10 hours)
+
+**Goal:** AI houses in your single-player game
+
+| # | Task | Time | Priority | Status | Files |
+|---|------|------|----------|--------|-------|
+| 1 | **AI House System** | 3 hrs | 🔴 HIGH | ⏳ TODO | `hot-houses.js` |
+| 2 | **Parallel Simulation** | 2 hrs | 🔴 HIGH | ⏳ TODO | `hot-houses.js` |
+| 3 | **House Status Display** | 1 hr | 🟡 MEDIUM | ⏳ TODO | `hot-ui-houses.js` |
+| 4 | **Interaction Events** | 2 hrs | 🟡 MEDIUM | ⏳ TODO | `hot-events-houses.js` |
+| 5 | **Victory Conditions** | 1 hr | 🟡 MEDIUM | ⏳ TODO | `hot-victory-houses.js` |
+
+**Tier 4 Total:** 9-10 hours
+
+**Cumulative:** 29-33 hours
+
+**Deliverable:** 6 AI houses compete in your single-player game
+
+---
+
+## **❌ Cut Features (Deferred Indefinitely)**
+
+| Feature | Time | Why Cut |
+|---------|------|---------|
+| Narration Generator | 3 hrs | YouTube can wait |
+| Highlight Reels | 2 hrs | Manual is fine |
+| Episode Export | 2 hrs | Nice-to-have |
+| Bot Profiles | 1 hr | Fluff |
+| Season Finales | 3 hrs | Over-engineering |
+| Bot Config Editor | 3 hrs | JSON files work |
+| Bot Sharing | 2 hrs | Copy/paste configs |
+| Online Leaderboard | 4 hrs | Local is enough |
+| Monthly Tournaments | 2 hrs | Manual is fine |
+| Bot Workshop | 3 hrs | Way too early |
+
+**Cut Total:** ~26 hours
+
+---
+
+## **v1.7 Summary (Optimized)**
+
+| Tier | Tasks | Time | Status |
+|------|-------|------|--------|
+| Tier 1: MVP | 8 | 8-9 hrs | ⏳ TODO |
+| Tier 2: Watch | 6 | 6-7 hrs | ⏳ TODO |
+| Tier 3: Tournament | 5 | 6-7 hrs | ⏳ TODO |
+| Tier 4: Houses | 5 | 9-10 hrs | ⏳ TODO |
+| ~~Cut~~ | ~~10~~ | ~~18-26 hrs~~ | ❌ DEFERRED |
+
+**v1.7 Total:** 24 tasks, 29-33 hours (was 48 tasks, 56-78 hrs)
+
+**Time Saved:** 27-45 hours
+
+---
+
+## **Recommended Rollout**
+
+**Week 1: MVP (8-9 hrs)**
+- Bots play autonomously
+- See win rates, tune balance
+
+**Week 2: Watch Mode (6-7 hrs)**
+- Browser automation
+- Export data
+
+**Week 3: Tournament (6-7 hrs)**
+- Championships
+- Seasons
+
+**Week 4: Houses (9-10 hrs)**
+- Single-player integration
 
 ---
 
