@@ -4,4 +4,5 @@ test-results/
 playwright-report/
 test-screenshots/
 node_modules/
+.worktrees/
 .DS_Store
