@@ -54,6 +54,12 @@ h1 { font-family:'IM Fell English SC',serif; font-size:clamp(2.8rem,9vw,5.5rem);
 .btn:hover:not(:disabled) { border-color:var(--rust); color:var(--gold-hi);
   background:rgba(139,105,20,.04); }
 .btn:disabled { opacity:.35; cursor:not-allowed; }
+
+/* Primary button (e.g., Begin the Founding) */
+.btn-primary { border-color:#a07820; color:#d4b46a; font-size:0.75rem; padding:0.75rem 2.5rem; }
+.btn-primary:hover:not(:disabled) { border-color:#c8a040; color:#f0d888;
+  background:rgba(160,120,32,.08); }
+
 .btn-venture { border-color:#3a3060; color:#a898d0; }
 .btn-venture:hover:not(:disabled) { border-color:#7060b0; color:#d0c8f0;
   background:rgba(80,60,160,.06); }
@@ -792,6 +798,66 @@ footer { text-align:center; padding:1.2rem; border-top:1px solid #2a1e0e;
   padding: .3rem .6rem;
   cursor: pointer;
   transition: all .2s;
+
+/* ── ACCORDION SETTINGS (Mobile-friendly) ── */
+.settings-accordion-section {
+  border: 1px solid #2a1e0e;
+  border-radius: 3px;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+}
+.settings-accordion-header {
+  padding: 0.75rem 1rem;
+  background: linear-gradient(to bottom, #1a1408, #0f0c06);
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'IM Fell English SC', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: #a08848;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  min-height: 44px; /* iOS touch target */
+}
+.settings-accordion-header:hover {
+  background: linear-gradient(to bottom, #2a1e08, #1a1406);
+  color: #d4b46a;
+}
+.settings-accordion-header::after {
+  content: '+';
+  font-size: 1.2rem;
+  color: #7a6840;
+  transition: transform 0.3s;
+}
+.settings-accordion-section.expanded .settings-accordion-header::after {
+  content: '−';
+  transform: rotate(0deg);
+}
+.settings-accordion-content {
+  display: none;
+  padding: 1rem 1rem 1.25rem;
+  background: #0e0b06;
+  border-top: 1px solid #2a1e0e;
+}
+.settings-accordion-section.expanded .settings-accordion-content {
+  display: block;
+}
+
+/* Mobile: ensure accordion sections are easy to tap */
+@media (max-width: 768px) {
+  .settings-accordion-header {
+    padding: 1rem;
+    font-size: 0.7rem;
+  }
+  .settings-accordion-content {
+    padding: 1rem;
+  }
+}
 }
 .settings-btn-small:hover { background: #2a1e0e; border-color: #7a5828; }
 .settings-range {
