@@ -1302,15 +1302,24 @@ body > *:not(#bg-image):not(#settings-overlay):not(#debug-panel) { position: rel
     margin: 1rem auto;
   }
 
-  /* Settings buttons - ensure visible on mobile */
+  /* Settings buttons - fixed at bottom on mobile for visibility */
   .settings-row {
-    position: sticky;
+    position: fixed;
     bottom: 0;
-    background: #0e0b06;
-    padding-top: 1rem;
-    padding-bottom: 0.5rem;
-    border-top: 1px solid #2a1e0e;
-    margin-top: 1rem;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to bottom, rgba(14,11,6,0), #0e0b06 20%);
+    padding: 1.5rem 1rem 1rem;
+    display: flex;
+    gap: 0.8rem;
+    justify-content: flex-end;
+    z-index: 10;
+    margin-top: 0;
+  }
+  
+  /* Add padding to settings-box content to prevent overlap with fixed buttons */
+  .settings-box {
+    padding-bottom: 5rem;
   }
 
   .settings-radio-row {
