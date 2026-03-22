@@ -54,6 +54,12 @@ h1 { font-family:'IM Fell English SC',serif; font-size:clamp(2.8rem,9vw,5.5rem);
 .btn:hover:not(:disabled) { border-color:var(--rust); color:var(--gold-hi);
   background:rgba(139,105,20,.04); }
 .btn:disabled { opacity:.35; cursor:not-allowed; }
+
+/* Primary button (e.g., Begin the Founding) */
+.btn-primary { border-color:#a07820; color:#d4b46a; font-size:0.75rem; padding:0.75rem 2.5rem; }
+.btn-primary:hover:not(:disabled) { border-color:#c8a040; color:#f0d888;
+  background:rgba(160,120,32,.08); }
+
 .btn-venture { border-color:#3a3060; color:#a898d0; }
 .btn-venture:hover:not(:disabled) { border-color:#7060b0; color:#d0c8f0;
   background:rgba(80,60,160,.06); }

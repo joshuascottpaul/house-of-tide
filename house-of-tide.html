@@ -28,22 +28,15 @@
       When you die, your heir continues.<br>
       The sea does not care either way.
     </p>
-    <div style="margin-top:2rem;display:flex;align-items:center;justify-content:center;gap:.9rem;">
-      <span id="engine-label" style="font-family:'IM Fell English SC',serif;font-size:.68rem;color:#7a6840;letter-spacing:.1em;text-transform:uppercase;"></span>
-      <button onclick="showAchievementsPanel()" aria-label="View achievements" style="background:none;border:1px solid #2a1e0e;font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.1em;color:#5a4828;text-transform:uppercase;padding:.2rem .55rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.color='#a08848';this.style.borderColor='#3a2c18'" onmouseout="this.style.color='#5a4828';this.style.borderColor='#2a1e0e'">🏆 Achievements</button>
-      <button onclick="showStatsDashboard()" aria-label="View game statistics" style="background:none;border:1px solid #2a1e0e;font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.1em;color:#5a4828;text-transform:uppercase;padding:.2rem .55rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.color='#a08848';this.style.borderColor='#3a2c18'" onmouseout="this.style.color='#5a4828';this.style.borderColor='#2a1e0e'">Statistics</button>
-      <button onclick="openSettings()" aria-label="Open game settings" style="background:none;border:1px solid #2a1e0e;font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.1em;color:#5a4828;text-transform:uppercase;padding:.2rem .55rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.color='#a08848';this.style.borderColor='#3a2c18'" onmouseout="this.style.color='#5a4828';this.style.borderColor='#2a1e0e'">⊞ Settings</button>
+    <div style="margin-top:2rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.7rem;">
+      <span id="engine-label" style="width:100%;text-align:center;font-family:'IM Fell English SC',serif;font-size:.68rem;color:#7a6840;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;"></span>
+      <button onclick="showAchievementsPanel()" aria-label="View achievements" style="background:none;border:1px solid #2a1e0e;font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.1em;color:#5a4828;text-transform:uppercase;padding:.25rem .65rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.color='#a08848';this.style.borderColor='#3a2c18'" onmouseout="this.style.color='#5a4828';this.style.borderColor='#2a1e0e'">🏆 Achievements</button>
+      <button onclick="showStatsDashboard()" aria-label="View game statistics" style="background:none;border:1px solid #2a1e0e;font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.1em;color:#5a4828;text-transform:uppercase;padding:.25rem .65rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.color='#a08848';this.style.borderColor='#3a2c18'" onmouseout="this.style.color='#5a4828';this.style.borderColor='#2a1e0e'">📊 Statistics</button>
+      <button onclick="openSettings()" aria-label="Open game settings" style="background:none;border:1px solid #2a1e0e;font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.1em;color:#5a4828;text-transform:uppercase;padding:.25rem .65rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.color='#a08848';this.style.borderColor='#3a2c18'" onmouseout="this.style.color='#5a4828';this.style.borderColor='#2a1e0e'">⚙️ Settings</button>
+      <button onclick="window.HOT_SCREENSHOT_LIVE.isCapturing() ? window.HOT_SCREENSHOT_LIVE.stopCapture() : window.HOT_SCREENSHOT_LIVE.startLiveCapture(3)" aria-label="Toggle live screen capture for sharing gameplay" style="background:none;border:1px solid #2a1e0e;font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.1em;color:#5a4828;text-transform:uppercase;padding:.25rem .65rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.color='#a08848';this.style.borderColor='#3a2c18'" onmouseout="this.style.color='#5a4828';this.style.borderColor='#2a1e0e'">🔴 Live Share</button>
     </div>
-    <div style="margin-top:.5rem;display:flex;align-items:center;justify-content:center;gap:.9rem;">
-      <button onclick="window.HOT_SCREENSHOT_LIVE.isCapturing() ? window.HOT_SCREENSHOT_LIVE.stopCapture() : window.HOT_SCREENSHOT_LIVE.startLiveCapture(3)" aria-label="Toggle live screen capture for sharing gameplay" style="background:none;border:1px solid #2a1e0e;font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.1em;color:#5a4828;text-transform:uppercase;padding:.2rem .55rem;cursor:pointer;transition:all .2s;" onmouseover="this.style.color='#a08848';this.style.borderColor='#3a2c18'" onmouseout="this.style.color='#5a4828';this.style.borderColor='#2a1e0e'">🔴 Live Share</button>
-    </div>
-    <button class="btn" onclick="showScreen('screen-name')">Begin the Founding</button>
-    <div style="margin-top:.8rem;">
-      <div style="display:flex;align-items:center;justify-content:center;gap:1.2rem;">
-        <button id="test-btn" onclick="testConnection()" style="background:none;border:none;font-family:'IM Fell English SC',serif;font-size:.72rem;letter-spacing:.12em;color:#7a6840;text-transform:uppercase;cursor:pointer;transition:color .2s;padding:.3rem 0;" onmouseover="this.style.color='#5a4020'" onmouseout="this.style.color='#7a6840'">⊞ &nbsp;Test Connection</button>
-      </div>
-      <div id="test-result" aria-live="polite" aria-atomic="true" style="font-style:italic;font-size:.82rem;margin-top:.5rem;line-height:1.7;min-height:1.2rem;"></div>
-    </div>
+    <button class="btn btn-primary" onclick="showScreen('screen-name')" style="margin-top:1.2rem;font-size:0.75rem;padding:0.75rem 2.5rem;">Begin the Founding</button>
+    <div id="test-result" aria-live="polite" aria-atomic="true" style="font-style:italic;font-size:.82rem;margin-top:.5rem;line-height:1.7;min-height:1.2rem;"></div>
     <div id="title-saves" class="title-saves" style="display:none;">
       <div class="rule-wide"></div>
       <div style="font-family:'IM Fell English SC',serif;font-size:.6rem;letter-spacing:.2em;color:#3a2a12;text-transform:uppercase;margin-bottom:.8rem;">Continue a House</div>
@@ -483,6 +476,10 @@
         </label>
       </div>
       <div id="settings-backend-note"></div>
+      <div style="margin-top:1rem;display:flex;align-items:center;gap:.5rem;">
+        <button id="test-btn" onclick="testConnection()" style="background:none;border:1px solid #3a2c18;font-family:'IM Fell English SC',serif;font-size:.62rem;letter-spacing:.1em;color:#7a6840;text-transform:uppercase;padding:.35rem .85rem;cursor:pointer;transition:all .2s;border-radius:3px;" onmouseover="this.style.color='#a08848';this.style.borderColor='#5a4020'" onmouseout="this.style.color='#7a6840';this.style.borderColor='#3a2c18'">⊞ Test Connection</button>
+        <span id="test-status" style="font-family:'IM Fell English',serif;font-size:.75rem;color:#6a5838;font-style:italic;"></span>
+      </div>
     </div>
 
     <div class="settings-section" id="s-ollama-section">
