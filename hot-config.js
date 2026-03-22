@@ -3,7 +3,7 @@
 // ══════════════════════════════════════════════════════════
 const CFG_KEY = 'hot_config';
 const CFG_DEFAULTS = {
-  backend:     'ollama',       // 'ollama' | 'claude' | 'openai' | 'mlx'
+  backend:     'ollama',       // 'ollama' | 'claude' | 'openai' | 'mlx' | 'openrouter'
   ollamaModel: 'mistral:latest',
   mlxModel:    'mlx-community/Qwen2.5-7B-Instruct-4bit',  // Fast, quantized
   mlxHfToken:  '',
@@ -11,6 +11,8 @@ const CFG_DEFAULTS = {
   claudeApiKey:'',
   openaiModel: 'gpt-4o-mini',
   openaiApiKey:'',
+  openrouterModel: 'meta-llama/llama-3.1-8b-instruct:free',
+  openrouterApiKey:'',
   debugMode:      false,
   colorBlindMode: 'none', // 'none' | 'deuteranopia' | 'protanopia' | 'tritanopia'
   easyMode:       false   // Start with more marks, lower mortality, higher income
@@ -56,6 +58,9 @@ function updateEngineLabel() {
   } else if (CFG.backend === 'openai') {
     const short = CFG.openaiModel.includes('mini') ? 'gpt-4o-mini' : CFG.openaiModel;
     el.textContent = '⊞ OpenAI API · ' + short;
+  } else if (CFG.backend === 'openrouter') {
+    const short = CFG.openrouterModel.split('/').pop().replace(':free', '');
+    el.textContent = '⊞ OpenRouter · ' + short;
   } else {
     el.textContent = '⊞ Ollama · ' + (CFG.ollamaModel === 'custom' ? 'custom' : CFG.ollamaModel);
   }
@@ -169,6 +174,8 @@ function openSettings() {
   if (claudeRadio) claudeRadio.checked = (CFG.backend === 'claude');
   const openaiRadio = document.getElementById('s-openai');
   if (openaiRadio) openaiRadio.checked = (CFG.backend === 'openai');
+  const openrouterRadio = document.getElementById('s-openrouter');
+  if (openrouterRadio) openrouterRadio.checked = (CFG.backend === 'openrouter');
   const mlxRadio = document.getElementById('s-mlx');
   if (mlxRadio) mlxRadio.checked = (CFG.backend === 'mlx');
   
@@ -204,7 +211,13 @@ function openSettings() {
   if (openaiModelSel) openaiModelSel.value = CFG.openaiModel;
   const openaiKeyInput = document.getElementById('s-openai-key');
   if (openaiKeyInput) openaiKeyInput.value = CFG.openaiApiKey;
-  
+
+  // openrouter model + key
+  const openrouterModelSel = document.getElementById('s-openrouter-model');
+  if (openrouterModelSel) openrouterModelSel.value = CFG.openrouterModel;
+  const openrouterKeyInput = document.getElementById('s-openrouter-key');
+  if (openrouterKeyInput) openrouterKeyInput.value = CFG.openrouterApiKey;
+
   const debugCheckbox = document.getElementById('s-debug');
   if (debugCheckbox) debugCheckbox.checked = CFG.debugMode;
 
@@ -254,16 +267,20 @@ function closeSettings() {
 function settingsBackendChange() {
   const isClaude = document.getElementById('s-claude').checked;
   const isOpenAI = document.getElementById('s-openai').checked;
+  const isOpenRouter = document.getElementById('s-openrouter').checked;
   const isMLX    = document.getElementById('s-mlx').checked;
-  document.getElementById('s-ollama-section').style.display = (isClaude || isOpenAI || isMLX) ? 'none' : 'block';
+  document.getElementById('s-ollama-section').style.display = (isClaude || isOpenAI || isOpenRouter || isMLX) ? 'none' : 'block';
   document.getElementById('s-claude-section').style.display = isClaude ? 'block' : 'none';
   document.getElementById('s-openai-section').style.display = isOpenAI ? 'block' : 'none';
+  document.getElementById('s-openrouter-section').style.display = isOpenRouter ? 'block' : 'none';
   document.getElementById('s-mlx-section').style.display   = isMLX    ? 'block' : 'none';
   const note = document.getElementById('settings-backend-note');
   if (isClaude) {
     note.textContent = 'Calls go directly from your browser to api.anthropic.com. Excellent prose quality and reliable JSON. Requires a paid API key.';
   } else if (isOpenAI) {
     note.textContent = 'Calls go directly from your browser to api.openai.com. Fast, reliable JSON, good prose. Requires a paid API key.';
+  } else if (isOpenRouter) {
+    note.textContent = 'OpenRouter provides access to many models (free + paid). Calls go to openrouter.ai. Great for trying different models without multiple API keys.';
   } else if (isMLX) {
     note.textContent = 'MLX runs Apple Silicon models locally via mlx-openai-server — no API key, no cost. Start with: mlx-openai-server launch --model-path <model> --model-type lm';
   } else {
@@ -282,14 +299,17 @@ document.addEventListener('DOMContentLoaded', () => {
 function saveSettings() {
   const isClaude = document.getElementById('s-claude').checked;
   const isOpenAI = document.getElementById('s-openai').checked;
+  const isOpenRouter = document.getElementById('s-openrouter').checked;
   const isMLX    = document.getElementById('s-mlx').checked;
-  CFG.backend     = isClaude ? 'claude' : isOpenAI ? 'openai' : isMLX ? 'mlx' : 'ollama';
+  CFG.backend     = isClaude ? 'claude' : isOpenAI ? 'openai' : isOpenRouter ? 'openrouter' : isMLX ? 'mlx' : 'ollama';
   CFG.mlxModel    = document.getElementById('s-mlx-model').value.trim() || 'mlx-community/Qwen2.5-3B-Instruct-4bit';
   CFG.mlxHfToken  = document.getElementById('s-mlx-token').value.trim();
   CFG.claudeModel = document.getElementById('s-claude-model').value;
   CFG.claudeApiKey= document.getElementById('s-api-key').value.trim();
   CFG.openaiModel = document.getElementById('s-openai-model').value;
   CFG.openaiApiKey= document.getElementById('s-openai-key').value.trim();
+  CFG.openrouterModel = document.getElementById('s-openrouter-model').value;
+  CFG.openrouterApiKey = document.getElementById('s-openrouter-key').value.trim();
   CFG.debugMode       = document.getElementById('s-debug').checked;
   const cbSel2 = document.getElementById('s-colorblind');
   if (cbSel2) { CFG.colorBlindMode = cbSel2.value; applyColorBlindMode(CFG.colorBlindMode); }

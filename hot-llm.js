@@ -129,6 +129,42 @@ async function callLLM(systemPrompt, userMsg, opts = {}) {
       raw = data.choices?.[0]?.message?.content || '';
     }
 
+  } else if (CFG.backend === 'openrouter') {
+    // ── OpenRouter API (OpenAI-compatible) ─────────────────
+    if (!CFG.openrouterApiKey) throw new Error('No OpenRouter API key set. Open ⊞ Settings to add one.');
+    metaStr = `OpenRouter · ${CFG.openrouterModel}`;
+
+    const body = {
+      model:       CFG.openrouterModel,
+      max_tokens:  maxTok,
+      temperature: temp,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user',   content: msgText }
+      ]
+    };
+    if (isJson) body.response_format = { type: 'json_object' };
+
+    const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${CFG.openrouterApiKey}`,
+        'HTTP-Referer': 'file:///Users/jpaul/Desktop/house-of-tide/house-of-tide.html',
+        'X-Title': 'House of Tide'
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!resp.ok) {
+      const errBody = await resp.json().catch(() => ({}));
+      const detail  = errBody?.error?.message || resp.statusText;
+      throw new Error(`OpenRouter ${resp.status}: ${detail}`);
+    }
+
+    const data = await resp.json();
+    raw = data.choices?.[0]?.message?.content || '';
+
   } else if (CFG.backend === 'claude') {
     // ── Claude API ─────────────────────────────────────────
     if (!CFG.claudeApiKey) throw new Error('No Claude API key set. Open ⊞ Settings to add one.');

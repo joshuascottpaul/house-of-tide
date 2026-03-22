@@ -788,12 +788,15 @@ function showTradingPanel() {
 
   renderTradingPanel();
 
-  // Hide other panels
+  // Hide other panels - explicitly hide result panel and its button
   var otherPanels = ['panel-event', 'panel-venture', 'loading-panel', 'panel-result', 'panel-yearend'];
   for (var i = 0; i < otherPanels.length; i++) {
     var el = document.getElementById(otherPanels[i]);
     if (el) el.style.display = 'none';
   }
+  // Also explicitly hide the continue button from result panel
+  var continueBtn = document.getElementById('continue-btn');
+  if (continueBtn) continueBtn.style.display = 'none';
 
   var tp = document.getElementById('panel-trading');
   if (tp) {

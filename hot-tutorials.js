@@ -53,8 +53,8 @@ const TUTORIALS = {
     icon: '🌊',
     title: 'The Horizon Opens',
     content: `<p>The horizon opens. This is not ordinary.</p>
-    <p style="margin-top:1rem;"><strong style="color:var(--gold-hi)">Grand Ventures are high-stakes opportunities.</strong> They appear every 7 years (years 5, 12, 19...). The rewards are substantial. The risks are commensurate.</p>
-    <p style="margin-top:1rem;">This is the Oregon Trail mechanic. Things do not fully go to plan. The ledger notes who survived.</p>
+    <p style="margin-top:1rem;"><strong style="color:var(--gold-hi)">Grand Ventures await—high-stakes opportunities that surface like leviathans from the deep.</strong> The rewards are substantial. The risks are commensurate.</p>
+    <p style="margin-top:1rem;">The sea keeps her own counsel. Routes shift. Storms gather where skies were clear. The ledger notes who survived.</p>
     <p>You have been preparing for this. Whether you were preparing well enough remains to be seen.</p>`
   },
   combat: {

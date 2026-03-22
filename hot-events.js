@@ -274,7 +274,7 @@ async function showRoutesEvent() {
     const ev = await generateEvent('routes');
     if (!ev) throw new Error('No event generated');
     gs.currentEvent = ev;
-    document.getElementById('event-phase-lbl').innerHTML = '<span class="glyph glyph-anchor" style="font-size:.9em;">⚓</span> &nbsp; From the Routes &nbsp; <span class="glyph glyph-anchor" style="font-size:.9em;">⚓</span>';
+    document.getElementById('event-phase-lbl').innerHTML = '<span class="glyph glyph-anchor">⚓</span> &nbsp; From the Routes &nbsp; <span class="glyph glyph-anchor">⚓</span>';
     document.getElementById('event-text').textContent = ev.text;
     renderChoices('choices-container', ev.choices, false);
     
