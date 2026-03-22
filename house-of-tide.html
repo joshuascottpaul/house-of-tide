@@ -451,51 +451,61 @@
   <div class="settings-box">
     <div class="settings-title" id="settings-title">⊞ &nbsp; The Ledger's Engine &nbsp; ⊞</div>
 
-    <div class="settings-section">
-      <div class="settings-label">Backend</div>
-      <div class="settings-radio-row">
-        <label class="settings-radio">
-          <input type="radio" name="s-backend" value="ollama" id="s-ollama" onchange="settingsBackendChange()">
-          <span>Ollama (local)</span>
-        </label>
-        <label class="settings-radio">
-          <input type="radio" name="s-backend" value="mlx" id="s-mlx" onchange="settingsBackendChange()">
-          <span>MLX (local)</span>
-        </label>
-        <label class="settings-radio">
-          <input type="radio" name="s-backend" value="openai" id="s-openai" onchange="settingsBackendChange()">
-          <span>OpenAI API</span>
-        </label>
-        <label class="settings-radio">
-          <input type="radio" name="s-backend" value="openrouter" id="s-openrouter" onchange="settingsBackendChange()">
-          <span>OpenRouter (free + paid)</span>
-        </label>
-        <label class="settings-radio">
-          <input type="radio" name="s-backend" value="claude" id="s-claude" onchange="settingsBackendChange()">
-          <span>Claude API</span>
-        </label>
-      </div>
-      <div id="settings-backend-note"></div>
-      <div style="margin-top:1rem;display:flex;align-items:center;gap:.5rem;">
-        <button id="test-btn" onclick="testConnection()" style="background:none;border:1px solid #3a2c18;font-family:'IM Fell English SC',serif;font-size:.62rem;letter-spacing:.1em;color:#7a6840;text-transform:uppercase;padding:.35rem .85rem;cursor:pointer;transition:all .2s;border-radius:3px;" onmouseover="this.style.color='#a08848';this.style.borderColor='#5a4020'" onmouseout="this.style.color='#7a6840';this.style.borderColor='#3a2c18'">⊞ Test Connection</button>
-        <span id="test-status" style="font-family:'IM Fell English',serif;font-size:.75rem;color:#6a5838;font-style:italic;"></span>
+    <!-- Backend Section -->
+    <div class="settings-accordion-section expanded" id="acc-backend">
+      <button class="settings-accordion-header" onclick="toggleAccordion('acc-backend')">
+        AI Backend
+      </button>
+      <div class="settings-accordion-content">
+        <div class="settings-label">Backend</div>
+        <div class="settings-radio-row">
+          <label class="settings-radio">
+            <input type="radio" name="s-backend" value="ollama" id="s-ollama" onchange="settingsBackendChange()">
+            <span>Ollama (local)</span>
+          </label>
+          <label class="settings-radio">
+            <input type="radio" name="s-backend" value="mlx" id="s-mlx" onchange="settingsBackendChange()">
+            <span>MLX (local)</span>
+          </label>
+          <label class="settings-radio">
+            <input type="radio" name="s-backend" value="openai" id="s-openai" onchange="settingsBackendChange()">
+            <span>OpenAI API</span>
+          </label>
+          <label class="settings-radio">
+            <input type="radio" name="s-backend" value="openrouter" id="s-openrouter" onchange="settingsBackendChange()">
+            <span>OpenRouter (free + paid)</span>
+          </label>
+          <label class="settings-radio">
+            <input type="radio" name="s-backend" value="claude" id="s-claude" onchange="settingsBackendChange()">
+            <span>Claude API</span>
+          </label>
+        </div>
+        <div id="settings-backend-note"></div>
+        <div style="margin-top:1rem;display:flex;align-items:center;gap:.5rem;">
+          <button id="test-btn" onclick="testConnection()" style="background:none;border:1px solid #3a2c18;font-family:'IM Fell English SC',serif;font-size:.62rem;letter-spacing:.1em;color:#7a6840;text-transform:uppercase;padding:.35rem .85rem;cursor:pointer;transition:all .2s;border-radius:3px;" onmouseover="this.style.color='#a08848';this.style.borderColor='#5a4020'" onmouseout="this.style.color='#7a6840';this.style.borderColor='#3a2c18'">⊞ Test Connection</button>
+          <span id="test-status" style="font-family:'IM Fell English',serif;font-size:.75rem;color:#6a5838;font-style:italic;"></span>
+        </div>
       </div>
     </div>
 
-    <div class="settings-section" id="s-ollama-section">
-      <div class="settings-label">Ollama Model</div>
-      <select class="settings-select" id="s-ollama-model">
-        <option value="qwen3.5:4b">⚡⚡⚡ qwen3.5:4b — fastest (~28s), less reliable JSON</option>
-        <option value="qwen2.5:7b">⚡⚡ qwen2.5:7b — balanced (~45s), good JSON</option>
-        <option value="mistral:latest">⚡⚡ mistral:latest — reliable JSON (~40s)</option>
-        <option value="llama3.1:8b">⚡ llama3.1:8b — best prose (~50s)</option>
-        <option value="custom">custom…</option>
-      </select>
-      <input type="text" class="settings-input" id="s-ollama-custom"
-        placeholder="model name e.g. gemma3:4b"
-        style="margin-top:.5rem;display:none;">
-      <div class="settings-hint">Models must be pulled first: <code style="color:#7a6840">ollama pull &lt;model&gt;</code></div>
-      <div style="margin-top:.6rem;">
+    <div class="settings-accordion-section" id="s-ollama-section">
+      <button class="settings-accordion-header" onclick="toggleAccordion('s-ollama-section')">
+        Ollama Settings
+      </button>
+      <div class="settings-accordion-content">
+        <div class="settings-label">Ollama Model</div>
+        <select class="settings-select" id="s-ollama-model">
+          <option value="qwen3.5:4b">⚡⚡⚡ qwen3.5:4b — fastest (~28s), less reliable JSON</option>
+          <option value="qwen2.5:7b">⚡⚡ qwen2.5:7b — balanced (~45s), good JSON</option>
+          <option value="mistral:latest">⚡⚡ mistral:latest — reliable JSON (~40s)</option>
+          <option value="llama3.1:8b">⚡ llama3.1:8b — best prose (~50s)</option>
+          <option value="custom">custom…</option>
+        </select>
+        <input type="text" class="settings-input" id="s-ollama-custom"
+          placeholder="model name e.g. gemma3:4b"
+          style="margin-top:.5rem;display:none;">
+        <div class="settings-hint">Models must be pulled first: <code style="color:#7a6840">ollama pull &lt;model&gt;</code></div>
+        <div style="margin-top:.6rem;">
         <button onclick="closeSettings();openOllamaWizard()" style="background:none;border:1px solid #3a2c18;font-family:'IM Fell English SC',serif;font-size:.62rem;letter-spacing:.1em;color:#7a6840;text-transform:uppercase;padding:.3rem .7rem;cursor:pointer;transition:all .2s;border-radius:3px;" onmouseover="this.style.color='#a08848';this.style.borderColor='#5a4020'" onmouseout="this.style.color='#7a6840';this.style.borderColor='#3a2c18'">? &nbsp;Ollama Setup Guide</button>
       </div>
 
@@ -511,73 +521,98 @@
       </div>
     </div>
 
-    <div class="settings-section" id="s-mlx-section" style="display:none;">
-      <div class="settings-label">MLX Model Path</div>
-      <input type="text" class="settings-input" id="s-mlx-model"
-        placeholder="mlx-community/Qwen2.5-3B-Instruct-4bit" onchange="saveMlxSettings()">
-      <div class="settings-label" style="margin-top:.9rem;">HuggingFace Token</div>
-      <input type="password" class="settings-input" id="s-mlx-token"
-        placeholder="hf_…" autocomplete="off" onchange="saveMlxSettings()">
-      <div class="settings-hint">Stored locally in your browser only. Required to download models from HuggingFace. Then start the server:</div>
-      <code id="mlx-launch-cmd" style="display:block;margin-top:.4rem;padding:.4rem .6rem;background:#0c0a06;border:1px solid #3a2c18;color:#c8a870;font-size:.75rem;font-family:monospace;user-select:all;">mlx-openai-server launch --model-path mlx-community/Qwen2.5-3B-Instruct-4bit --model-type lm</code>
+    <!-- MLX Section -->
+    <div class="settings-accordion-section" id="s-mlx-section" style="display:none;">
+      <button class="settings-accordion-header" onclick="toggleAccordion('s-mlx-section')">
+        MLX Settings
+      </button>
+      <div class="settings-accordion-content">
+        <div class="settings-label">MLX Model Path</div>
+        <input type="text" class="settings-input" id="s-mlx-model"
+          placeholder="mlx-community/Qwen2.5-3B-Instruct-4bit" onchange="saveMlxSettings()">
+        <div class="settings-label" style="margin-top:.9rem;">HuggingFace Token</div>
+        <input type="password" class="settings-input" id="s-mlx-token"
+          placeholder="hf_…" autocomplete="off" onchange="saveMlxSettings()">
+        <div class="settings-hint">Stored locally in your browser only. Required to download models from HuggingFace. Then start the server:</div>
+        <code id="mlx-launch-cmd" style="display:block;margin-top:.4rem;padding:.4rem .6rem;background:#0c0a06;border:1px solid #3a2c18;color:#c8a870;font-size:.75rem;font-family:monospace;user-select:all;">mlx-openai-server launch --model-path mlx-community/Qwen2.5-3B-Instruct-4bit --model-type lm</code>
+      </div>
     </div>
 
-    <div class="settings-section" id="s-claude-section" style="display:none;">
-      <div class="settings-label">Claude Model</div>
-      <select class="settings-select" id="s-claude-model">
-        <option value="claude-haiku-4-5-20251001">⚡⚡⚡ claude-haiku-4-5 — fastest, cheapest</option>
-        <option value="claude-sonnet-4-6">⚡⚡ claude-sonnet-4-6 — best quality, slower</option>
-      </select>
-      <div class="settings-label" style="margin-top:.9rem;">API Key</div>
-      <input type="password" class="settings-input" id="s-api-key"
-        placeholder="sk-ant-api03-…" autocomplete="off">
-      <div class="settings-hint">Stored locally in your browser only. Calls go directly to api.anthropic.com. Get a key at console.anthropic.com.</div>
+    <!-- Claude Section -->
+    <div class="settings-accordion-section" id="s-claude-section" style="display:none;">
+      <button class="settings-accordion-header" onclick="toggleAccordion('s-claude-section')">
+        Claude API
+      </button>
+      <div class="settings-accordion-content">
+        <div class="settings-label">Claude Model</div>
+        <select class="settings-select" id="s-claude-model">
+          <option value="claude-haiku-4-5-20251001">⚡⚡⚡ claude-haiku-4-5 — fastest, cheapest</option>
+          <option value="claude-sonnet-4-6">⚡⚡ claude-sonnet-4-6 — best quality, slower</option>
+        </select>
+        <div class="settings-label" style="margin-top:.9rem;">API Key</div>
+        <input type="password" class="settings-input" id="s-api-key"
+          placeholder="sk-ant-api03-…" autocomplete="off">
+        <div class="settings-hint">Stored locally in your browser only. Calls go directly to api.anthropic.com. Get a key at console.anthropic.com.</div>
+      </div>
     </div>
 
-    <div class="settings-section" id="s-openai-section" style="display:none;">
-      <div class="settings-label">OpenAI Model</div>
-      <select class="settings-select" id="s-openai-model">
-        <option value="gpt-4o-mini">⚡⚡⚡ gpt-4o-mini — fastest, cheapest, reliable</option>
-        <option value="gpt-4o">⚡⚡ gpt-4o — best quality, slower, more expensive</option>
-      </select>
-      <div class="settings-label" style="margin-top:.9rem;">API Key</div>
-      <input type="password" class="settings-input" id="s-openai-key"
-        placeholder="sk-proj-…" autocomplete="off">
-      <div class="settings-hint">Stored locally in your browser only. Calls go directly to api.openai.com. Get a key at platform.openai.com.</div>
+    <!-- OpenAI Section -->
+    <div class="settings-accordion-section" id="s-openai-section" style="display:none;">
+      <button class="settings-accordion-header" onclick="toggleAccordion('s-openai-section')">
+        OpenAI API
+      </button>
+      <div class="settings-accordion-content">
+        <div class="settings-label">OpenAI Model</div>
+        <select class="settings-select" id="s-openai-model">
+          <option value="gpt-4o-mini">⚡⚡⚡ gpt-4o-mini — fastest, cheapest, reliable</option>
+          <option value="gpt-4o">⚡⚡ gpt-4o — best quality, slower, more expensive</option>
+        </select>
+        <div class="settings-label" style="margin-top:.9rem;">API Key</div>
+        <input type="password" class="settings-input" id="s-openai-key"
+          placeholder="sk-proj-…" autocomplete="off">
+        <div class="settings-hint">Stored locally in your browser only. Calls go directly to api.openai.com. Get a key at platform.openai.com.</div>
+      </div>
     </div>
 
-    <div class="settings-section" id="s-openrouter-section" style="display:none;">
-      <div class="settings-label">OpenRouter Model</div>
-      <select class="settings-select" id="s-openrouter-model">
-        <option value="meta-llama/llama-3.1-8b-instruct:free">⚡⚡⚡ Llama 3.1 8B — free, fast</option>
-        <option value="google/gemma-2-9b-it:free">⚡⚡ Gemma 2 9B — free, good quality</option>
-        <option value="meta-llama/llama-3.2-3b-instruct:free">⚡ Llama 3.2 3B — free, fastest</option>
-        <option value="anthropic/claude-3.5-haiku">⚡⚡ Claude Haiku — paid, best quality</option>
-        <option value="openai/gpt-4o-mini">⚡⚡ GPT-4o mini — paid, reliable</option>
-        <option value="qwen/qwen-2.5-72b-instruct">⚡⚡ Qwen 2.5 72B — paid, strong JSON</option>
-      </select>
-      <div class="settings-label" style="margin-top:.9rem;">API Key</div>
-      <input type="password" class="settings-input" id="s-openrouter-key"
-        placeholder="sk-or-…" autocomplete="off">
-      <div class="settings-hint">Stored locally in your browser only. Calls go to openrouter.ai. Get a key at openrouter.ai — many free models available.</div>
+    <!-- OpenRouter Section -->
+    <div class="settings-accordion-section" id="s-openrouter-section" style="display:none;">
+      <button class="settings-accordion-header" onclick="toggleAccordion('s-openrouter-section')">
+        OpenRouter API
+      </button>
+      <div class="settings-accordion-content">
+        <div class="settings-label">OpenRouter Model</div>
+        <select class="settings-select" id="s-openrouter-model">
+          <option value="meta-llama/llama-3.1-8b-instruct:free">⚡⚡⚡ Llama 3.1 8B — free, fast</option>
+          <option value="google/gemma-2-9b-it:free">⚡⚡ Gemma 2 9B — free, good quality</option>
+          <option value="meta-llama/llama-3.2-3b-instruct:free">⚡ Llama 3.2 3B — free, fastest</option>
+          <option value="anthropic/claude-3.5-haiku">⚡⚡ Claude Haiku — paid, best quality</option>
+          <option value="openai/gpt-4o-mini">⚡⚡ GPT-4o mini — paid, reliable</option>
+          <option value="qwen/qwen-2.5-72b-instruct">⚡⚡ Qwen 2.5 72B — paid, strong JSON</option>
+        </select>
+        <div class="settings-label" style="margin-top:.9rem;">API Key</div>
+        <input type="password" class="settings-input" id="s-openrouter-key"
+          placeholder="sk-or-…" autocomplete="off">
+        <div class="settings-hint">Stored locally in your browser only. Calls go to openrouter.ai. Get a key at openrouter.ai — many free models available.</div>
+      </div>
     </div>
 
-    <div class="settings-section">
-      <div class="settings-label">Background Image</div>
-      <select class="settings-select" id="s-bg-select" onchange="backgroundSelectChange()">
-        <option value="dynamic">Dynamic (changes with game state)</option>
-        <option value="custom">Custom URL…</option>
-      </select>
-      <input type="text" class="settings-input" id="s-bg-custom"
-        placeholder="https://example.com/background.jpg"
-        style="margin-top:.5rem;display:none;" onchange="saveCustomBg()">
-      <div class="settings-hint">Choose dynamic backgrounds that reflect your house's state, or set a custom image URL.</div>
-    </div>
+    <!-- Visual Settings Section -->
+    <div class="settings-accordion-section expanded" id="acc-visual">
+      <button class="settings-accordion-header" onclick="toggleAccordion('acc-visual')">
+        Visual Appearance
+      </button>
+      <div class="settings-accordion-content">
+        <div class="settings-label">Background Image</div>
+        <select class="settings-select" id="s-bg-select" onchange="backgroundSelectChange()">
+          <option value="dynamic">Dynamic (changes with game state)</option>
+          <option value="custom">Custom URL…</option>
+        </select>
+        <input type="text" class="settings-input" id="s-bg-custom"
+          placeholder="https://example.com/background.jpg"
+          style="margin-top:.5rem;display:none;" onchange="saveCustomBg()">
+        <div class="settings-hint">Choose dynamic backgrounds that reflect your house's state, or set a custom image URL.</div>
 
-    <div class="settings-section">
-      <div class="settings-label">Visual Appearance</div>
-      
-      <div style="margin-top:.6rem;">
+        <div class="settings-label" style="margin-top:1rem;">Appearance Controls</div>
         <div style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:.3rem;">Background Opacity: <span id="bg-opacity-val">15</span>%</div>
         <input type="range" class="settings-range" id="s-bg-opacity" min="0" max="40" value="15" oninput="updateAppearanceSettings()">
       </div>

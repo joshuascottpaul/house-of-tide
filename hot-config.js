@@ -264,6 +264,27 @@ function closeSettings() {
   document.getElementById('settings-overlay').classList.remove('open');
 }
 
+// Accordion toggle for mobile-friendly settings
+function toggleAccordion(sectionId) {
+  const section = document.getElementById(sectionId);
+  if (!section) return;
+  
+  // Toggle this section
+  const isExpanded = section.classList.contains('expanded');
+  
+  // Optional: close all other sections (uncomment for accordion behavior)
+  // document.querySelectorAll('.settings-accordion-section').forEach(sec => {
+  //   sec.classList.remove('expanded');
+  // });
+  
+  // Toggle current section
+  if (isExpanded) {
+    section.classList.remove('expanded');
+  } else {
+    section.classList.add('expanded');
+  }
+}
+
 function settingsBackendChange() {
   const isClaude = document.getElementById('s-claude').checked;
   const isOpenAI = document.getElementById('s-openai').checked;
