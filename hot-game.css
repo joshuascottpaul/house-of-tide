@@ -809,7 +809,7 @@ footer { text-align:center; padding:1.2rem; border-top:1px solid #2a1e0e;
 .settings-accordion-header {
   padding: 0.75rem 1rem;
   background: linear-gradient(to bottom, #1a1408, #0f0c06);
-  border: none;
+  border: 1px solid #3a2c18;
   width: 100%;
   text-align: left;
   cursor: pointer;
@@ -827,6 +827,7 @@ footer { text-align:center; padding:1.2rem; border-top:1px solid #2a1e0e;
 .settings-accordion-header:hover {
   background: linear-gradient(to bottom, #2a1e08, #1a1406);
   color: #d4b46a;
+  border-color: #5a4020;
 }
 .settings-accordion-header::after {
   content: '+';
@@ -837,6 +838,11 @@ footer { text-align:center; padding:1.2rem; border-top:1px solid #2a1e0e;
 .settings-accordion-section.expanded .settings-accordion-header::after {
   content: '−';
   transform: rotate(0deg);
+}
+.settings-accordion-section.expanded .settings-accordion-header {
+  background: linear-gradient(to bottom, #2a1e08, #1a1406);
+  border-color: #5a4020;
+  color: #d4b46a;
 }
 .settings-accordion-content {
   display: none;
