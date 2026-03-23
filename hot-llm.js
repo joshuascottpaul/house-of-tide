@@ -319,11 +319,12 @@ async function callLLM(systemPrompt, userMsg, opts = {}) {
 // ══════════════════════════════════════════════════════════
 async function testConnection() {
   const btn = document.getElementById('test-btn');
-  const res = document.getElementById('test-result');
+  // Use test-status in settings modal, fallback to test-result on title screen
+  const res = document.getElementById('test-status') || document.getElementById('test-result');
   btn.disabled = true;
   btn.textContent = '⊞  Consulting the archive…';
-  res.style.color = '#3a2a12';
-  res.textContent = '';
+  if (res) res.style.color = '#3a2a12';
+  if (res) res.textContent = '';
 
   try {
     let resp, data, raw, clean, reply;
@@ -440,12 +441,12 @@ async function testConnection() {
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({}));
         if (resp.status === 404 || (err.error && err.error.includes('not found'))) {
-          res.style.color = '#b05040';
-          res.textContent = 'Model not found. Run: ollama pull ' + CFG.ollamaModel;
+          if (res) res.style.color = '#b05040';
+          if (res) res.textContent = 'Model not found. Run: ollama pull ' + CFG.ollamaModel;
           return;
         } else {
-          res.style.color = '#b05040';
-          res.textContent = 'Ollama returned an error (' + resp.status + '). Check that it is running.';
+          if (res) res.style.color = '#b05040';
+          if (res) res.textContent = 'Ollama returned an error (' + resp.status + '). Check that it is running.';
           return;
         }
       }
@@ -456,29 +457,31 @@ async function testConnection() {
       reply = clean.length > 0 ? clean : 'Connection established.';
     }
 
-    res.style.color = '#5a8030';
-    res.innerHTML = '✓ &nbsp;<em>' + reply + '</em>';
+    if (res) {
+      res.style.color = '#5a8030';
+      res.innerHTML = '✓ &nbsp;<em>' + reply + '</em>';
+    }
 
   } catch(e) {
-    res.style.color = '#b05040';
+    if (res) res.style.color = '#b05040';
     if (CFG.backend === 'mlx') {
-      res.innerHTML =
+      if (res) res.innerHTML =
         '<strong style="color:#c04030">Connection blocked.</strong> Two possible causes:<br><br>' +
         '<strong style="color:#a08848">1. MLX server is not running.</strong> Run in Terminal:<br>' +
         '<code style="display:block;margin:.5rem 0;padding:.4rem .6rem;background:#0c0a06;border:1px solid #3a2c18;color:#c8a870;font-size:.85rem;font-family:monospace;user-select:all;">mlx-openai-server launch --model-path ' + (CFG.mlxModel || '<model-path>') + ' --model-type lm</code>' +
         '<strong style="color:#a08848">2. CORS not set.</strong> The MLX server should enable CORS by default. Check the server logs.';
     } else if (CFG.backend === 'openai') {
-      res.innerHTML =
+      if (res) res.innerHTML =
         '<strong style="color:#c04030">OpenAI API Error:</strong><br><br>' +
         '<code style="display:block;margin:.5rem 0;padding:.4rem .6rem;background:#0c0a06;border:1px solid #3a2c18;color:#c8a870;font-size:.85rem;font-family:monospace;">' + e.message + '</code><br><br>' +
         '<strong style="color:#a08848">Check:</strong> API key is valid and has credits.';
     } else if (CFG.backend === 'claude') {
-      res.innerHTML =
+      if (res) res.innerHTML =
         '<strong style="color:#c04030">Claude API Error:</strong><br><br>' +
         '<code style="display:block;margin:.5rem 0;padding:.4rem .6rem;background:#0c0a06;border:1px solid #3a2c18;color:#c8a870;font-size:.85rem;font-family:monospace;">' + e.message + '</code><br><br>' +
         '<strong style="color:#a08848">Check:</strong> API key is valid and has credits.';
     } else {
-      res.innerHTML =
+      if (res) res.innerHTML =
         '<strong style="color:#c04030">Connection blocked.</strong> Two possible causes:<br><br>' +
         '<strong style="color:#a08848">1. Ollama is not running.</strong> Open the Ollama app from Applications and wait for the llama icon to appear in the menu bar.<br><br>' +
         '<strong style="color:#a08848">2. CORS not set (most likely).</strong> Run this in Terminal, then quit and reopen Ollama:<br>' +
