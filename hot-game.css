@@ -798,6 +798,7 @@ footer { text-align:center; padding:1.2rem; border-top:1px solid #2a1e0e;
   padding: .3rem .6rem;
   cursor: pointer;
   transition: all .2s;
+}
 
 /* ── ACCORDION SETTINGS (Mobile-friendly) ── */
 .settings-accordion-section {
