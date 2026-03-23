@@ -292,28 +292,12 @@ function settingsBackendChange() {
   const isMLX    = document.getElementById('s-mlx').checked;
   const isOllama = !(isClaude || isOpenAI || isOpenRouter || isMLX);
   
-  // Helper to show/hide accordion sections
-  function setAccordionVisible(sectionId, visible) {
-    const section = document.getElementById(sectionId);
-    if (!section) return;
-    
-    if (visible) {
-      section.style.display = 'block';
-      section.classList.add('expanded');
-      // Also ensure the content div is visible
-      const content = section.querySelector('.settings-accordion-content');
-      if (content) content.style.display = 'block';
-    } else {
-      section.style.display = 'none';
-      section.classList.remove('expanded');
-    }
-  }
-  
-  setAccordionVisible('s-ollama-section', isOllama);
-  setAccordionVisible('s-claude-section', isClaude);
-  setAccordionVisible('s-openai-section', isOpenAI);
-  setAccordionVisible('s-openrouter-section', isOpenRouter);
-  setAccordionVisible('s-mlx-section', isMLX);
+  // Simple show/hide for backend-specific sections (no accordion logic)
+  document.getElementById('s-ollama-section').style.display = isOllama ? 'block' : 'none';
+  document.getElementById('s-claude-section').style.display = isClaude ? 'block' : 'none';
+  document.getElementById('s-openai-section').style.display = isOpenAI ? 'block' : 'none';
+  document.getElementById('s-openrouter-section').style.display = isOpenRouter ? 'block' : 'none';
+  document.getElementById('s-mlx-section').style.display = isMLX ? 'block' : 'none';
   
   const note = document.getElementById('settings-backend-note');
   if (isClaude) {

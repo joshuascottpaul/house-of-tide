@@ -860,6 +860,16 @@ footer { text-align:center; padding:1.2rem; border-top:1px solid #2a1e0e;
 }
 }
 .settings-btn-small:hover { background: #2a1e0e; border-color: #7a5828; }
+
+/* Backend-specific settings sections (simple divs, not accordions) */
+.backend-settings-section {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(26,20,8,0.5);
+  border: 1px solid #2a1e0e;
+  border-radius: 3px;
+}
+
 .settings-range {
   width: 100%;
   height: 6px;
