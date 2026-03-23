@@ -1302,10 +1302,10 @@ body > *:not(#bg-image):not(#settings-overlay):not(#debug-panel) { position: rel
 
   #game-content {
     /* Increased top padding to prevent content hiding behind tall mobile status bar */
-    padding: calc(6.5rem + 1rem) 1rem 3rem;
+    padding: calc(9rem + 1rem) 1rem 3rem;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    min-height: calc(100vh - 6.5rem);
+    min-height: calc(100vh - 9rem);
   }
 
   .stats {
