@@ -296,10 +296,16 @@ function settingsBackendChange() {
   function setAccordionVisible(sectionId, visible) {
     const section = document.getElementById(sectionId);
     if (!section) return;
-    section.style.display = visible ? 'block' : 'none';
-    // Also expand the accordion if showing
+    
     if (visible) {
+      section.style.display = 'block';
       section.classList.add('expanded');
+      // Also ensure the content div is visible
+      const content = section.querySelector('.settings-accordion-content');
+      if (content) content.style.display = 'block';
+    } else {
+      section.style.display = 'none';
+      section.classList.remove('expanded');
     }
   }
   
