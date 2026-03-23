@@ -84,6 +84,8 @@ function showNotification(msg) {
   el.style.opacity = '1';
   clearTimeout(el._timer);
   el._timer = setTimeout(() => { el.style.opacity = '0'; }, 3000);
+  // Play notification sound
+  if (typeof playNotificationSfx === 'function') playNotificationSfx();
 }
 
 // ══════════════════════════════════════════════════════════

@@ -98,6 +98,8 @@ function autoSave() {
     localStorage.setItem(AUTOSAVE_KEY, serialiseState());
     // Show subtle save notification
     showNotification('✓ Auto-saved');
+    // Play save sound
+    if (typeof playSaveSfx === 'function') playSaveSfx();
   } catch(e) { /* storage full or unavailable */ }
 }
 
@@ -113,6 +115,8 @@ function saveToSlot(slot) {
   localStorage.setItem(SAVE_KEY_PREFIX + slot, JSON.stringify(data));
   renderSaveOverlay();
   flashSaveSlot(slot);
+  // Play save sound
+  if (typeof playSaveSfx === 'function') playSaveSfx();
 }
 
 function flashSaveSlot(slot) {

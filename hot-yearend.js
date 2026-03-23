@@ -437,6 +437,9 @@ function beginYear() {
   // Hide year-end panel
   document.getElementById('panel-yearend').style.display = 'none';
 
+  // Play turn sound (new year beginning)
+  if (typeof playTurnSfx === 'function') playTurnSfx();
+
   // Begin house phase
   if (window.beginPhase) {
     beginPhase();
