@@ -864,10 +864,25 @@ footer { text-align:center; padding:1.2rem; border-top:1px solid #2a1e0e;
 /* Backend-specific settings sections (simple divs, not accordions) */
 .backend-settings-section {
   margin-top: 1rem;
-  padding: 1rem;
-  background: rgba(26,20,8,0.5);
-  border: 1px solid #2a1e0e;
+  padding: 1rem 1.2rem;
+  background: #0e0b06;
+  border: 1px solid #3a2c18;
   border-radius: 3px;
+}
+
+.backend-settings-section .settings-label {
+  color: #7a6840;
+}
+
+.backend-settings-section .settings-select,
+.backend-settings-section .settings-input {
+  background: #0a0804;
+  border: 1px solid #3a2c18;
+  color: #c8a870;
+}
+
+.backend-settings-section .settings-hint {
+  color: #6a5838;
 }
 
 .settings-range {
