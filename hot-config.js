@@ -290,11 +290,25 @@ function settingsBackendChange() {
   const isOpenAI = document.getElementById('s-openai').checked;
   const isOpenRouter = document.getElementById('s-openrouter').checked;
   const isMLX    = document.getElementById('s-mlx').checked;
-  document.getElementById('s-ollama-section').style.display = (isClaude || isOpenAI || isOpenRouter || isMLX) ? 'none' : 'block';
-  document.getElementById('s-claude-section').style.display = isClaude ? 'block' : 'none';
-  document.getElementById('s-openai-section').style.display = isOpenAI ? 'block' : 'none';
-  document.getElementById('s-openrouter-section').style.display = isOpenRouter ? 'block' : 'none';
-  document.getElementById('s-mlx-section').style.display   = isMLX    ? 'block' : 'none';
+  const isOllama = !(isClaude || isOpenAI || isOpenRouter || isMLX);
+  
+  // Helper to show/hide accordion sections
+  function setAccordionVisible(sectionId, visible) {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    section.style.display = visible ? 'block' : 'none';
+    // Also expand the accordion if showing
+    if (visible) {
+      section.classList.add('expanded');
+    }
+  }
+  
+  setAccordionVisible('s-ollama-section', isOllama);
+  setAccordionVisible('s-claude-section', isClaude);
+  setAccordionVisible('s-openai-section', isOpenAI);
+  setAccordionVisible('s-openrouter-section', isOpenRouter);
+  setAccordionVisible('s-mlx-section', isMLX);
+  
   const note = document.getElementById('settings-backend-note');
   if (isClaude) {
     note.textContent = 'Calls go directly from your browser to api.anthropic.com. Excellent prose quality and reliable JSON. Requires a paid API key.';
