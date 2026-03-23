@@ -606,13 +606,13 @@
       
       <div style="margin-top:.6rem;">
         <div style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:.3rem;">Background Tint Color</div>
-        <div style="display:flex;align-items:center;gap:.5rem;">
-          <input type="color" id="s-bg-tint-color" value="#090705" style="width:40px;height:30px;border:none;cursor:pointer;" onchange="updateAppearanceSettings()">
-          <input type="range" id="s-bg-tint-opacity" min="0" max="100" value="0" style="flex:1;" oninput="updateAppearanceSettings()">
-          <span style="font-size:.72rem;color:#7a6840;">Intensity: <span id="tint-opacity-val">0</span>%</span>
+        <div style="display:flex;align-items:center;gap:.75rem;">
+          <input type="color" id="s-bg-tint-color" value="#090705" style="width:50px;height:35px;border:2px solid #c8a870;cursor:pointer;background:#0a0804;" onchange="updateAppearanceSettings()">
+          <input type="range" id="s-bg-tint-opacity" min="0" max="100" value="0" style="flex:1;height:6px;" oninput="updateAppearanceSettings()">
+          <span style="font-family:'IM Fell English SC',serif;font-size:.65rem;letter-spacing:.1em;color:#a08848;text-transform:uppercase;">Intensity: <span id="tint-opacity-val">0</span>%</span>
         </div>
       </div>
-      
+
       <div style="margin-top:.6rem;">
         <div style="font-family:'IM Fell English',serif;font-size:.75rem;color:#c8a870;margin-bottom:.3rem;">Text Brightness</div>
         <input type="range" class="settings-range" id="s-text-brightness" min="50" max="100" value="100" oninput="updateAppearanceSettings()">
